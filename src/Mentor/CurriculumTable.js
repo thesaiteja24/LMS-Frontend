@@ -83,14 +83,19 @@ const CurriculumTable = ({
     return youtubeRegex.test(url) || driveRegex.test(url);
   };
 
+  // Utility function to wait for a given ms
+  const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
   const handleSubmit = async () => {
     setLoading(true);
+
     try {
       let idCounter = 1;
 
-      // Extract highest Id from classes SubTopics
-      const idCounters = {}; // Store ID counters per CurriculumId
+      // This object tracks the highest subtopic IDs per CurriculumId.
+      const idCounters = {};
 
+      // Helper to get the next incremental ID for a given CurriculumId
       const getNextId = (curriculumId) => {
         if (!idCounters[curriculumId]) {
           const matchedClass = classes.find(
@@ -106,7 +111,7 @@ const CurriculumTable = ({
           } else {
             const validIds = matchedClass.SubTopics.map((sub) => {
               if (!sub.Id || !sub.Id.includes(":")) {
-                return null; // or 0
+                return null;
               }
               const numericPart = parseInt(sub.Id.split(":")[1], 10);
               return isNaN(numericPart) ? null : numericPart;
@@ -128,11 +133,12 @@ const CurriculumTable = ({
             icon: "error",
             confirmButtonText: "OK",
           });
-          setLoading(false); // Reset loading state if validation fails
+          setLoading(false);
           return;
         }
       }
 
+      // Build final payload for all new (unsubmitted) DayOrders
       const payloads = curriculumData
         .filter((item) => !submittedCurriculumIds.has(item.id))
         .map((item) => {
@@ -144,29 +150,31 @@ const CurriculumTable = ({
             .map(([subTopic]) => ({
               subTopic,
               status: true,
-              Id: `${item.DayOrder}:${idCounter++}`, // Auto-increment for today’s subtopics
+              Id: `${item.DayOrder}:${idCounter++}`,
             }));
 
           // Gather newly ticked subtopics from previous days
           const previousSubTopics = curriculumData
-            .filter((prevItem) => prevItem.DayOrder < item.DayOrder) // Only previous days
+            .filter((prevItem) => prevItem.DayOrder < item.DayOrder)
             .flatMap((prevItem) =>
               Object.entries(checkedSubTopics[prevItem.DayOrder] || {})
                 .filter(
                   ([subTopic, status]) =>
                     status && !prevItem.subTopicsStatus[subTopic]
-                ) // Exclude already submitted ones
+                )
                 .map(([subTopic]) => ({
                   subTopic,
                   status: true,
-                  Id: `${prevItem.DayOrder}:${getNextId(prevItem.id)}`, // Get next available Id from classes
-                  dayOrder: prevItem.DayOrder, // Store reference to correct DayOrder
-                  curriculumId: prevItem.id, // Store Curriculum ID for updating
+                  Id: `${prevItem.DayOrder}:${getNextId(prevItem.id)}`,
+                  dayOrder: prevItem.DayOrder,
+                  curriculumId: prevItem.id,
                 }))
             );
 
-          if (selectedSubTopics.length === 0 || item.videoUrl.trim() === "")
+          // We only create a new "day" if we have subtopics & videoUrl
+          if (selectedSubTopics.length === 0 || item.videoUrl.trim() === "") {
             return null;
+          }
 
           return {
             subject,
@@ -184,6 +192,7 @@ const CurriculumTable = ({
         })
         .filter((item) => item !== null);
 
+      // Check if there's anything to submit
       if (payloads.length === 0) {
         Swal.fire({
           title: "No Changes",
@@ -195,18 +204,24 @@ const CurriculumTable = ({
         return;
       }
 
-      // 🔹 1️⃣ First, send the POST request for today's curriculum
-      await axios.post(
-        `${process.env.REACT_APP_BACKEND_URL}/api/v1/mentorsyllabus`,
-        payloads[0]
-      );
-      await fetchMentorStudents(batches);
-
-      // 🔹 2️⃣ Update previous topics with PUT requests
+      // ------------------------------------------------------------------
+      // For each new day in payloads:
+      // 1) POST new day
+      // 2) PUT for each previousSubTopic
+      // 3) Wait 3 seconds
+      // 4) POST store-daily-exam-tags
+      // ------------------------------------------------------------------
       for (const payload of payloads) {
+        // 1) Submit today's new day
+        await axios.post(
+          `${process.env.REACT_APP_BACKEND_URL}/api/v1/mentorsyllabus`,
+          payload
+        );
+
+        // 2) Update subtopics for previous days
         for (const prevSub of payload.previousSubTopics) {
           const updateData = {
-            location: location,
+            location,
             DayOrder: prevSub.dayOrder,
             CurriculumId: prevSub.curriculumId,
             batch: batches,
@@ -219,31 +234,30 @@ const CurriculumTable = ({
             ],
           };
 
-          // PUT request to update previous day’s curriculum
           await axios.put(
             `${process.env.REACT_APP_BACKEND_URL}/api/v1/mentorsyllabus`,
             updateData
           );
-
-          // ############################################# Creating Daily Exam #########################################
-          const dailyExamPayload = {
-            dayOrder: payloads[0]?.dayOrder, // Assuming we take from today's curriculum
-            mentorId,
-            subject,
-            batch: batches,
-          };
-
-          console.log(dailyExamPayload);
-
-          await axios.post(
-            `${process.env.REACT_APP_BACKEND_URL}/api/v1/store-daily-exam-tags`,
-            dailyExamPayload
-          );
-
-          // ############################################# Daily Exam #########################################
         }
+
+        // 3) Delay 3 seconds before the daily exam tags
+        await delay(3000);
+
+        // 4) Store daily exam tags only after the POST + PUTs succeed
+        const dailyExamPayload = {
+          dayOrder: payload.dayOrder,
+          mentorId,
+          subject,
+          batch: batches,
+        };
+
+        await axios.post(
+          `${process.env.REACT_APP_BACKEND_URL}/api/v1/store-daily-exam-tags`,
+          dailyExamPayload
+        );
       }
 
+      // Re-fetch data after all requests are successful
       await fetchMentorStudents(batches);
 
       Swal.fire({
@@ -260,8 +274,9 @@ const CurriculumTable = ({
         icon: "error",
         confirmButtonText: "Retry",
       });
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   };
 
   // Handle input change for Video URL
