@@ -79,8 +79,8 @@ const roleDisplayNames = {
           { label: "Profile", path: "/student-profile", icon: FaUser },
           { label: "Jobs List", path: "/jobslist", icon: FaBook },
           { label: "Course", path: "/courses", icon: FaClipboard },
-          { label: "Exams", path: "/exam-dashboard", icon: FaFileAlt },
-          { label: "ATS", path: "/ats-upload", icon: FaLayerGroup },
+          // { label: "Exams", path: "/exam-dashboard", icon: FaFileAlt },
+          // { label: "ATS", path: "/ats-upload", icon: FaLayerGroup },
           { label: "Mock Interviews", path: "/mock-interviews", icon: FaMicrophoneAlt },
           { label: "Leave Request", path: "/leave-request-page", icon: MdOutlineRequestQuote },
           { label: "Logout", action: handleLogout, icon: FaSignOutAlt },
@@ -125,14 +125,14 @@ const roleDisplayNames = {
           { label: "Courses", path: "/course", icon: FaChalkboardTeacher },
           { label: "Attendance", path: "/attendance", icon: FaClipboard },
           { label: "Student List", path: "/mentorstudentslist", icon: FaUsers },
-          {
-            label: "Online Exam",
-            icon: FaFileAlt,
-            subItems: [
-              { label: "Manage Exams", path: "/manage-exams", icon: FaFileAlt },
-              { label: "Reports", path: "/mentor-reports", icon: FaClipboard },
-            ],
-          },
+//           {
+//             label: "Online Exam",
+//             icon: FaFileAlt,
+//             subItems: [
+//               { label: "Manage Exams", path: "/manage-exams", icon: FaFileAlt },
+//               { label: "Reports", path: "/mentor-reports", icon: FaClipboard },
+//             ],
+//           },
           { label: "Logout", action: handleLogout, icon: FaSignOutAlt },
         ];
   
@@ -146,7 +146,7 @@ const roleDisplayNames = {
           { label: "Student Attendance", path: "/studentattendance", icon: FaClipboard },
           { label: "Batch Schedule", path: "/batchschedule", icon: FaUsers },
           { label: "Create Batch", path: "/createbatch", icon: FaPlusSquare },
-          { label: "Scheduling Exam", path: "/create-exam", icon: PiExam },
+          // { label: "Scheduling Exam", path: "/create-exam", icon: PiExam },
           { label: "Logout", action: handleLogout, icon: FaSignOutAlt },
         ];
   

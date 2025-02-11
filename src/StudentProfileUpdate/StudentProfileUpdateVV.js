@@ -1,6 +1,7 @@
 import React, { useState,useEffect,useCallback } from "react";
 import axios from "axios";
 import Modal from "react-modal";
+import { useNavigate } from 'react-router-dom';
 import { Worker, Viewer } from "@react-pdf-viewer/core"; // ✅ PDF Viewer
 import { defaultLayoutPlugin } from "@react-pdf-viewer/default-layout"; // ✅ Layout Plugin
 import "@react-pdf-viewer/core/lib/styles/index.css";
@@ -10,6 +11,8 @@ import Swal from "sweetalert2/dist/sweetalert2.min.js";
 import { useStudent } from "../contexts/StudentProfileContext";
 import StudentProfileV from "../StudentProfile/StudentProfileV";
 import { useEdit } from "../contexts/EditContext";
+import AtsResult from "../Ats/AtsResult";
+
 import {
   FaUserCircle,
   FaGraduationCap,
@@ -31,6 +34,56 @@ export default function StudentProfileUpdateVV() {
  const resumeId = localStorage.getItem('id')
  const [modalIsOpen, setModalIsOpen] = useState(false);
  const pdfPlugin = defaultLayoutPlugin();
+ const [resumeScore, setResumeScore] = useState(null);
+const [scoreLoading, setScoreLoading] = useState(false);
+const [updatingResume, setUpdatingResume] = useState(false);
+const navigate = useNavigate();
+const [scoreModalOpen, setScoreModalOpen] = useState(false); // ✅ State for modal visibility
+const [resumeScoreData, setResumeScoreData] = useState(null);
+
+
+const fetchResumeScore = async () => {
+  fetchResume()
+  if (!studentDetails?.studentId) {
+    Swal.fire({
+      icon: "error",
+      title: "Student ID Missing",
+      text: "Your student ID is not available. Please try again later.",
+    });
+    return;
+  }
+
+  setScoreLoading(true);
+
+  try {
+    const response = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/v1/atscheck`, {
+      params: { student_id: resumeId },
+    });
+   console.log(response)
+    // navigate('/ats-result', { state: { analysis: response.data } });
+
+
+    if (response.status === 200) {
+      setResumeScore(response.data.Resume_data.ats_score);
+      setResumeScoreData(response.data.Resume_data); // ✅ Store response in state
+      setScoreModalOpen(true);
+      Swal.fire({
+        title: "Resume Score Retrieved",
+        text: `Your ATS Resume Score is ${response.data.Resume_data.ats_score}/100`,
+        icon: "success",
+      });
+    }
+  } catch (error) {
+    console.error("❌ Error fetching resume score:", error);
+    Swal.fire({
+      icon: "error",
+      title: "Failed to Retrieve Score",
+      text: "There was an issue fetching your resume score. Please try again later.",
+    });
+  }
+
+  setScoreLoading(false);
+};
 
   const fetchResume =useCallback( async () => {
     try {
@@ -78,6 +131,7 @@ export default function StudentProfileUpdateVV() {
     const formData = new FormData();
     formData.append("resume", file);
     formData.append("student_id", localStorage.getItem("student_id"));
+    setUpdatingResume(true);
 
     try {
       const response = await axios.post(
@@ -90,11 +144,26 @@ export default function StudentProfileUpdateVV() {
         }
       );
 
-      if (response.status === 200) {
+      const responseResume = await axios.post(
+        `${process.env.REACT_APP_BACKEND_URL}/api/v1/atscheck`,
+        formData,
+        {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        }
+      );
+
+      if (response.status === 200 && responseResume.status===200) {
         Swal.fire({
           title: "Resume Updated Successfully",
           icon: "success",
         });
+        fetchResume()
+
+
+        setFile(null);
+      e.target.reset(); 
       }
     } catch (error) {
       console.error("Error updating resume:", error);
@@ -103,6 +172,8 @@ export default function StudentProfileUpdateVV() {
         title: "Update Failed",
         text: "There was an issue updating your resume. Please try again later.",
       });
+    }finally{
+      setUpdatingResume(false);
     }
   };
 
@@ -122,8 +193,7 @@ export default function StudentProfileUpdateVV() {
             }
         );
 
-        console.log("✅ API Response Headers:", response.headers);
-        console.log("✅ Response Content-Type:", response.headers["content-type"]);
+
 
         const contentType = response.headers["content-type"];
 
@@ -305,10 +375,28 @@ useEffect(() => {
                   >
                     View Resume
                   </button>
+                  <div className="flex flex-col md:flex-row items-center space-y-4 md:space-y-0 md:space-x-4 mt-3">
+                <button
+                  onClick={fetchResumeScore}
+                  className="bg-gradient-to-r from-indigo-500 to-purple-500 text-white py-2 px-6 rounded-md shadow-md hover:shadow-lg transition-transform transform hover:scale-105"
+                  disabled={scoreLoading}
+                >
+                  {scoreLoading ? "Fetching Score..." : "View Resume Score"}
+                </button>
+
+                {/* Show Resume Score if Available */}
+                {resumeScore !== null && (
+                  <p className="text-lg font-semibold text-gray-700">
+                    🎯 ATS Resume Score: <span className="text-blue-600">{resumeScore}/100</span>
+                  </p>
+                )}
+              </div>
                 </div>
               ) : (
                 <p className="text-gray-500">No resume found.</p>
               )}
+
+           
 
               {/* ✅ Resume Modal */}
               <Modal
@@ -347,6 +435,43 @@ useEffect(() => {
               </div>
             </Modal>
 
+            <Modal
+            isOpen={scoreModalOpen}
+            onRequestClose={() => setScoreModalOpen(false)}
+            className="bg-white p-8 rounded-xl shadow-2xl max-w-5xl w-full mx-auto overflow-auto"
+            overlayClassName="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center"
+            style={{
+              maxHeight: "90vh",
+              overflowY: "auto",
+              borderRadius: "12px",
+              padding: "20px",
+            }}
+          >
+            <div className="flex justify-between items-center mb-6">
+              <h2 className="text-2xl font-bold text-gray-800">Resume Score Analysis</h2>
+              <button
+                onClick={() => setScoreModalOpen(false)}
+                className="text-red-500 text-2xl font-bold hover:scale-110 transition-transform"
+              >
+                ✖
+              </button>
+            </div>
+
+            {/* ✅ Render AtsResult component inside the modal */}
+            <div className="overflow-y-auto max-h-[75vh] p-4">
+              {resumeScoreData ? (
+                <AtsResult analysis={resumeScoreData} />
+              ) : (
+                <p className="text-center text-gray-500">No resume score data available.</p>
+              )}
+            </div>
+          </Modal>
+
+
+
+               {/* View Resume Score Button */}
+            
+
               {/* Resume Upload */}
               <form encType="multipart/form-data" onSubmit={updateResume} className="mt-8">
                 <h2 className="text-xl font-semibold text-gray-700 mb-4">
@@ -360,10 +485,14 @@ useEffect(() => {
                   />
                   <button
                     type="submit"
-                    className="bg-gradient-to-r from-indigo-500 to-purple-500 text-white py-2 px-6 rounded-md shadow-md hover:shadow-lg transition-transform transform hover:scale-105"
+                    disabled={updatingResume} // ✅ Disable while uploading
+                    className={`bg-gradient-to-r from-indigo-500 to-purple-500 text-white py-2 px-6 rounded-md shadow-md hover:shadow-lg transition-transform transform hover:scale-105 ${
+                      updatingResume ? "opacity-50 cursor-not-allowed" : ""
+                    }`}
                   >
-                    Update Resume
+                    {updatingResume ? "Updating..." : "Update Resume"} {/* ✅ Show loading text */}
                   </button>
+
                 </div>
               </form>
             </>

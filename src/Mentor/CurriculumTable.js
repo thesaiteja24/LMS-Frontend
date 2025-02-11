@@ -79,17 +79,29 @@ const CurriculumTable = ({ subject, batches, mentorData,classes,fetchMentorStude
       const idCounters = {}; // Store ID counters per CurriculumId
 
       const getNextId = (curriculumId) => {
+      
         if (!idCounters[curriculumId]) {
+      
           const matchedClass = classes.find((cls) => cls.CurriculumId === curriculumId);
+      
           if (!matchedClass || !matchedClass.SubTopics || matchedClass.SubTopics.length === 0) {
             idCounters[curriculumId] = 1; // Start from 1 if no subtopics exist
           } else {
-            const maxId = Math.max(...matchedClass.SubTopics.map((sub) => sub.Id)); // Get highest Id
-            idCounters[curriculumId] = maxId + 1; // Increment for new entry
+            // Extract numerical parts only to avoid NaN issues
+            const validIds = matchedClass.SubTopics.map((sub) =>
+              parseInt(sub.Id.split(":")[1])
+            ) // Extract number part
+              .filter((num) => !isNaN(num)); // Remove NaN values
+      
+            const maxId = validIds.length > 0 ? Math.max(...validIds) : 0;
+      
+            idCounters[curriculumId] = maxId + 1;
           }
         }
-        return idCounters[curriculumId]++; // Return current and increment
+      
+        return idCounters[curriculumId]++;
       };
+      
 
         // Validate all video URLs before submission
         for (const item of curriculumData) {
@@ -116,23 +128,31 @@ const CurriculumTable = ({ subject, batches, mentorData,classes,fetchMentorStude
             .map(([subTopic]) => ({
               subTopic,
               status: true,
-              Id: idCounter++, // Auto-increment for today’s subtopics
+              Id: `${item.DayOrder}:${idCounter++}`, // Auto-increment for today’s subtopics
             }));
   
           // Gather newly ticked subtopics from previous days
           const previousSubTopics = curriculumData
-            .filter((prevItem) => prevItem.DayOrder < item.DayOrder) // Only previous days
-            .flatMap((prevItem) =>
-              Object.entries(checkedSubTopics[prevItem.DayOrder] || {})
-                .filter(([subTopic, status]) => status && !prevItem.subTopicsStatus[subTopic]) // Exclude already submitted ones
-                .map(([subTopic]) => ({
-                  subTopic,
-                  status: true,
-                  Id: getNextId(prevItem.id), // Get next available Id from classes
-                  dayOrder: prevItem.DayOrder, // Store reference to correct DayOrder
-                  curriculumId: prevItem.id, // Store Curriculum ID for updating
-                }))
-            );
+  .filter((prevItem) => {
+    return prevItem.DayOrder < item.DayOrder;
+  }) // Only previous days
+  .flatMap((prevItem) => {
+    return Object.entries(checkedSubTopics[prevItem.DayOrder] || {})
+      .filter(([subTopic, status]) => {
+        return status && !prevItem.subTopicsStatus[subTopic]; // Exclude already submitted ones
+      })
+      .map(([subTopic]) => {
+        return {
+          subTopic,
+          status: true,
+          Id: `${prevItem.DayOrder}:${getNextId(prevItem.id)}`, // Get next available Id from classes
+          dayOrder: prevItem.DayOrder, // Store reference to correct DayOrder
+          curriculumId: prevItem.id, // Store Curriculum ID for updating
+        };
+      });
+  });
+
+
   
           if (selectedSubTopics.length === 0 || item.videoUrl.trim() === "") return null;
   
