@@ -226,17 +226,19 @@ const CurriculumTable = ({
           );
 
           // ############################################# Creating Daily Exam #########################################
-          // const dailyExamPayload = {
-          //   dayOrder: payloads[0]?.dayOrder, // Assuming we take from today's curriculum
-          //   mentorId,
-          //   subject,
-          //   batch: batches,
-          // };
-          // console.log(dailyExamPayload);
-          // await axios.post(
-          //   `${process.env.REACT_APP_BACKEND_URL}/api/v1/daily-exam-syllabus`,
-          //   dailyExamPayload
-          // );
+          const dailyExamPayload = {
+            dayOrder: payloads[0]?.dayOrder, // Assuming we take from today's curriculum
+            mentorId,
+            subject,
+            batch: batches,
+          };
+
+          console.log(dailyExamPayload);
+
+          await axios.post(
+            `${process.env.REACT_APP_BACKEND_URL}/api/v1/store-daily-exam-tags`,
+            dailyExamPayload
+          );
 
           // ############################################# Daily Exam #########################################
         }

@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import axios from "axios"; // Import axios for API calls
 import CurriculumTable from "./CurriculumTable";
@@ -6,13 +5,13 @@ import { useStudentsMentorData } from "../contexts/MentorStudentsContext";
 
 const Course = () => {
   const [selectedSubject, setSelectedSubject] = useState("");
-  const [syllabus, setSyllabus] = useState([]); 
+  const [syllabus, setSyllabus] = useState([]);
   const [availableSubjects, setAvailableSubjects] = useState([]);
-  const [filteredBatches, setFilteredBatches] = useState([]); 
-  const {classes, mentorData, scheduleData, fetchMentorStudents } = useStudentsMentorData();
+  const [filteredBatches, setFilteredBatches] = useState([]);
+  const { classes, mentorData, scheduleData, fetchMentorStudents } =
+    useStudentsMentorData();
   const location = localStorage.getItem("location");
   const [selectedBatch, setSelectedBatch] = useState(""); // Add this at the top
-
 
   useEffect(() => {
     fetchMentorStudents();
@@ -20,7 +19,9 @@ const Course = () => {
 
   useEffect(() => {
     if (Array.isArray(scheduleData)) {
-      const uniqueSubjects = [...new Set(scheduleData.map((item) => item.subject))];
+      const uniqueSubjects = [
+        ...new Set(scheduleData.map((item) => item.subject)),
+      ];
       setAvailableSubjects(uniqueSubjects);
     }
   }, [scheduleData]);
@@ -39,12 +40,16 @@ const Course = () => {
 
   const fetchMentorSyllabus = async () => {
     fetchMentorStudents(selectedBatch);
-    if (selectedSubject && selectedBatch  && location) {
+    if (selectedSubject && selectedBatch && location) {
       try {
         const response = await axios.get(
           `${process.env.REACT_APP_BACKEND_URL}/api/v1/mentorsyllabus`,
           {
-            params: { subject: selectedSubject, location, batches: selectedBatch },
+            params: {
+              subject: selectedSubject,
+              location,
+              batches: selectedBatch,
+            },
           }
         );
         // console.log("Backend Response:", response.data);
@@ -55,14 +60,12 @@ const Course = () => {
     }
   };
 
-
   useEffect(() => {
- 
     fetchMentorSyllabus();
-  }, [selectedSubject, selectedBatch, location]); 
+  }, [selectedSubject, selectedBatch, location]);
 
   return (
-    <div className="min-h-screen bg-blue-100 py-10 px-5">
+    <div className="h-full bg-blue-100 py-10 px-5">
       <div className="max-w-7xl mx-auto bg-white shadow-lg rounded-lg p-6">
         <h1 className="text-3xl font-bold text-black text-center mb-6">
           Mentor Curriculum
@@ -108,53 +111,52 @@ const Course = () => {
               </div>
             )} */}
             {selectedSubject && (
-  <div className="flex-1 min-w-[200px]">
-    <div className="flex flex-col items-center bg-sky-200 space-y-4 md:space-y-6 px-6 py-6 rounded-lg shadow-lg max-w-md mx-auto">
-      <label
-        htmlFor="batch-selector"
-        className="text-xl font-semibold text-black text-center"
-      >
-        Select a Batch:
-      </label>
+              <div className="flex-1 min-w-[200px]">
+                <div className="flex flex-col items-center bg-sky-200 space-y-4 md:space-y-6 px-6 py-6 rounded-lg shadow-lg max-w-md mx-auto">
+                  <label
+                    htmlFor="batch-selector"
+                    className="text-xl font-semibold text-black text-center"
+                  >
+                    Select a Batch:
+                  </label>
 
-      {filteredBatches.length > 0 ? (
-        <select
-          id="batch-selector"
-          className="w-full px-4 py-2 text-lg text-gray-700 bg-white border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-          value={selectedBatch} // Bind selected value
-          onChange={(e) => setSelectedBatch(e.target.value)} // Update selected batch
-        >
-          <option value="" disabled>
-            Choose a batch
-          </option>
-          {filteredBatches.map((batch, index) => (
-            <option key={index} value={batch}>
-              {batch}
-            </option>
-          ))}
-        </select>
-      ) : (
-        <p className="text-lg text-gray-700">
-          No batches available for this subject.
-        </p>
-      )}
-    </div>
-  </div>
-)}
-
+                  {filteredBatches.length > 0 ? (
+                    <select
+                      id="batch-selector"
+                      className="w-full px-4 py-2 text-lg text-gray-700 bg-white border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      value={selectedBatch} // Bind selected value
+                      onChange={(e) => setSelectedBatch(e.target.value)} // Update selected batch
+                    >
+                      <option value="" disabled>
+                        Choose a batch
+                      </option>
+                      {filteredBatches.map((batch, index) => (
+                        <option key={index} value={batch}>
+                          {batch}
+                        </option>
+                      ))}
+                    </select>
+                  ) : (
+                    <p className="text-lg text-gray-700">
+                      No batches available for this subject.
+                    </p>
+                  )}
+                </div>
+              </div>
+            )}
           </div>
           {syllabus.length > 0 && selectedBatch && (
-          <div className="bg-sky-200 p-4 rounded-lg shadow-md">
-            <CurriculumTable
-            classes={classes}
-            fetchMentorStudents={fetchMentorStudents}
-              syllabus={syllabus}
-              mentorData={mentorData}
-              subject={selectedSubject}
-              batches={selectedBatch} // ✅ Pass only the selected batch
-            />
-          </div>
-        )}
+            <div className="bg-sky-200 p-4 rounded-lg shadow-md">
+              <CurriculumTable
+                classes={classes}
+                fetchMentorStudents={fetchMentorStudents}
+                syllabus={syllabus}
+                mentorData={mentorData}
+                subject={selectedSubject}
+                batches={selectedBatch} // ✅ Pass only the selected batch
+              />
+            </div>
+          )}
         </div>
       </div>
     </div>

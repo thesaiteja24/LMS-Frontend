@@ -1,20 +1,21 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import * as XLSX from "xlsx";
 import axios from "axios";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const UploadQuestions = () => {
   const [file, setFile] = useState(null);
-  const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
+  const fileInputRef = useRef(null);
 
   const handleFileChange = (e) => {
     setFile(e.target.files[0]);
-    setMessage("");
   };
 
   const handleProcessFile = async () => {
     if (!file) {
-      setMessage("Please select an Excel file to upload.");
+      toast.error("Please select an Excel file to upload.");
       return;
     }
 
@@ -23,7 +24,7 @@ const UploadQuestions = () => {
         "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" &&
       file.type !== "application/vnd.ms-excel"
     ) {
-      setMessage("Invalid file type. Please upload an Excel file.");
+      toast.error("Invalid file type. Please upload an Excel file.");
       return;
     }
 
@@ -36,25 +37,25 @@ const UploadQuestions = () => {
         const sheetName = workbook.SheetNames[0];
         const sheet = workbook.Sheets[sheetName];
         const jsonData = XLSX.utils.sheet_to_json(sheet);
-        console.log(jsonData);
+
         const response = await axios.post(
           `${process.env.REACT_APP_BACKEND_URL}/api/v1/uploadquestions`,
           jsonData,
-          {
-            headers: { "Content-Type": "application/json" },
-          }
+          { headers: { "Content-Type": "application/json" } }
         );
+
         if (response.data.success) {
           setFile(null);
+          if (fileInputRef.current) {
+            fileInputRef.current.value = ""; // Reset file input
+          }
+          toast.success("File uploaded and processed successfully.");
+        } else {
+          toast.error(`Failed to upload file: ${response.data.message}`);
         }
-        setMessage(
-          response.data.success
-            ? "File uploaded and processed successfully."
-            : "Failed to upload file: " + response.data.message
-        );
       } catch (error) {
         console.error("Error uploading file:", error);
-        setMessage("An error occurred while processing the file.");
+        toast.error("An error occurred while processing the file.");
       } finally {
         setLoading(false);
       }
@@ -62,40 +63,47 @@ const UploadQuestions = () => {
 
     reader.onerror = () => {
       setLoading(false);
-      setMessage("Error reading the file. Please try again.");
+      toast.error("Error reading the file. Please try again.");
     };
 
     reader.readAsArrayBuffer(file);
   };
 
-  const handleCodeTemplate = () => {
+  const handleDownloadTemplate = (type) => {
+    const fileName =
+      type === "mcq" ? "Final_Mcq_Template.xlsx" : "Final_Code_Template.xlsx";
     const link = document.createElement("a");
-    link.href = `/Final_Code_Template.xlsx`;
-    link.download = `Final_Code_Template.xlsx`;
-    link.click();
-  };
-
-  const handleMcqTemplate = () => {
-    const link = document.createElement("a");
-    link.href = `/Final_Mcq_Template.xlsx`;
-    link.download = `Final_Mcq_Template.xlsx`;
+    link.href = `/${fileName}`;
+    link.download = fileName;
     link.click();
   };
 
   return (
     <div className="upload-section bg-transparent shadow-md rounded-lg p-8 mx-auto max-w-2xl">
+      <ToastContainer
+        position="top-right"
+        autoClose={3000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="colored"
+      />
       <h3 className="text-2xl text-center font-semibold text-blue-800 mb-6">
         Upload Questions
       </h3>
       <div className="flex flex-wrap justify-center gap-4 mb-6">
         <button
-          onClick={() => handleMcqTemplate()}
+          onClick={() => handleDownloadTemplate("mcq")}
           className="w-48 bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600 transition shadow-md"
         >
           Download MCQ Template
         </button>
         <button
-          onClick={() => handleCodeTemplate()}
+          onClick={() => handleDownloadTemplate("code")}
           className="w-48 bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600 transition shadow-md"
         >
           Download Coding Template
@@ -105,6 +113,7 @@ const UploadQuestions = () => {
         type="file"
         accept=".xlsx, .xls"
         onChange={handleFileChange}
+        ref={fileInputRef} // Reference for resetting input
         className="block w-full p-3 mb-4 border border-gray-300 rounded-lg focus:ring focus:ring-blue-300"
       />
       <button
@@ -114,15 +123,6 @@ const UploadQuestions = () => {
       >
         {loading ? "Processing..." : "Process and Upload File"}
       </button>
-      {message && (
-        <p
-          className={`mt-4 text-center text-sm ${
-            message.includes("success") ? "text-green-600" : "text-red-600"
-          }`}
-        >
-          {message}
-        </p>
-      )}
     </div>
   );
 };

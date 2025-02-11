@@ -63,7 +63,6 @@ import ConductExam from "./Student/Exams_module/students/ConductExam.jsx";
 import ExamSecurityWrapper from "./Student/Exams_module/students/ExamSecurityWrapper.jsx";
 import ExamAnalysis from "./Student/Exams_module/students/ExamAnalysis.jsx";
 import { DailyQuestionBank } from "./Mentor/ManageExams/QuestionBanks/DailyQuestionBank.jsx";
-import DisplayQuestions from "./Mentor/ManageExams/ViewQuestionBanks/DisplayQuestions.jsx";
 import UploadQuestions from "./Mentor/ManageExams/UploadQuestions.jsx";
 
 const ProtectedRoute = ({ children, allowedRoles }) => {
@@ -662,21 +661,6 @@ export default function App() {
               </ProtectedRoute>
             }
           />
-
-          <Route
-            path="/view-daily-exams"
-            element={
-              <ProtectedRoute allowedRoles={["Mentors"]}>
-                <LogoWrapper>
-                  <DisplayQuestions />
-                </LogoWrapper>
-              </ProtectedRoute>
-            }
-          />
-
-          {/* Exam Viewing Routes */}
-
-          {/* mentor ending */}
 
           <Route
             path="/batchschedule"
