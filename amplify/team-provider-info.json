@@ -1,0 +1,15 @@
+{
+  "dev": {
+    "awscloudformation": {
+      "AuthRoleName": "amplify-codegnanjobportal-dev-e2581-authRole",
+      "UnauthRoleArn": "arn:aws:iam::954976324224:role/amplify-codegnanjobportal-dev-e2581-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::954976324224:role/amplify-codegnanjobportal-dev-e2581-authRole",
+      "Region": "us-east-1",
+      "DeploymentBucketName": "amplify-codegnanjobportal-dev-e2581-deployment",
+      "UnauthRoleName": "amplify-codegnanjobportal-dev-e2581-unauthRole",
+      "StackName": "amplify-codegnanjobportal-dev-e2581",
+      "StackId": "arn:aws:cloudformation:us-east-1:954976324224:stack/amplify-codegnanjobportal-dev-e2581/4c957dc0-846a-11ef-bb79-0e04891abfad",
+      "AmplifyAppId": "d4hp2a8bfv9kj"
+    }
+  }
+}
