@@ -44,7 +44,9 @@ const UploadQuestions = () => {
             headers: { "Content-Type": "application/json" },
           }
         );
-
+        if (response.data.success) {
+          setFile(null);
+        }
         setMessage(
           response.data.success
             ? "File uploaded and processed successfully."
