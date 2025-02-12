@@ -3,19 +3,43 @@ import Swal from "sweetalert2"; // Import SweetAlert
 
 const EnquiryForm = () => {
   const now = new Date();
-  const currentDate = now.toISOString().split("T")[0]; // Get YYYY-MM-DD format
-  const currentTime = now.toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit" }); // HH:MM in 24-hour format
+
+  // Format the date as "February 7, 2025"
+  const currentDate = new Intl.DateTimeFormat("en-US", {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  }).format(now);
+  
+  // Format the time as "10:30 AM"
+  const currentTime = new Intl.DateTimeFormat("en-US", {
+    hour: "numeric",
+    minute: "2-digit",
+    hour12: true, // ✅ Ensures AM/PM format
+  }).format(now);
+   // HH:MM in 24-hour format
   
   const [formData, setFormData] = useState({
     Name: "",
     Email: "",
     Mobile: "",
     Role: "Student",
-    course_id: "", // Updated field
+    Course: "", // Updated field
     "Page URL": "https://placements.codegnan.com/request-form",
     form_name: "Placement Request Form",
     Date: currentDate,
     Time: currentTime,
+    form_id:'',
+    "Remote IP":'',
+    "Powered by":'',
+    "User Agent":'',
+    utm_medium:'',
+    utm_source:'',
+    utm_campaign:'',
+    "Batches Preferences":'',
+    "preferred_location":'',
+    "Full Stack Developer Course in Bangalore":''
+
   });
   
   const [errors, setErrors] = useState({});
@@ -30,7 +54,7 @@ const EnquiryForm = () => {
     if (!formData.Name.trim()) newErrors.Name = "Full Name is required.";
     if (!formData.Email.trim()) newErrors.Email = "Email is required.";
     if (!formData.Mobile.trim()) newErrors.Mobile = "Mobile number is required.";
-    if (!formData.course_id) newErrors.course_id = "Please select a course."; // Validation for course_id
+    if (!formData.Course) newErrors.Course = "Please select a course."; // Validation for course_id
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -66,7 +90,7 @@ const EnquiryForm = () => {
             Email: "",
             Mobile: "",
             Role: "Student",
-            course_id: "",
+            Course: "",
             "Page URL": "https://placements.codegnan.com/request-form",
             form_name: "Enquiry Form",
           });
@@ -189,13 +213,13 @@ const EnquiryForm = () => {
 
             {/* Course ID Dropdown */}
             <div>
-              <label htmlFor="course_id" className="block text-sm font-semibold text-gray-700">
+              <label htmlFor="Course" className="block text-sm font-semibold text-gray-700">
                 Course ID*
               </label>
               <select
-                id="course_id"
-                name="course_id"
-                value={formData.course_id}
+                id="Course"
+                name="Course"
+                value={formData.Course}
                 onChange={handleChange}
                 className="mt-1 block w-full rounded-md shadow-md border-gray-300 focus:ring-blue-500 focus:border-blue-500 p-3 bg-white text-gray-900"
               >
@@ -205,7 +229,7 @@ const EnquiryForm = () => {
                 <option value="CS117">Python FullStack</option>
                 <option value="CS106">Data Science</option>
               </select>
-              {errors.course_id && <p className="text-sm text-red-500 mt-1">{errors.course_id}</p>}
+              {errors.Course && <p className="text-sm text-red-500 mt-1">{errors.Course}</p>}
             </div>
 
             {/* Submit Button */}

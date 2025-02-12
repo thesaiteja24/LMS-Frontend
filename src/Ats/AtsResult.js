@@ -1,9 +1,9 @@
 import React from "react";
-import { useLocation } from "react-router-dom";
+// import { useLocation } from "react-router-dom";
 
-const AtsResult = () => {
-  const location = useLocation();
-  const analysisData = location.state?.analysis ;
+const AtsResult = (analysis) => {
+  // const location = useLocation();
+   const analysisData = analysis.analysis ;
  console.log("hello--",analysisData);
   const score = analysisData.ats_score || "Score Not Available";
   const feedbackSections = analysisData.feedback_sections || {

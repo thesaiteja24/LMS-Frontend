@@ -97,32 +97,29 @@ const CurriculumTable = ({
 
       // Helper to get the next incremental ID for a given CurriculumId
       const getNextId = (curriculumId) => {
+      
         if (!idCounters[curriculumId]) {
-          const matchedClass = classes.find(
-            (cls) => cls.CurriculumId === curriculumId
-          );
-
-          if (
-            !matchedClass ||
-            !matchedClass.SubTopics ||
-            matchedClass.SubTopics.length === 0
-          ) {
-            idCounters[curriculumId] = 1;
+      
+          const matchedClass = classes.find((cls) => cls.CurriculumId === curriculumId);
+      
+          if (!matchedClass || !matchedClass.SubTopics || matchedClass.SubTopics.length === 0) {
+            idCounters[curriculumId] = 1; // Start from 1 if no subtopics exist
           } else {
-            const validIds = matchedClass.SubTopics.map((sub) => {
-              if (!sub.Id || !sub.Id.includes(":")) {
-                return null;
-              }
-              const numericPart = parseInt(sub.Id.split(":")[1], 10);
-              return isNaN(numericPart) ? null : numericPart;
-            }).filter((n) => n !== null);
-
+            // Extract numerical parts only to avoid NaN issues
+            const validIds = matchedClass.SubTopics.map((sub) =>
+              parseInt(sub.Id.split(":")[1])
+            ) // Extract number part
+              .filter((num) => !isNaN(num)); // Remove NaN values
+      
             const maxId = validIds.length > 0 ? Math.max(...validIds) : 0;
+      
             idCounters[curriculumId] = maxId + 1;
           }
         }
+      
         return idCounters[curriculumId]++;
       };
+      
 
       // Validate all video URLs before submission
       for (const item of curriculumData) {
@@ -150,32 +147,34 @@ const CurriculumTable = ({
             .map(([subTopic]) => ({
               subTopic,
               status: true,
-              Id: `${item.DayOrder}:${idCounter++}`,
+              Id: `${item.DayOrder}:${idCounter++}`, // Auto-increment for today’s subtopics
             }));
 
           // Gather newly ticked subtopics from previous days
           const previousSubTopics = curriculumData
-            .filter((prevItem) => prevItem.DayOrder < item.DayOrder)
-            .flatMap((prevItem) =>
-              Object.entries(checkedSubTopics[prevItem.DayOrder] || {})
-                .filter(
-                  ([subTopic, status]) =>
-                    status && !prevItem.subTopicsStatus[subTopic]
-                )
-                .map(([subTopic]) => ({
-                  subTopic,
-                  status: true,
-                  Id: `${prevItem.DayOrder}:${getNextId(prevItem.id)}`,
-                  dayOrder: prevItem.DayOrder,
-                  curriculumId: prevItem.id,
-                }))
-            );
+  .filter((prevItem) => {
+    return prevItem.DayOrder < item.DayOrder;
+  }) // Only previous days
+  .flatMap((prevItem) => {
+    return Object.entries(checkedSubTopics[prevItem.DayOrder] || {})
+      .filter(([subTopic, status]) => {
+        return status && !prevItem.subTopicsStatus[subTopic]; // Exclude already submitted ones
+      })
+      .map(([subTopic]) => {
+        return {
+          subTopic,
+          status: true,
+          Id: `${prevItem.DayOrder}:${getNextId(prevItem.id)}`, // Get next available Id from classes
+          dayOrder: prevItem.DayOrder, // Store reference to correct DayOrder
+          curriculumId: prevItem.id, // Store Curriculum ID for updating
+        };
+      });
+  });
 
-          // We only create a new "day" if we have subtopics & videoUrl
-          if (selectedSubTopics.length === 0 || item.videoUrl.trim() === "") {
-            return null;
-          }
 
+  
+          if (selectedSubTopics.length === 0 || item.videoUrl.trim() === "") return null;
+  
           return {
             subject,
             batches,

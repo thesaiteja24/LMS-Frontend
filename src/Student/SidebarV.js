@@ -71,18 +71,12 @@ export const SidebarV = ({ setIsAuthenticated }) => {
           { label: "Profile", path: "/student-profile", icon: FaUser },
           { label: "Jobs List", path: "/jobslist", icon: FaBook },
           { label: "Course", path: "/courses", icon: FaClipboard },
-          { label: "Exams", path: "/exam-dashboard", icon: FaFileAlt },
-          { label: "ATS", path: "/ats-upload", icon: FaLayerGroup },
-          {
-            label: "Mock Interviews",
-            path: "/mock-interviews",
-            icon: FaMicrophoneAlt,
-          },
-          {
-            label: "Leave Request",
-            path: "/leave-request-page",
-            icon: MdOutlineRequestQuote,
-          },
+
+          // { label: "Exams", path: "/exam-dashboard", icon: FaFileAlt },
+          // { label: "ATS", path: "/ats-upload", icon: FaLayerGroup },
+          { label: "Mock Interviews", path: "/mock-interviews", icon: FaMicrophoneAlt },
+          { label: "Leave Request", path: "/leave-request-page", icon: MdOutlineRequestQuote },
+
           { label: "Logout", action: handleLogout, icon: FaSignOutAlt },
         ];
 
@@ -165,6 +159,7 @@ export const SidebarV = ({ setIsAuthenticated }) => {
           { label: "Courses", path: "/course", icon: FaChalkboardTeacher },
           { label: "Attendance", path: "/attendance", icon: FaClipboard },
           { label: "Student List", path: "/mentorstudentslist", icon: FaUsers },
+
           {
             label: "Upload Questions",
             path: "/upload-questions",
@@ -175,6 +170,7 @@ export const SidebarV = ({ setIsAuthenticated }) => {
             path: "/mentor-reports",
             icon: TbReportAnalytics,
           },
+
           { label: "Logout", action: handleLogout, icon: FaSignOutAlt },
         ];
 
@@ -208,7 +204,10 @@ export const SidebarV = ({ setIsAuthenticated }) => {
           },
           { label: "Batch Schedule", path: "/batchschedule", icon: FaUsers },
           { label: "Create Batch", path: "/createbatch", icon: FaPlusSquare },
+
+
           { label: "Scheduling Exam", path: "/create-exam", icon: PiExam },
+
           { label: "Logout", action: handleLogout, icon: FaSignOutAlt },
         ];
 
@@ -218,90 +217,6 @@ export const SidebarV = ({ setIsAuthenticated }) => {
   };
 
   const menuItems = getMenuItems(userType, handleLogout);
-
-  // const menuItems = userType
-  //   ? userType === "student_login_details"
-  //     ? [
-  //       // { label: "Dashboard", path: "/student-dashboard", icon: FaTachometerAlt },
-  //         { label: "Profile", path: "/student-profile", icon: FaUser },
-  //         { label: "Jobs List", path: "/jobslist", icon: FaBook },
-  //         { label: "Course", path: "/courses", icon: FaClipboard },
-  //         // { label: "Exams", path: "/exam-dashboard", icon: FaFileAlt },
-  //         // { label: "Compiler", path: "/compiler", icon: FaTerminal },
-  //         { label: "ATS", path: "/ats-upload", icon: FaLayerGroup },
-  //         { label: "Mock Interviews", path: "/mock-interviews", icon: FaMicrophoneAlt },
-  //         { label: "Leave Request", path: "/leave-request-page", icon: MdOutlineRequestQuote },
-  //         { label: "Logout", action: handleLogout, icon: FaSignOutAlt },
-  //       ]
-  //       :userType === "super"
-  //       ? [
-  //         { label: "Admin Dashboard", path: "/admin-dashboard", icon: FaChartBar },
-  //         { label: "Manager Dashboard", path: "/manager-dashboard", icon: FaTachometerAlt },
-  //         { label: "Manage Jobs List", path: "/jobs-dashboard", icon: FaBook },
-  //         { label: "Students List", path: "/studentslist", icon: FaUsers },
-  //         { label: "Student Search", path: "/studentsearch", icon: FaSearch },
-  //           { label: "Logout", action: handleLogout, icon: FaSignOutAlt },
-  //         ]
-  //       :userType === 'superAdmin'
-  //     ? [
-  //       { label: "Admin Dashboard", path: "/admin-dashboard", icon: FaChartBar },
-  //       { label: "Manager Dashboard", path: "/manager-dashboard", icon: FaTachometerAlt },
-  //         { label: 'Manage BDEs', path: '/bdes', icon: FaBriefcase },
-  //         { label: 'Manage Mentors', path: '/mentors', icon: FaChalkboardTeacher },
-  //         { label: 'Manage Program Managers', path: '/program-managers', icon: FaSchool },
-  //         { label: 'Students List', path: '/studentslist', icon: FaUsers },
-  //         { label: "Student Search", path: "/studentsearch", icon: FaSearch },
-  //         {
-  //           label: "Curriculum",
-  //           path: "/curriculum",
-  //           icon: FaBookOpen,
-  //         },
-  //         { label: "Manage Jobs List", path: "/jobs-dashboard", icon: FaLayerGroup },
-
-  //         { label: 'Logout', action: handleLogout, icon: FaSignOutAlt },
-  //       ]
-  //        :userType === 'BDE_data'
-  //             ? [
-  //                 { label: 'Add Job', path: '/addjob', icon: FaPlusSquare },
-  //                 { label: 'Students List', path: '/managestudentslist', icon: FaUsers },
-  //                 { label: 'Student Data', path: '/studentdata', icon: FaSearch },
-  //                 { label: 'Manage Jobs List', path: '/jobs-dashboard', icon: FaLayerGroup },
-  //                 { label: 'Logout', action: handleLogout, icon: FaSignOutAlt },
-  //               ]
-
-  //     : userType === "Mentors"
-  //     ? [
-  //       { label: "Mentor Dashboard", path: "/mentor-dashboard", icon: FaTachometerAlt },
-  //         { label: "Courses", path: "/course", icon: FaChalkboardTeacher },
-  //         { label: "Attendance", path: "/attendance", icon: FaClipboard },
-  //         { label: "Student List", path: "/mentorstudentslist", icon: FaUsers },
-  //         // { label: 'Student Data', path: '/studentdata', icon: FaSearch },
-  //         // {
-  //         //   label: "Online Exam",
-  //         //   icon: FaFileAlt,
-  //         //   subItems: [
-  //         //     { label: "Manage Exams", path: "/manage-exams", icon: FaFileAlt },
-  //         //     { label: "Reports", path: "/mentor-reports", icon: FaClipboard },
-  //         //   ],
-  //         // },
-  //       // { label: "Coding Platform", path: "/compiler", icon: FaTerminal },
-  //         { label: "Logout", action: handleLogout, icon: FaSignOutAlt },
-  //       ]
-  //     : userType === "Manager"
-  //     ? [
-  //       { label: "Manager Dashboard", path: "/manager-dashboard", icon: FaTachometerAlt },
-  //       { label: 'Students List', path: '/managestudentslist', icon: FaUsers },
-  //       { label: 'Student Data', path: '/studentdata', icon: FaSearch },
-  //         { label: "Manage Jobs List", path: "/jobs-dashboard", icon: FaLayerGroup },
-  //         { label: "Student Enrollment", path: "/student-enroll", icon: FaSchool },
-  //         { label: "Student Attendance", path: "/studentattendance", icon: FaClipboard },
-  //         { label: 'Batch Schedule', path: '/batchschedule', icon: FaUsers },
-  //         { label: "Create Batch", path: "/createbatch", icon: FaPlusSquare },
-  //         { label: "Logout", action: handleLogout, icon: FaSignOutAlt },
-
-  //       ]
-  //     : []
-  //   : [];
 
   const isLoggedIn = !!localStorage.getItem("userType") && !isLoggedOut;
   if (!isLoggedIn) {

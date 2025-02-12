@@ -1,18 +1,18 @@
 import React, { useState, useEffect } from "react";
-import Notes from "./Notes"; // Import Notes Component
-import Swal from "sweetalert2";
+// import Notes from "./Notes"; // Import Notes Component
+// import Swal from "sweetalert2";
 import "sweetalert2/dist/sweetalert2.min.css";
-import { FaStar, FaRegStar } from "react-icons/fa";
+// import { FaStar, FaRegStar } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 
 const MainContent = ({ selectedContent, curriculumData }) => {
   const navigate = useNavigate();
-  const [isRatingModalOpen, setIsRatingModalOpen] = useState(false);
-  const [isDiscussionFormOpen, setIsDiscussionFormOpen] = useState(false);
-  const [discussionTitle, setDiscussionTitle] = useState("");
-  const [discussionDescription, setDiscussionDescription] = useState("");
-  const [rating, setRating] = useState(0);
-  const [hoverRating, setHoverRating] = useState(0);
+  // const [isRatingModalOpen, setIsRatingModalOpen] = useState(false);
+  // const [isDiscussionFormOpen, setIsDiscussionFormOpen] = useState(false);
+  // const [discussionTitle, setDiscussionTitle] = useState("");
+  // const [discussionDescription, setDiscussionDescription] = useState("");
+  // const [rating, setRating] = useState(0);
+  // const [hoverRating, setHoverRating] = useState(0);
   const [filteredCurriculum, setFilteredCurriculum] = useState([]);
 
   // **Filter Duplicate SubTopics Function**
@@ -73,41 +73,41 @@ const MainContent = ({ selectedContent, curriculumData }) => {
 
   
 
-  const submitRating = () => {
-    Swal.fire({
-      icon: "success",
-      title: `Thank you for rating ${rating} stars!`,
-      showConfirmButton: false,
-      timer: 1500,
-    });
-    setRating(0);
-    setIsRatingModalOpen(false);
-  };
+  // const submitRating = () => {
+  //   Swal.fire({
+  //     icon: "success",
+  //     title: `Thank you for rating ${rating} stars!`,
+  //     showConfirmButton: false,
+  //     timer: 1500,
+  //   });
+  //   setRating(0);
+  //   setIsRatingModalOpen(false);
+  // };
 
-  const handleDiscussionSubmit = (e) => {
-    e.preventDefault();
+  // const handleDiscussionSubmit = (e) => {
+  //   e.preventDefault();
 
-    if (!discussionTitle.trim() || !discussionDescription.trim()) {
-      Swal.fire({
-        icon: "error",
-        title: "Missing Fields",
-        text: "Please fill in both the title and description before submitting.",
-      });
-      return;
-    }
+  //   if (!discussionTitle.trim() || !discussionDescription.trim()) {
+  //     Swal.fire({
+  //       icon: "error",
+  //       title: "Missing Fields",
+  //       text: "Please fill in both the title and description before submitting.",
+  //     });
+  //     return;
+  //   }
 
-    Swal.fire({
-      icon: "success",
-      title: "Discussion Submitted!",
-      text: "Your discussion has been successfully posted.",
-      showConfirmButton: false,
-      timer: 1500,
-    });
+  //   Swal.fire({
+  //     icon: "success",
+  //     title: "Discussion Submitted!",
+  //     text: "Your discussion has been successfully posted.",
+  //     showConfirmButton: false,
+  //     timer: 1500,
+  //   });
 
-    setIsDiscussionFormOpen(false);
-    setDiscussionTitle("");
-    setDiscussionDescription("");
-  };
+  //   setIsDiscussionFormOpen(false);
+  //   setDiscussionTitle("");
+  //   setDiscussionDescription("");
+  // };
 
   return (
     <div className="flex-1 bg-gradient-to-b from-indigo-50 to-indigo-100 p-6 overflow-y-auto h-screen">
@@ -162,7 +162,7 @@ const MainContent = ({ selectedContent, curriculumData }) => {
     </div>
   
     {/* Discussion Form Modal */}
-    {isDiscussionFormOpen && (
+    {/* {isDiscussionFormOpen && (
       <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
         <div className="bg-white rounded-3xl shadow-2xl p-8 w-full max-w-lg relative">
           <button
@@ -197,10 +197,10 @@ const MainContent = ({ selectedContent, curriculumData }) => {
           </form>
         </div>
       </div>
-    )}
+    )} */}
   
     {/* Rating Modal */}
-    {isRatingModalOpen && (
+    {/* {isRatingModalOpen && (
       <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
         <div className="bg-white rounded-3xl shadow-2xl p-8 w-full max-w-md relative">
           <button
@@ -235,7 +235,7 @@ const MainContent = ({ selectedContent, curriculumData }) => {
           </button>
         </div>
       </div>
-    )}
+    )} */}
   </div>
   
   );
