@@ -17,8 +17,8 @@ export const ManagerExamDashboard = () => {
 
   // Fetch batches on mount
   useEffect(() => {
-    fetchBatches();
-  }, [fetchBatches]);
+    fetchBatches(localStorageLocation);
+  }, [fetchBatches, localStorageLocation]);
 
   // Filter batches based on location
   useEffect(() => {
