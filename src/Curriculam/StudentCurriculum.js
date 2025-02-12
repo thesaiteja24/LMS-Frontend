@@ -4,7 +4,7 @@ import { useStudent } from "../contexts/StudentProfileContext";
 
 const SubjectMappings = {
   PFS: ["Python", "Flask", "Frontend", "SoftSkills", "MySQL", "Aptitude"],
-  JFS: ["Java", "Advanced Java", "Frontend", "SoftSkills", "MySQL", "Aptitude"],
+  JFS: ["Java", "AdvancedJava", "Frontend", "SoftSkills", "MySQL", "Aptitude"],
   DA: ["Python", "MySQL", "SoftSkills", "Aptitude"],
   DS: ["Python", "SoftSkills", "MySQL", "Aptitude"],
 };
@@ -12,7 +12,7 @@ const SubjectMappings = {
 const Subjects = [
   { name: "Python", description: "Learn Python programming from basics to advanced.", image: "/python.jpg" },
   { name: "Java", description: "Master Java programming concepts with practical examples.", image: "/java.jpg" },
-  { name: "Advanced Java", description: "Deep dive into advanced Java programming concepts.", image: "/advancejava.jpg" },
+  { name: "AdvancedJava", description: "Deep dive into advanced Java programming concepts.", image: "/advancejava.jpg" },
   { name: "Frontend", description: "Build dynamic and responsive UI using modern frontend technologies.", image: "/frontend.jpg" },
   { name: "MySQL", description: "Learn database management and SQL queries with MySQL.", image: "/mysql.jpg" },
   { name: "Flask", description: "Master web development using the Flask framework in Python.", image: "/flask.jpg" },
