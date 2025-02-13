@@ -323,8 +323,10 @@ export const Parent = () => {
   // ✅ Function to mark a question for review
   const handleMarkReview = () => {
     if (selectedMCQ) {
+      mcqQuestions[mcqIndex].markedForReview = true;
       console.log("marked for review", mcqQuestions[mcqIndex]);
     } else {
+      codingQuestions[codingIndex].markedForReview = true;
       console.log("marked for review", codingQuestions[codingIndex]);
     }
   };
@@ -373,21 +375,24 @@ export const Parent = () => {
           totalExamTime={examData.exam.totalExamTime}
         />
       </div>
+      <div className="flex felx-roe">
+        <div className="w-1/2">Testing</div>
 
-      <div className="mcq-section"></div>
-      {selectedMCQ ? (
-        <NumberedNavigation
-          map={mcqQuestions}
-          currentIndex={mcqIndex}
-          onSelect={setMcqIndex}
-        />
-      ) : (
-        <NumberedNavigation
-          map={codingQuestions}
-          currentIndex={codingIndex}
-          onSelect={setCodingIndex}
-        />
-      )}
+        <div className="mcq-section"></div>
+        {selectedMCQ ? (
+          <NumberedNavigation
+            map={mcqQuestions}
+            currentIndex={mcqIndex}
+            onSelect={setMcqIndex}
+          />
+        ) : (
+          <NumberedNavigation
+            map={codingQuestions}
+            currentIndex={codingIndex}
+            onSelect={setCodingIndex}
+          />
+        )}
+      </div>
 
       {/* QNavigation Component */}
       <QNavigation
