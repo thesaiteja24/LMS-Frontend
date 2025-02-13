@@ -421,8 +421,8 @@ useEffect(() => {
                 style={{ maxHeight: "70vh" }}
               >
                 {resumeUrl && (
-                  <Worker workerUrl="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.worker.min.js">
-                    <Viewer
+                  <Worker workerUrl={`https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js`}>
+                  <Viewer
                       fileUrl={resumeUrl}
                       plugins={[pdfPlugin]}
                       style={{

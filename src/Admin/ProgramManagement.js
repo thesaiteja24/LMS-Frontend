@@ -18,8 +18,7 @@ const ProgramManagement = () => {
 
       setData(response.data.managers);
     } catch (error) {
-      console.error('Error fetching BDE data:', error);
-      Swal.fire({ icon: 'error', title: 'Failed to load data' });
+      console.error('Error fetching manager data:', error);
     }
   };
 

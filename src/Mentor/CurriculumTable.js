@@ -243,17 +243,17 @@ const CurriculumTable = ({
         await delay(3000);
 
         // 4) Store daily exam tags only after the POST + PUTs succeed
-        const dailyExamPayload = {
-          dayOrder: payload.dayOrder,
-          mentorId,
-          subject,
-          batch: batches,
-        };
+        // const dailyExamPayload = {
+        //   dayOrder: payload.dayOrder,
+        //   mentorId,
+        //   subject,
+        //   batch: batches,
+        // };
 
-        await axios.post(
-          `${process.env.REACT_APP_BACKEND_URL}/api/v1/store-daily-exam-tags`,
-          dailyExamPayload
-        );
+        // await axios.post(
+        //   `${process.env.REACT_APP_BACKEND_URL}/api/v1/store-daily-exam-tags`,
+        //   dailyExamPayload
+        // );
       }
 
       // Re-fetch data after all requests are successful
