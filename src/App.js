@@ -64,6 +64,7 @@ import ExamSecurityWrapper from "./Student/Exams_module/students/ExamSecurityWra
 import ExamAnalysis from "./Student/Exams_module/students/ExamAnalysis.jsx";
 import { DailyQuestionBank } from "./Mentor/ManageExams/QuestionBanks/DailyQuestionBank.jsx";
 import UploadQuestions from "./Mentor/ManageExams/UploadQuestions.jsx";
+import { Parent } from "./Student/Exams_module/students/ExamModule/Parent.jsx";
 
 const ProtectedRoute = ({ children, allowedRoles }) => {
   const userType = localStorage.getItem("userType");
@@ -191,7 +192,7 @@ export default function App() {
                 replace
               />
             ) : (
-              <SuperAdmin /> 
+              <SuperAdmin />
             )
           }
         /> */}
@@ -538,10 +539,18 @@ export default function App() {
             }
           />
           <Route
+            path="/parent"
+            element={
+              <ProtectedRoute allowedRoles={["student_login_details"]}>
+                <Parent />
+              </ProtectedRoute>
+            }
+          />
+          <Route
             path="/exam-page"
             element={
               <ProtectedRoute allowedRoles={["student_login_details"]}>
-                <ExamPage />
+                <Parent />
               </ProtectedRoute>
             }
           />
@@ -698,13 +707,13 @@ export default function App() {
             }
           />
 
-          {/* <Route 
-            path="/student-profile" 
+          {/* <Route
+            path="/student-profile"
             element={
               <ProtectedRoute allowedRoles={['student_login_details']}>
                 <StudentProfile />
               </ProtectedRoute>
-            } 
+            }
           /> */}
           <Route
             path="/student-dashboard"
@@ -714,13 +723,13 @@ export default function App() {
               </ProtectedRoute>
             }
           />
-          {/* <Route 
-            path="/online-exams" 
+          {/* <Route
+            path="/online-exams"
             element={
               <ProtectedRoute allowedRoles={['student_login_details']}>
                 <StudentDailyExam />
               </ProtectedRoute>
-            } 
+            }
           /> */}
           <Route
             path="/student-profile"

@@ -136,11 +136,9 @@ export const SetExam = () => {
         (item) => item.dayOrder === dayOrder
       );
       if (subjectData) {
-        setTotalMCQs(
-          subjectData.mcqDifficulty || { easy: 0, medium: 0, hard: 0 }
-        );
+        setTotalMCQs(subjectData.MCQ_Stats || { easy: 0, medium: 0, hard: 0 });
         setTotalCoding(
-          subjectData.codingDifficulty || { easy: 0, medium: 0, hard: 0 }
+          subjectData.Coding_Stats || { easy: 0, medium: 0, hard: 0 }
         );
         setExamTopics([
           ...subjectData.subTopics,
@@ -342,11 +340,9 @@ export const SetExam = () => {
         (s) => s.dayOrder === dayOrderToEdit
       );
       if (subjectData) {
-        setTotalMCQs(
-          subjectData.mcqDifficulty || { easy: 0, medium: 0, hard: 0 }
-        );
+        setTotalMCQs(subjectData.MCQ_Stats || { easy: 0, medium: 0, hard: 0 });
         setTotalCoding(
-          subjectData.codingDifficulty || { easy: 0, medium: 0, hard: 0 }
+          subjectData.Coding_Stats || { easy: 0, medium: 0, hard: 0 }
         );
         setExamTopics([
           ...subjectData.subTopics,

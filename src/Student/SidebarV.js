@@ -72,10 +72,19 @@ export const SidebarV = ({ setIsAuthenticated }) => {
           { label: "Jobs List", path: "/jobslist", icon: FaBook },
           { label: "Course", path: "/courses", icon: FaClipboard },
 
-          // { label: "Exams", path: "/exam-dashboard", icon: FaFileAlt },
+          { label: "Exams", path: "/exam-dashboard", icon: FaFileAlt },
           // { label: "ATS", path: "/ats-upload", icon: FaLayerGroup },
-          { label: "Mock Interviews", path: "/mock-interviews", icon: FaMicrophoneAlt },
-          { label: "Leave Request", path: "/leave-request-page", icon: MdOutlineRequestQuote },
+          { label: "Temp", path: "/parent", icon: FaFileAlt },
+          {
+            label: "Mock Interviews",
+            path: "/mock-interviews",
+            icon: FaMicrophoneAlt,
+          },
+          {
+            label: "Leave Request",
+            path: "/leave-request-page",
+            icon: MdOutlineRequestQuote,
+          },
 
           { label: "Logout", action: handleLogout, icon: FaSignOutAlt },
         ];
@@ -204,7 +213,6 @@ export const SidebarV = ({ setIsAuthenticated }) => {
           },
           { label: "Batch Schedule", path: "/batchschedule", icon: FaUsers },
           { label: "Create Batch", path: "/createbatch", icon: FaPlusSquare },
-
 
           { label: "Scheduling Exam", path: "/create-exam", icon: PiExam },
 

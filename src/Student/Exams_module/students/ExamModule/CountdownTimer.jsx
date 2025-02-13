@@ -39,20 +39,22 @@ const CountdownTimer = ({ startTime, totalExamTime }) => {
   }, [endTime]);
 
   return (
-    <div className="bg-white w-[54rem] h-[6.5rem] m-4 border-black border-2 rounded-[20px] text-center p-4">
+    <div className="bg-white w-full mt-2 mr-2 ml-0.5 MCQ_Stats rounded-2xl text-center p-4 shadow-[0px_4px_12px_0px_rgba(3,104,255,0.15)]">
       <div className="flex flex-row justify-center items-center">
-        <img src="/ExamModule/Vector from Figma.png" alt="" />
-        <span className="text-gray-700 font-semibold text-4xl mx-4">Time left:</span>
+        <img className="w-9" src="/ExamModule/Vector from Figma.png" alt="" />
+        <span className="text-gray-700 font-semibold text-xl mx-4">
+          Time left:
+        </span>
         <div className="flex flex-row">
-          <span className="ml-3 text-gray-900 font-bold text-4xl flex flex-col">
+          <span className="ml-3 text-gray-900 font-bold text-xl flex flex-col">
             {String(timeLeft.hours).padStart(2, "0")}{" "}
             <span className="text-sm">Hours</span>
           </span>
-          <span className="mx-2 text-gray-900 font-bold text-4xl flex flex-col">
+          <span className="mx-2 text-gray-900 font-bold text-xl flex flex-col">
             {String(timeLeft.minutes).padStart(2, "0")}{" "}
             <span className="text-sm">Minutes</span>
           </span>
-          <span className="text-gray-900 font-bold text-4xl flex flex-col">
+          <span className="text-gray-900 font-bold text-xl flex flex-col">
             {String(timeLeft.seconds).padStart(2, "0")}{" "}
             <span className="text-sm">Seconds</span>
           </span>

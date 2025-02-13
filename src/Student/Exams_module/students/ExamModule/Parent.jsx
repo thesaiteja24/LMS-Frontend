@@ -3,6 +3,9 @@ import CountdownTimer from "./CountdownTimer";
 import { ExamLegend } from "./ExamLegend";
 import QNavigation from "./QNavigation";
 import { NumberedNavigation } from "./NumberedNavigation";
+import { McqPanel } from "./McqPanel";
+import { CodingPanel } from "./CodingPanel";
+import OnlineCompiler from "../OnlineCompiler";
 
 export const Parent = () => {
   const examData = {
@@ -13,7 +16,7 @@ export const Parent = () => {
       batch: "JFS-108",
       studentId: "b1a7af12-8e1d-40d9-8a17-065b3c6e4186",
       location: "hyderabad",
-      startDate: "2025-02-12",
+      startDate: "2025-02-13",
       startTime: "15:06",
       totalExamTime: 36,
       subjects: [
@@ -254,8 +257,30 @@ export const Parent = () => {
   const [codingIndex, setCodingIndex] = useState(0);
   const [mcqQuestions, setMcqQuestions] = useState([]);
   const [codingQuestions, setCodingQuestions] = useState([]);
-  const [mcqMap, setMcqMap] = useState([]);
-  const [codingMap, setCodingMap] = useState([]);
+  const totalScore = examData.exam.subjects.reduce((acc, subject) => {
+    const mcqScore = subject.MCQs
+      ? subject.MCQs.reduce((sum, q) => sum + q.Score, 0)
+      : 0;
+    const codingScore = subject.Coding
+      ? subject.Coding.reduce((sum, q) => sum + q.Score, 0)
+      : 0;
+    return acc + mcqScore + codingScore;
+  }, 0);
+
+  // In Parent component
+  const currentCodingQuestion = codingQuestions[codingIndex];
+
+  const onlineCompilerQuestion = {
+    question_id: currentCodingQuestion.questionId,
+    description: currentCodingQuestion.Question,
+    constraints: currentCodingQuestion.Constraints,
+    hidden_test_cases: currentCodingQuestion.Hidden_Test_Cases,
+    sample_input: currentCodingQuestion.Sample_Input,
+    sample_output: currentCodingQuestion.Sample_Output,
+    score: currentCodingQuestion.Score,
+    type: currentCodingQuestion.Question_Type,
+    difficulty: currentCodingQuestion.Difficulty,
+  };
 
   useEffect(() => {
     const extractedMCQs = [];
@@ -300,6 +325,30 @@ export const Parent = () => {
     codingQuestions
   );
 
+  const updateMcqAnswer = (index, answer) => {
+    setMcqQuestions((prevQuestions) => {
+      const updated = [...prevQuestions];
+      updated[index] = {
+        ...updated[index],
+        answer: answer,
+        answered: true,
+      };
+      return updated;
+    });
+  };
+
+  const updateCodingAnswer = (data) => {
+    setCodingQuestions((prev) => {
+      const updated = [...prev];
+      updated[codingIndex] = {
+        ...updated[codingIndex],
+        ...data, // merge in code, test summary, output, etc.
+        answered: true,
+      };
+      return updated;
+    });
+  };
+
   const handlePrevious = () => {
     if (selectedMCQ && mcqIndex > 0) {
       setMcqIndex(mcqIndex - 1);
@@ -337,25 +386,25 @@ export const Parent = () => {
   };
 
   return (
-    <div className="min-h-screen h-full parent bg-[#E1EFFF]">
+    <div className="h-full parent bg-[#E1EFFF]">
       <div className="flex flex-row justify-evenly">
-        <div className="test-details bg-white w-[54rem] h-[6.5rem] m-4 border-black border-2 rounded-[20px] text-center p-4 text-3xl">
+        <div className="test-details bg-white w-full mt-2 ml-2 mr-0.5 MCQ_Stats rounded-2xl  text-center p-4 text-2xl shadow-[0px_4px_12px_0px_rgba(3,104,255,0.15)]">
           Daily Test
         </div>
-        <div className="student-details bg-white w-[54rem] h-[6.5rem] m-4 border-black border-2 rounded-[20px] text-center p-4 text-3xl">
+        <div className="student-details bg-white w-full mt-2 mr-2 ml-0.5 MCQ_Stats rounded-2xl text-center p-4 text-2xl shadow-[0px_4px_12px_0px_rgba(3,104,255,0.15)]">
           Naga Siva Sai Teja
         </div>
       </div>
 
       <div className="flex flex-row justify-evenly">
-        <div className="section-switching flex flex-row justify-evenly items-center bg-white w-[54rem] h-[6.5rem] m-4 border-black border-2 rounded-[20px] text-center p-4">
+        <div className="section-switching flex flex-row justify-evenly items-center bg-white w-full mt-2 ml-2 mr-0.5 MCQ_Stats rounded-2xl text-center p-4 shadow-[0px_4px_12px_0px_rgba(3,104,255,0.15)]">
           <button
             onClick={() => setSelectedMCQ(true)}
             className={`${
               selectedMCQ
                 ? "text-white bg-[#122CD8] hover:bg-[#3f53d4]"
                 : "text-black bg-white hover:bg-gray-50 border-black border-[1px]"
-            } rounded-[14px] w-[411px] h-[83px] text-2xl`}
+            } rounded-xl w-full text-xl p-2 mx-2`}
           >
             MCQ Section
           </button>
@@ -365,7 +414,7 @@ export const Parent = () => {
               selectedMCQ
                 ? "text-black bg-white hover:bg-gray-50 border-black border-[1px]"
                 : "text-white bg-[#122CD8] hover:bg-[#3f53d4]"
-            } rounded-[14px] w-[411px] h-[83px] text-2xl`}
+            } rounded-xl w-full text-xl p-2 mx-2`}
           >
             Coding Section
           </button>
@@ -375,24 +424,41 @@ export const Parent = () => {
           totalExamTime={examData.exam.totalExamTime}
         />
       </div>
-      <div className="flex felx-roe">
-        <div className="w-1/2">Testing</div>
 
-        <div className="mcq-section"></div>
-        {selectedMCQ ? (
-          <NumberedNavigation
-            map={mcqQuestions}
-            currentIndex={mcqIndex}
-            onSelect={setMcqIndex}
+      {!selectedMCQ && codingQuestions.length > 0 ? (
+        <div className="coding-section flex flex-row ">
+          <CodingPanel
+            map={codingQuestions}
+            currentIndex={codingIndex}
+            total={totalScore}
           />
-        ) : (
+
+          <OnlineCompiler
+            question={onlineCompilerQuestion}
+            onRun={updateCodingAnswer}
+          />
+
           <NumberedNavigation
             map={codingQuestions}
             currentIndex={codingIndex}
             onSelect={setCodingIndex}
           />
-        )}
-      </div>
+        </div>
+      ) : (
+        <div className="coding-section flex flex-row">
+          <McqPanel
+            map={mcqQuestions}
+            currentIndex={mcqIndex}
+            total={totalScore}
+            updateMcqAnswer={updateMcqAnswer}
+          />
+          <NumberedNavigation
+            map={mcqQuestions}
+            currentIndex={mcqIndex}
+            onSelect={setMcqIndex}
+          />
+        </div>
+      )}
 
       {/* QNavigation Component */}
       <QNavigation

@@ -1,6 +1,6 @@
 export const NumberedNavigation = ({ map, currentIndex, onSelect }) => {
   return (
-    <div className="inline-grid grid-flow-col grid-rows-6 gap-2 m-4 bg-white rounded-2xl p-4">
+    <div className="inline-grid grid-flow-col grid-rows-6 gap-2 my-4 mx-2 bg-white rounded-2xl p-4 shadow-[0px_4px_12px_0px_rgba(3,104,255,0.15)]">
       {map.map((item, index) => {
         let bgColor;
         if (index === currentIndex) {

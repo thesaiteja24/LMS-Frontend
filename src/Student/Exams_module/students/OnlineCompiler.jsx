@@ -151,7 +151,7 @@ const OnlineCompiler = ({ question, existingData = {}, onRun }) => {
   };
 
   return (
-    <div className="p-4 bg-gray-50 rounded">
+    <div className="w-full h-auto bg-white rounded-2xl my-4 mx-2 p-4 flex flex-col gap-4 shadow-[0px_4px_12px_0px_rgba(3,104,255,0.15)]">
       {/* Language Select */}
       <div className="mb-4">
         <label className="block font-semibold mb-1">Select Language:</label>
