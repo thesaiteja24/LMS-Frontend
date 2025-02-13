@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
 import CountdownTimer from "./CountdownTimer";
 import { ExamLegend } from "./ExamLegend";
-import QNavigation from "./QNavigation"; // Import the new component
+import QNavigation from "./QNavigation";
+import { NumberedNavigation } from "./NumberedNavigation";
 
 export const Parent = () => {
   const examData = {
@@ -249,11 +250,12 @@ export const Parent = () => {
     },
   };
   const [selectedMCQ, setSelectedMCQ] = useState(true);
-  const [currentQuestion, setCurrentQuestion] = useState(0);
-  const [mcqIndex, setMcqIndex] = useState(5);
-  const [codingIndex, setCodingIndex] = useState(5);
+  const [mcqIndex, setMcqIndex] = useState(0);
+  const [codingIndex, setCodingIndex] = useState(0);
   const [mcqQuestions, setMcqQuestions] = useState([]);
   const [codingQuestions, setCodingQuestions] = useState([]);
+  const [mcqMap, setMcqMap] = useState([]);
+  const [codingMap, setCodingMap] = useState([]);
 
   useEffect(() => {
     const extractedMCQs = [];
@@ -261,41 +263,70 @@ export const Parent = () => {
 
     examData.exam.subjects.forEach((subject) => {
       if (subject.MCQs && subject.MCQs.length > 0) {
-        extractedMCQs.push(...subject.MCQs);
+        // Map over each MCQ and add extra fields
+        extractedMCQs.push(
+          ...subject.MCQs.map((q) => ({
+            ...q,
+            answered: false,
+            markedForReview: false,
+            // Alternatively, you can use a single status field:
+            answer: "", // possible values: "notAnswered", "answered", "markedForReview"
+          }))
+        );
       }
       if (subject.Coding && subject.Coding.length > 0) {
-        extractedCoding.push(...subject.Coding);
+        // Map over each Coding question similarly
+        extractedCoding.push(
+          ...subject.Coding.map((q) => ({
+            ...q,
+            answered: false,
+            markedForReview: false,
+            answer: "",
+          }))
+        );
       }
     });
 
     setMcqQuestions(extractedMCQs);
     setCodingQuestions(extractedCoding);
   }, []);
-  console.log(mcqQuestions, codingQuestions);
+
+  useEffect(() => {});
+
+  console.log(
+    "mcqQuestions:\n",
+    mcqQuestions,
+    "\ncodingQuestions:\n",
+    codingQuestions
+  );
 
   const handlePrevious = () => {
     if (selectedMCQ && mcqIndex > 0) {
       setMcqIndex(mcqIndex - 1);
-      console.log(mcqIndex);
+      // console.log(mcqIndex);
     } else if (!selectedMCQ && codingIndex > 0) {
       setCodingIndex(codingIndex - 1);
-      console.log(codingIndex);
+      // console.log(codingIndex);
     }
   };
 
   const handleNext = () => {
     if (selectedMCQ && mcqIndex < mcqQuestions.length - 1) {
       setMcqIndex(mcqIndex + 1);
-      console.log(mcqIndex);
+      // console.log(mcqIndex);
     } else if (!selectedMCQ && codingIndex < codingQuestions.length - 1) {
       setCodingIndex(codingIndex + 1);
-      console.log(codingIndex);
+      // console.log(codingIndex);
     }
   };
 
   // ✅ Function to mark a question for review
   const handleMarkReview = () => {
-    console.log(`Marked Question ${currentQuestion + 1} for Review`);
+    if (selectedMCQ) {
+      console.log("marked for review", mcqQuestions[mcqIndex]);
+    } else {
+      console.log("marked for review", codingQuestions[codingIndex]);
+    }
   };
 
   // ✅ Function to submit the test
@@ -342,6 +373,21 @@ export const Parent = () => {
           totalExamTime={examData.exam.totalExamTime}
         />
       </div>
+
+      <div className="mcq-section"></div>
+      {selectedMCQ ? (
+        <NumberedNavigation
+          map={mcqQuestions}
+          currentIndex={mcqIndex}
+          onSelect={setMcqIndex}
+        />
+      ) : (
+        <NumberedNavigation
+          map={codingQuestions}
+          currentIndex={codingIndex}
+          onSelect={setCodingIndex}
+        />
+      )}
 
       {/* QNavigation Component */}
       <QNavigation
