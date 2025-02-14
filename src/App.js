@@ -50,7 +50,7 @@ import DailyExam from "./Student/Exams_module/students/DailyExam.jsx";
 import WeeklyExam from "./Student/Exams_module/students/WeeklyExam.jsx";
 import GrandExam from "./Student/Exams_module/students/GrandExam.jsx";
 import SurpriseExam from "./Student/Exams_module/students/SurpriseExam.jsx";
-import ExamDashboard from "./Student/Exams_module/students/ExamDashboard.jsx";
+import ExamDashboard from "./Student/Exams_module/students/ExamModule/ExamDashboard.jsx";
 import ExamPage from "./Student/Exams_module/students/ExamPage.jsx";
 import ExamAnalytics from "./Student/Exams_module/students/ExamAnalytics.jsx";
 import MentorBatches from "./Mentor/MentorBatches.jsx";
@@ -65,6 +65,8 @@ import ExamAnalysis from "./Student/Exams_module/students/ExamAnalysis.jsx";
 import { DailyQuestionBank } from "./Mentor/ManageExams/QuestionBanks/DailyQuestionBank.jsx";
 import UploadQuestions from "./Mentor/ManageExams/UploadQuestions.jsx";
 import { Parent } from "./Student/Exams_module/students/ExamModule/Parent.jsx";
+import { useLocation } from "react-router-dom";
+import { ExamProvider } from "./Student/Exams_module/students/ExamModule/ExamContext.jsx";
 
 const ProtectedRoute = ({ children, allowedRoles }) => {
   const userType = localStorage.getItem("userType");
@@ -98,9 +100,19 @@ export default function App() {
     };
   }, []);
 
+  const Location = ({ children }) => {
+    const location = useLocation();
+    const hideHeader = location.pathname == "/conduct-exam";
+    return (
+      <div>
+        {!hideHeader && <SidebarV setIsAuthenticated={setIsAuthenticated} />}
+      </div>
+    );
+  };
+
   return (
     <div style={{ overflow: "auto", height: "100vh" }}>
-      <SidebarV setIsAuthenticated={setIsAuthenticated} />
+      <Location />
       <ScrollToTop />
 
       <div>
@@ -534,23 +546,9 @@ export default function App() {
             path="/exam-dashboard"
             element={
               <ProtectedRoute allowedRoles={["student_login_details"]}>
-                <ExamDashboard />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/parent"
-            element={
-              <ProtectedRoute allowedRoles={["student_login_details"]}>
-                <Parent />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/exam-page"
-            element={
-              <ProtectedRoute allowedRoles={["student_login_details"]}>
-                <Parent />
+                <ExamProvider>
+                  <ExamDashboard />
+                </ExamProvider>
               </ProtectedRoute>
             }
           />
@@ -559,11 +557,9 @@ export default function App() {
             path="/conduct-exam"
             element={
               <ProtectedRoute allowedRoles={["student_login_details"]}>
-                <LogoWrapper>
-                  <ExamSecurityWrapper>
-                    <ConductExam />
-                  </ExamSecurityWrapper>
-                </LogoWrapper>
+                {/* <ExamSecurityWrapper> */}
+                  <Parent />
+                {/* </ExamSecurityWrapper> */}
               </ProtectedRoute>
             }
           />
@@ -788,5 +784,6 @@ export default function App() {
       </div>
       {/* <Footer /> */}
     </div>
+    // <Parent />
   );
 }

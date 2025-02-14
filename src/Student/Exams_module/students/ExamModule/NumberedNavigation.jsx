@@ -1,7 +1,24 @@
-export const NumberedNavigation = ({ map, currentIndex, onSelect }) => {
+import React, { useContext } from "react";
+import { ExamContext } from "./ExamContext";
+
+export const NumberedNavigation = () => {
+  const {
+    selectedMCQ,
+    mcqQuestions,
+    codingQuestions,
+    mcqIndex,
+    setMcqIndex,
+    codingIndex,
+    setCodingIndex,
+  } = useContext(ExamContext);
+
+  const questions = selectedMCQ ? mcqQuestions : codingQuestions;
+  const currentIndex = selectedMCQ ? mcqIndex : codingIndex;
+  const setIndex = selectedMCQ ? setMcqIndex : setCodingIndex;
+
   return (
-    <div className="inline-grid grid-flow-col grid-rows-6 gap-2 my-4 mx-2 bg-white rounded-2xl p-4 shadow-[0px_4px_12px_0px_rgba(3,104,255,0.15)]">
-      {map.map((item, index) => {
+    <div className=" inline-grid grid-flow-col grid-rows-6 gap-2 p-4 w-full mt-4 bg-white rounded-2xl shadow-[0px_4px_12px_0px_rgba(3,104,255,0.15)]">
+      {questions.map((item, index) => {
         let bgColor;
         if (index === currentIndex) {
           bgColor = "bg-[#3686FF]";
@@ -15,8 +32,8 @@ export const NumberedNavigation = ({ map, currentIndex, onSelect }) => {
         return (
           <button
             key={index}
-            onClick={() => onSelect(index)}
-            className={`${bgColor} text-white px-3 py-1 m-1 rounded-lg w-[64px] h-[64px]`}
+            onClick={() => setIndex(index)}
+            className={`${bgColor} text-white rounded-lg w-[64px] h-[64px]`}
           >
             {index + 1}
           </button>

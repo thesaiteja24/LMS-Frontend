@@ -1,63 +1,65 @@
-import React, { useEffect, useState } from "react";
-import { FaRegClock } from "react-icons/fa";
+import React, { useContext, useEffect, useState } from "react";
+import { ExamContext } from "./ExamContext";
 
-const CountdownTimer = ({ startTime, totalExamTime }) => {
-  // Parse startTime into hours and minutes
-  const [hours, minutes] = startTime.split(":").map(Number);
+const CountdownTimer = () => {
+  const { examData } = useContext(ExamContext);
 
-  // Convert to a Date object and add totalExamTime (minutes)
-  const startDateTime = new Date();
-  startDateTime.setHours(hours, minutes, 0, 0);
-  const endTime = new Date(startDateTime.getTime() + totalExamTime * 60000);
+  // Always determine totalExamTime using a fallback (0 if examData is not available)
+  const totalExamTime =
+    examData && examData.exam ? examData.exam.totalExamTime : 0;
 
-  // State for remaining time
-  const [timeLeft, setTimeLeft] = useState(calculateTimeLeft(endTime));
+  // Always call useState; if examData is not loaded, initialize with 0 seconds
+  const [timeLeft, setTimeLeft] = useState(totalExamTime * 60);
 
-  // Function to calculate remaining time
-  function calculateTimeLeft(endTime) {
-    const now = new Date();
-    const difference = endTime - now;
-
-    if (difference > 0) {
-      return {
-        hours: Math.floor(difference / (1000 * 60 * 60)),
-        minutes: Math.floor((difference / (1000 * 60)) % 60),
-        seconds: Math.floor((difference / 1000) % 60),
-      };
-    } else {
-      return { hours: 0, minutes: 0, seconds: 0 };
+  // Update timeLeft when examData becomes available
+  useEffect(() => {
+    if (examData && examData.exam) {
+      setTimeLeft(examData.exam.totalExamTime * 60);
     }
+  }, [examData]);
+
+  // Start the timer unconditionally
+  useEffect(() => {
+    const timerId = setInterval(() => {
+      setTimeLeft((prev) => (prev > 0 ? prev - 1 : 0));
+    }, 1000);
+    return () => clearInterval(timerId);
+  }, []);
+
+  // If examData isn't loaded, show a loading indicator
+  if (!examData || !examData.exam) {
+    return <div className="text-center p-4">Loading exam data...</div>;
   }
 
-  // Effect to update the timer every second
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setTimeLeft(calculateTimeLeft(endTime));
-    }, 1000);
-
-    return () => clearInterval(timer);
-  }, [endTime]);
+  // Calculate hours, minutes, and seconds from timeLeft (in seconds)
+  const hours = Math.floor(timeLeft / 3600);
+  const minutes = Math.floor((timeLeft % 3600) / 60);
+  const seconds = timeLeft % 60;
 
   return (
-    <div className="bg-white w-full mt-2 mr-2 ml-0.5 MCQ_Stats rounded-2xl text-center p-4 shadow-[0px_4px_12px_0px_rgba(3,104,255,0.15)]">
-      <div className="flex flex-row justify-center items-center">
-        <img className="w-9" src="/ExamModule/Vector from Figma.png" alt="" />
-        <span className="text-gray-700 font-semibold text-xl mx-4">
-          Time left:
-        </span>
-        <div className="flex flex-row">
-          <span className="ml-3 text-gray-900 font-bold text-xl flex flex-col">
-            {String(timeLeft.hours).padStart(2, "0")}{" "}
-            <span className="text-sm">Hours</span>
-          </span>
-          <span className="mx-2 text-gray-900 font-bold text-xl flex flex-col">
-            {String(timeLeft.minutes).padStart(2, "0")}{" "}
-            <span className="text-sm">Minutes</span>
-          </span>
-          <span className="text-gray-900 font-bold text-xl flex flex-col">
-            {String(timeLeft.seconds).padStart(2, "0")}{" "}
-            <span className="text-sm">Seconds</span>
-          </span>
+    <div className="text-2xl w-full bg-white rounded-lg shadow-[0px_4px_12px_0px_rgba(3,104,255,0.15)]">
+      <div className=" text-center bg-[#132EE0] text-white font-bold py-2 rounded-t-lg">
+        Time Left
+      </div>
+      <div className="p-4">
+        <div className="flex flex-row items-center justify-center space-x-6 p-4">
+          <img src="ExamModule/clock.png" alt="Clock" className="w-12 h-12" />
+          <div className="flex flex-col items-center">
+            <span className="font-bold">{String(hours).padStart(2, "0")}</span>
+            <span className="text-sm text-gray-600">Hours</span>
+          </div>
+          <div className="flex flex-col items-center">
+            <span className="font-bold">
+              {String(minutes).padStart(2, "0")}
+            </span>
+            <span className="text-sm text-gray-600">Minutes</span>
+          </div>
+          <div className="flex flex-col items-center">
+            <span className="font-bold">
+              {String(seconds).padStart(2, "0")}
+            </span>
+            <span className="text-sm text-gray-600">Seconds</span>
+          </div>
         </div>
       </div>
     </div>

@@ -1,13 +1,16 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import axios from "axios";
-import { Card, CardContent, CardHeader, CardTitle } from "./Card";
-import Alert from "./Alert";
+import { Card, CardContent, CardHeader, CardTitle } from "../Card";
+import Alert from "../Alert";
 import { Loader } from "lucide-react";
-import { useStudent } from "../../../contexts/StudentProfileContext";
+import { useStudent } from "../../../../contexts/StudentProfileContext";
 import { useNavigate } from "react-router-dom";
+import { ExamContext } from "./ExamContext";
 
 const ExamDashboard = () => {
+  const { setExamData } = useContext(ExamContext);
   const { studentDetails, loading: studentLoading } = useStudent();
+
   const [exams, setExams] = useState([]);
   // Use a Set to track exam IDs that are already completed
   const [completedExams, setCompletedExams] = useState(new Set());
@@ -112,7 +115,9 @@ const ExamDashboard = () => {
       );
 
       if (response.data.success) {
-        navigate("/conduct-exam", { state: { exam: response.data.exam } });
+        localStorage.setItem("examData", JSON.stringify(response.data));
+        setExamData(response.data);
+        navigate("/conduct-exam");
       } else {
         console.error("Failed to start exam.");
       }
@@ -164,9 +169,6 @@ const ExamDashboard = () => {
                   <p>
                     <strong>Total Duration:</strong> {exam.totalExamTime} mins
                   </p>
-                  <p>
-                    <strong>Manager Location:</strong> {exam.managerLocation}
-                  </p>
                   <button
                     type="button"
                     onClick={() => handleStartExam(exam.examId)}
@@ -210,9 +212,6 @@ const ExamDashboard = () => {
                   <p>
                     <strong>Total Duration:</strong> {exam.totalExamTime} mins
                   </p>
-                  <p>
-                    <strong>Manager Location:</strong> {exam.managerLocation}
-                  </p>
                 </CardContent>
               </Card>
             ))}
@@ -242,9 +241,7 @@ const ExamDashboard = () => {
                   <p>
                     <strong>Total Duration:</strong> {exam.totalExamTime} mins
                   </p>
-                  <p>
-                    <strong>Manager Location:</strong> {exam.managerLocation}
-                  </p>
+
                   <p className="text-red-500 font-bold">Exam Completed</p>
                 </CardContent>
               </Card>

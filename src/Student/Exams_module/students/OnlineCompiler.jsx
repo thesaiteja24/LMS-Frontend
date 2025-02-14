@@ -11,7 +11,7 @@ import { oneDark } from "@codemirror/theme-one-dark";
  * (including hidden test case pass/fail).
  */
 const OnlineCompiler = ({ question, existingData = {}, onRun }) => {
-  // We track the question ID so that if the user navigates to a new question,
+  // Track the question ID so that if the user navigates to a new question,
   // we reset local states from `existingData`.
   const [currentQuestionId, setCurrentQuestionId] = useState(
     question.question_id
@@ -111,15 +111,19 @@ const OnlineCompiler = ({ question, existingData = {}, onRun }) => {
           if (result.type === "hidden") {
             // For hidden tests, show minimal info
             return `
-              <div style="margin-bottom: 10px;">
-                <h4>Hidden Test Case ${index + 1}: ${result.status}</h4>
+              <div class="mb-2">
+                <h4 class="font-semibold">Hidden Test Case ${index + 1}: ${
+              result.status
+            }</h4>
               </div>
             `;
           } else {
             // For sample tests, show full info
             return `
-              <div style="margin-bottom: 10px;">
-                <h4>Test Case ${index + 1}: ${result.status}</h4>
+              <div class="mb-2">
+                <h4 class="font-semibold">Test Case ${index + 1}: ${
+              result.status
+            }</h4>
                 <p><strong>Input:</strong> ${result.input}</p>
                 <p><strong>Expected Output:</strong> ${
                   result.expected_output
@@ -151,23 +155,9 @@ const OnlineCompiler = ({ question, existingData = {}, onRun }) => {
   };
 
   return (
-    <div className="w-full h-auto bg-white rounded-2xl my-4 mx-2 p-4 flex flex-col gap-4 shadow-[0px_4px_12px_0px_rgba(3,104,255,0.15)]">
-      {/* Language Select */}
-      <div className="mb-4">
-        <label className="block font-semibold mb-1">Select Language:</label>
-        <select
-          value={language}
-          onChange={(e) => setLanguage(e.target.value)}
-          className="p-2 border rounded w-full"
-        >
-          <option value="JavaScript">JavaScript</option>
-          <option value="Python">Python</option>
-          <option value="Java">Java</option>
-        </select>
-      </div>
-
+    <div className="w-full h-full bg-white rounded-2xl my-4 mx-2 p-6 flex flex-col gap-2 shadow-[0px_4px_12px_0px_rgba(3,104,255,0.15)]">
       {/* Editor */}
-      <div className="mb-4">
+      <div className="">
         <CodeMirror
           value={code}
           height="300px"
@@ -178,44 +168,45 @@ const OnlineCompiler = ({ question, existingData = {}, onRun }) => {
       </div>
 
       {/* Custom Input */}
-      <div className="mb-4">
+      {/* <div className="mb-4">
         <label className="flex items-center space-x-2">
           <input
             type="checkbox"
             checked={customInputEnabled}
             onChange={() => setCustomInputEnabled((prev) => !prev)}
+            className="form-checkbox h-5 w-5"
           />
           <span className="font-semibold">Enable Custom Input</span>
         </label>
         {customInputEnabled && (
           <textarea
             rows={4}
-            className="w-full mt-2 p-2 border rounded"
+            className="w-full mt-2 p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
             placeholder="Enter custom input"
             value={customInput}
             onChange={(e) => setCustomInput(e.target.value)}
           />
         )}
-      </div>
+      </div> */}
 
       {/* Run Button */}
       <button
         onClick={handleRun}
         disabled={loading}
-        className="px-4 py-2 text-white bg-blue-600 rounded hover:bg-blue-700"
+        className="px-4 py-2 text-white bg-blue-600 rounded hover:bg-blue-700 transition-colors"
       >
         {loading ? "Running..." : "Run"}
       </button>
 
       {/* Results */}
-      <div className="mt-4 p-2 border rounded bg-white">
+      <div className="mt-4 p-4 border border-gray-200 rounded bg-gray-50">
         <p className="font-semibold mb-2">
           Test Summary: Passed {testCaseSummary.passed} / Failed{" "}
           {testCaseSummary.failed}
         </p>
         <div
+          className="max-h-[150px] overflow-y-auto text-sm"
           dangerouslySetInnerHTML={{ __html: output }}
-          style={{ maxHeight: "150px", overflowY: "auto" }}
         />
       </div>
     </div>
