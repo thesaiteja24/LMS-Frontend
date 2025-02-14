@@ -2,7 +2,7 @@ import React, { useContext } from "react";
 import { ExamContext } from "./ExamContext";
 
 export const McqPanel = () => {
-  const { mcqQuestions, mcqIndex, totalScore, updateMcqAnswer } =
+  const { mcqQuestions, mcqIndex, updateMcqAnswer } =
     useContext(ExamContext);
   const currentQuestion = mcqQuestions[mcqIndex];
 

@@ -5,13 +5,13 @@ import OnlineCompiler from "../OnlineCompiler";
 import { ExamContext } from "./ExamContext";
 
 export const DisplayCoding = () => {
-  const { onlineCompilerQuestion } = useContext(ExamContext);
+  
   return (
     <div className="w-full bg-white m-4 p-2 rounded-xl shadow-[0px_4px_12px_0px_rgba(3,104,255,0.15)]">
       <SectionSwitcher />
       <div className="flex flex-row">
         <CodingPanel />
-        <OnlineCompiler question={onlineCompilerQuestion} />
+        <OnlineCompiler  />
       </div>
     </div>
   );

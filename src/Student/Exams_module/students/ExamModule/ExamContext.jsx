@@ -6,7 +6,7 @@ export const ExamContext = createContext();
 export const ExamProvider = ({ children }) => {
   const { studentDetails } = useStudent();
   const [examData, setExamData] = useState(null);
-
+  const [existingData, setExistingData] = useState({});
   const [selectedMCQ, setSelectedMCQ] = useState(true);
   const [mcqIndex, setMcqIndex] = useState(0);
   const [codingIndex, setCodingIndex] = useState(0);
@@ -136,7 +136,6 @@ export const ExamProvider = ({ children }) => {
       if (q.answered) {
         payload[q.questionId] = {
           selectedOption: q.answer, // your answer value
-          timeTaken: q.timeTaken || 0, // optionally, timing info if tracked
         };
       }
     });
@@ -147,7 +146,6 @@ export const ExamProvider = ({ children }) => {
         payload[q.questionId] = {
           // Assume you store a testCaseSummary from your online compiler evaluations.
           testCaseSummary: q.testCaseSummary || {},
-          timeTaken: q.timeTaken || 0,
         };
       }
     });
@@ -209,6 +207,8 @@ export const ExamProvider = ({ children }) => {
         handleMarkReview,
         handleSubmit,
         onlineCompilerQuestion,
+        existingData,
+        setExistingData,
       }}
     >
       {children}
