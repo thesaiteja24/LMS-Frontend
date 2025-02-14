@@ -41,20 +41,20 @@ export default function StudentLogin() {
       if (response.status === 200) {
         // window.location.reload()
         await fetchBatches()
-        window.location.reload();
+        // window.location.reload();
 
 
         const id = response.data.id 
-        const token = response.data.jwtaccess;
-          // Store JWT in HttpOnly cookies (secure and safer than localStorage)
-          Cookies.set('jwt_token', token, {
-            expires: 7, 
-            secure: true, 
-            sameSite: 'Strict', 
-        });
+        // const token = response.data.jwtaccess;
+        //   // Store JWT in HttpOnly cookies (secure and safer than localStorage)
+        //   Cookies.set('jwt_token', token, {
+        //     expires: 7, 
+        //     secure: true, 
+        //     sameSite: 'Strict', 
+        // });
 
         localStorage.setItem("id", id);
-        localStorage.setItem("JwtToken", token);
+        // localStorage.setItem("JwtToken", token);
        
         // Store user info in local storage
         localStorage.setItem('userType', response.data.user.usertype);

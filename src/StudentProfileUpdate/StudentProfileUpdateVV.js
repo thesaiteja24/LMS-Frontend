@@ -311,7 +311,7 @@ useEffect(() => {
                     <strong>State:</strong> {studentDetails?.state || "N/A"}
                   </p>
                   <p className="text-gray-700">
-                    <strong>Phone:</strong> {studentDetails?.phone || "N/A"}
+                    <strong>Phone:</strong> {studentDetails?.studentPhNumber || "N/A"}
                   </p>
                   <p className="text-gray-700">
                     <strong>Github:</strong>{" "}

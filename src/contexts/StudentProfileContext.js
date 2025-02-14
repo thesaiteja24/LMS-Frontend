@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
-import axiosInstance from '../axiosInstance';
+// import axiosInstance from '../axiosInstance';
+import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 
 const StudentProfileContext = createContext();
@@ -24,7 +25,7 @@ export const StudentProvider = ({ children }) => {
     }
 
     try {
-      const response = await axiosInstance.get(`/api/v1/getstudentdetails`, {
+      const response = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/v1/getstudentdetails`, {
         params: { student_id, location },
       });
 
