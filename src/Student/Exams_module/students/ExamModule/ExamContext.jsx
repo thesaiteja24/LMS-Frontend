@@ -14,6 +14,10 @@ export const ExamProvider = ({ children }) => {
   const [codingQuestions, setCodingQuestions] = useState([]);
   const studentName = studentDetails?.name || "Student Name";
   const studentExamId = examData?.exam.studentExamId;
+  const startTime = examData?.exam.startTime;
+  const startDate = examData?.exam.startDate;
+  const totalExamTime = examData?.exam.totalExamTime;
+  console.log(startDate, startTime, totalExamTime);
 
   const totalScore = examData?.exam.subjects.reduce((acc, subject) => {
     const mcqScore = subject.MCQs
@@ -150,23 +154,23 @@ export const ExamProvider = ({ children }) => {
       }
     });
     console.log(payload);
-    // try {
-    //   const response = await axios.post(
-    //     `${process.env.REACT_APP_BACKEND_URL}/api/v1/submitExam`,
-    //     payload
-    //   );
+    try {
+      const response = await axios.post(
+        `${process.env.REACT_APP_BACKEND_URL}/api/v1/submitExam`,
+        payload
+      );
 
-    //   if (response.data.success) {
-    //     console.log("Exam submitted successfully:", response.data.analysis);
-    //     // You can update context state, localStorage, or navigate to a results page:
-    //     // localStorage.setItem("examAnalysis", JSON.stringify(response.data.analysis));
-    //     // navigate("/exam-results");
-    //   } else {
-    //     console.error("Submission failed:", response.data.message);
-    //   }
-    // } catch (error) {
-    //   console.error("Error during exam submission:", error);
-    // }
+      if (response.data.success) {
+        console.log("Exam submitted successfully:", response.data.analysis);
+        // You can update context state, localStorage, or navigate to a results page:
+        // localStorage.setItem("examAnalysis", JSON.stringify(response.data.analysis));
+        // navigate("/exam-results");
+      } else {
+        console.error("Submission failed:", response.data.message);
+      }
+    } catch (error) {
+      console.error("Error during exam submission:", error);
+    }
   };
 
   const currentCodingQuestion = codingQuestions[codingIndex];
