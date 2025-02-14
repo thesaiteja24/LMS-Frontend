@@ -11,7 +11,7 @@ import { useUniqueBatches } from '../contexts/UniqueBatchesContext';
 import Swal from 'sweetalert2/dist/sweetalert2.min.js';
 import Footer from '../Footer/Footer';
 
-export default function StudentLogin() {
+export default function StudentLogin({setIsAuthenticated }) {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -40,15 +40,17 @@ export default function StudentLogin() {
       // Success case
       if (response.status === 200) {
         // window.location.reload()
-        await fetchBatches()
+        // await fetchBatches()
         // window.location.reload();
 
+         // ✅ Update authentication state
+  setIsAuthenticated(true);  // ✅ This will update App.js state
 
         const id = response.data.id 
         // const token = response.data.jwtaccess;
         //   // Store JWT in HttpOnly cookies (secure and safer than localStorage)
         //   Cookies.set('jwt_token', token, {
-        //     expires: 7, 
+        //     expires: 7,  
         //     secure: true, 
         //     sameSite: 'Strict', 
         // });

@@ -181,8 +181,7 @@ export default function App() {
                   replace
                 />
               ) : (
-                <StudentLogin />
-              )
+                <StudentLogin setIsAuthenticated={setIsAuthenticated} />              )
             }
           />
 

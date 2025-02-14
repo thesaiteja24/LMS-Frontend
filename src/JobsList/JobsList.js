@@ -85,7 +85,7 @@ const JobsList = () => {
 
     return (
         <div className='job-list-wrapper'>
-            <h1 className='student-head'>Student Dashboard</h1>
+            <h1 className='student-head'>Jobs Dashboard</h1>
             {loading && <p className='loading'>Loading Jobs...</p>}
 
             <div className="job-list-container">
