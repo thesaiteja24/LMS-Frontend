@@ -10,6 +10,10 @@ const ProgramManagement = () => {
   const [formData, setFormData] = useState({  name: '', email: '', PhNumber: '', location: '', userType: 'manager' });
 
   const locations = ['vijayawada', 'hyderabad', 'bangalore'];
+  const [countryCodes, setCountryCodes] = useState([]);
+const [selectedCountryCode, setSelectedCountryCode] = useState(null);
+const [phoneNumber, setPhoneNumber] = useState(""); // Store only the number
+
 
 
   const fetchData = async () => {
@@ -18,10 +22,26 @@ const ProgramManagement = () => {
 
       setData(response.data.managers);
     } catch (error) {
-      console.error('Error fetching BDE data:', error);
-      Swal.fire({ icon: 'error', title: 'Failed to load data' });
+      console.error('Error fetching manager data:', error);
     }
   };
+
+  useEffect(() => {
+    axios.get("https://restcountries.com/v3.1/all")
+      .then((response) => {
+        const countryList = response.data
+          .map(country => ({
+            value: `${country.idd.root}${country.idd.suffixes?.[0] || ""}`,
+            label: `${country.idd.root}${country.idd.suffixes?.[0] || ""}`
+          }))
+          .filter(country => country.value !== "undefined");
+  
+        setCountryCodes(countryList);
+        setSelectedCountryCode(countryList.find(c => c.value === "+91")); // Default: India
+      })
+      .catch(error => console.error("Error fetching country codes:", error));
+  }, []);
+  
 
   // Fetch BDE data from API
   useEffect(() => {
@@ -31,10 +51,42 @@ const ProgramManagement = () => {
   }, []);
 
   // Open Add/Edit Modal
-  const handleOpenModal = (bde = null) => {
-    setFormData(bde || {  name: '', email: '', PhNumber: '', location: locations[0], userType: 'manager' });
+  const handleOpenModal = (manager = null) => {
+    if (manager) {
+      // Extract country code and phone number properly
+      const match = manager.PhNumber ? manager.PhNumber.match(/^(\+\d+)(\d{10})$/) : null;
+      const countryCode = match ? match[1] : "+91"; // Default to India if not found
+      const extractedPhoneNumber = match ? match[2] : "";
+      
+      setFormData({
+        id: manager.id,
+        name: manager.name || '',
+        email: manager.email || '',
+        location: manager.location || locations[0],
+        userType: "manager",
+      });
+      
+      setPhoneNumber(extractedPhoneNumber);
+      const foundCountryCode = countryCodes.find(c => c.value === countryCode);
+      setSelectedCountryCode(foundCountryCode || { value: "+91", label: "+91" });
+    } else {
+      setFormData({
+        name: '',
+        email: '',
+        location: locations[0],
+        userType: "manager",
+      });
+      
+      setSelectedCountryCode({ value: "+91", label: "+91" });
+      setPhoneNumber("");
+    }
+  
     setIsModalOpen(true);
   };
+  
+  
+  
+  
 
   // Close Modal
   const handleCloseModal = () => {
@@ -59,7 +111,7 @@ const ProgramManagement = () => {
 
   // Save BDE (Add/Edit)
   const handleSave = async () => {
-    if (!formData.name || !formData.email || !formData.PhNumber || !formData.location) {
+    if (!formData.name || !formData.email || !phoneNumber || !formData.location) {
       Swal.fire({ icon: "error", title: "Please fill all fields." });
       return;
     }
@@ -69,16 +121,18 @@ const ProgramManagement = () => {
       return;
     }
   
-    if (!isValidPhone(formData.PhNumber)) {
-      Swal.fire({
-        icon: "error",
-        title: "Invalid phone number.",
-        text: "Phone number must have exactly 10 digits.",
-      });
+    if (!isValidPhone(phoneNumber)) {
+      Swal.fire({ icon: "error", title: "Invalid phone number. Enter a valid 10-digit number." });
       return;
     }
   
+  
     setIsSaving(true); // Start loading state
+
+    const formattedData = {
+      ...formData,
+      PhNumber: selectedCountryCode?.value + phoneNumber, // ✅ Append country code
+    };
   
     try {
       let response;
@@ -86,10 +140,10 @@ const ProgramManagement = () => {
   
       if (formData.id) {
         // 🔹 Update Existing Manager (PUT request)
-        response = await axios.put(apiUrl, formData);
+        response = await axios.put(apiUrl, formattedData);
       } else {
         // 🔹 Add New Manager (POST request)
-        response = await axios.post(apiUrl, formData);
+        response = await axios.post(apiUrl, formattedData);
       }
   
       if (response.status === 200 || response.status === 201) {
@@ -223,13 +277,35 @@ const ProgramManagement = () => {
                 value={formData.email}
                 onChange={(e) => setFormData({ ...formData, email: e.target.value })}
               />
-              <input
-                type="text"
-                className="w-full px-4 py-2 border rounded focus:outline-none"
-                placeholder="Phone Number"
-                value={formData.PhNumber}
-                onChange={(e) => setFormData({ ...formData, PhNumber: e.target.value })}
-              />
+              <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-1">Phone Number</label>
+              <div className="flex items-center border border-gray-300 rounded-md p-2">
+                <select
+                  className="mr-2 p-2 border rounded"
+                  value={selectedCountryCode?.value}
+                  onChange={(e) =>
+                    setSelectedCountryCode(
+                      countryCodes.find(c => c.value === e.target.value) || { value: "+91", label: "+91" }
+                    )
+                  }
+                >
+                  {countryCodes.map((code, index) => (
+                    <option key={index} value={code.value}>
+                      {code.label}
+                    </option>
+                  ))}
+                </select>
+                <input
+                  type="number"
+                  className="flex-1 px-2 py-1 text-gray-800 outline-none"
+                  placeholder="Enter phone number"
+                  value={phoneNumber}
+                  onChange={(e) => setPhoneNumber(e.target.value)}
+                  required
+                />
+              </div>
+            </div>
+
               <select
                 className="w-full px-4 py-2 border rounded focus:outline-none"
                 value={formData.location}

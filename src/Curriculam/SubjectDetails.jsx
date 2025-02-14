@@ -2,10 +2,11 @@ import React, { useState, useEffect, useRef } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { useStudent } from "../contexts/StudentProfileContext";
-import { FaCheckCircle, FaBookOpen, FaEdit, FaLock, FaBars, FaTimes, FaStar, FaRegStar } from "react-icons/fa";
+import { FaCheckCircle, FaBookOpen, FaEdit, FaLock, FaBars, FaTimes, FaStar, FaRegStar,FaArrowLeft } from "react-icons/fa";
 import Swal from "sweetalert2";
 import "sweetalert2/dist/sweetalert2.min.css";
-import "./SubjectDetails.css"
+import "./SubjectDetails.css";
+
 const SubjectDetails = () => {
   const { state } = useLocation();
   const { studentDetails } = useStudent();
@@ -177,21 +178,32 @@ const SubjectDetails = () => {
   return (
     <div className="flex min-h-screen bg-gray-100 relative transition-all duration-500 ease-in-out">
       {/* Sidebar Toggle Button */}
-      <button
-        className="absolute top-4 left-4 text-white bg-gray-900 p-3 rounded-full text-2xl focus:outline-none hover:bg-gray-800 transition-all duration-500 ease-in-out z-50"
+
+      {!sidebarOpen&&      <button
+        className="absolute top-2 left-2 mr-10 text-white bg-gray-900 p-3 rounded-md text-2xl focus:outline-none hover:bg-gray-800 transition-all duration-500 ease-in-out z-50"
         onClick={() => setSidebarOpen(!sidebarOpen)}
       >
-        {!sidebarOpen && <FaBars />}
-      </button>
+  {!sidebarOpen && <img src="/icon.svg" alt="Menu Icon" />}
+  {/* Use SVG as a component */}      
+</button>}
+
 
       {/* Sidebar */}
       <div
         ref={sidebarRef}
-        className={`scrollable-sidebar bg-gray-900 text-white  h-screen flex flex-col transition-all duration-500 ease-in-out shadow-lg rounded-r-2xl ${sidebarOpen ? "w-80 overflow-y-auto" : "w-0 opacity-0 overflow-hidden"
-          }`}
+        className={`scrollable-sidebar  bg-gray-900 text-white h-screen flex flex-col transition-all duration-500 ease-in-out shadow-lg rounded-r-2xl ${sidebarOpen ? "w-80 overflow-y-auto p-4" : "w-0 opacity-0 overflow-hidden"}`}
+        style={{ position: sidebarOpen && window.innerWidth <= 768 ? 'fixed'  : 'relative' }} // Adjust position based on screen size
       >
-        <div className="flex items-center justify-between mb-4 p-2">
-          <h2 className="text-2xl font-bold border-b pb-3 flex-grow text-center p-2">
+        <div className="flex items-center justify-between mb-4 ">
+        <div className="flex justify-end mb-1 ">
+        <button
+        onClick={() => navigate('/courses')}
+        className="flex items-center  gap-2 px-2 py-2 mr-2 text-white bg-indigo-700 rounded-md shadow-md hover:bg-indigo-600 transition-transform transform hover:scale-105"
+      >
+        <FaArrowLeft className="text-lg" />
+      </button>
+        </div>
+          <h2 className="text-2xl font-bold border-b pb-3 flex-grow text-center">
             {state?.subject?.name} Curriculum
           </h2>
           <button className="text-white text-2xl hover:text-gray-400 focus:outline-none ml-2" onClick={() => setSidebarOpen(false)}>
@@ -199,7 +211,7 @@ const SubjectDetails = () => {
           </button>
         </div>
 
-        <ul className="space-y-3 p-2">
+        <ul className="space-y-3">
           {filteredCurriculum.map((item, index) => (
             <li
               key={index}
@@ -229,28 +241,19 @@ const SubjectDetails = () => {
       </div>
 
       {/* Right Content Section */}
-      <div className="flex-1 h-screen overflow-y-auto p-2 lg:p-12">
+      <div className={`flex-1 h-screen overflow-y-auto p-4 lg:p-12 ${sidebarOpen && window.innerWidth > 768 ? "ml-10" : ""}`}>
         {/* Header */}
-        {/* Header */}
-        <div className="flex justify-end mb-8">
-          <button
-            onClick={() => navigate('/courses')}
-            className="px-6 py-3 text-white bg-indigo-700 rounded-full shadow-md hover:bg-indigo-600 transition-transform transform hover:scale-100"
-          >
-            ← Back to Courses
-          </button>
-        </div>
-
+     
 
         {/* Topic Title */}
-        <h1 className="text-4xl font-bold text-indigo-800 mb-6 text-center md:text-left">
+        <h1 className="text-2xl lg:text-4xl ml-10  font-bold text-indigo-800 mb-6 text-center md:text-left">
           {selectedTopic?.Topics || "Select a Topic"}
         </h1>
 
         {/* Video Section */}
-        <div className="flex justify-center">
+        <div >
           {selectedTopic?.VideoUrl ? (
-            <div className="w-full max-w-3xl rounded-lg overflow-hidden shadow-lg">
+            <div className="w-full  rounded-lg overflow-hidden shadow-lg">
               <iframe
                 src={getEmbedUrl(selectedTopic.VideoUrl)}
                 className="w-full h-auto aspect-video rounded-lg"
@@ -259,8 +262,8 @@ const SubjectDetails = () => {
                 sandbox="allow-same-origin allow-scripts allow-forms"
               ></iframe>
             </div>
-          ) : (
-            <div className="w-full max-w-3xl flex flex-col items-center justify-center bg-white/20 backdrop-blur-lg shadow-xl rounded-lg p-8 animate-fadeIn border border-gray-200">
+          ) :  (
+            <div className="w-full max-w-3xl flex flex-col items-center justify-center bg-white/20  shadow-xl rounded-lg p-8 animate-fadeIn border border-gray-200">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               className="w-16 h-16 text-indigo-500 animate-pulse"
@@ -286,7 +289,7 @@ const SubjectDetails = () => {
 
         {/* Subtopics Section */}
         {selectedTopic?.SubTopics?.length > 0 || selectedTopic?.PreviousSubTopics?.length > 0 ? (
-          <div className="mt-10 bg-white rounded-2xl shadow-md p-6">
+          <div className="mt-10 bg-white rounded-2xl shadow-md p-6  w-full">
             <h2 className="text-xl font-semibold text-indigo-700 mb-4">SubTopics Covered:</h2>
             <ul className="list-disc pl-6 space-y-2 text-gray-700">
               {selectedTopic?.SubTopics?.map((sub, index) => (
@@ -341,7 +344,6 @@ const SubjectDetails = () => {
       </div>
     </div>
   );
-
 };
 
 export default SubjectDetails;

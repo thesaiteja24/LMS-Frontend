@@ -9,17 +9,18 @@ const MentorManagement = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [formData, setFormData] = useState({  name: '', email: '', PhNumber: '', location: '',Designation:'', userType: 'mentor' });
+  const [countryCodes, setCountryCodes] = useState([]); 
+  const [mentorCountryCode, setMentorCountryCode] = useState(null);
 
   const locations = ['vijayawada', 'hyderabad', 'bangalore'];
 const  designations =["Python","Flask","Java","AdvancedJava","MySQL","DataScience","DataAnalytics","Frontend","SoftSkills","Aptitude"]
-  // Fetch BDE data from API
 
   const fetchData = async () => {
     try {
       const response = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/v1/mentor`);
       setData(response.data.mentors);
     } catch (error) {
-      Swal.fire({ icon: 'error', title: 'Failed to load data' });
+      console.log(error)
     }
   };
 
@@ -28,31 +29,60 @@ const  designations =["Python","Flask","Java","AdvancedJava","MySQL","DataScienc
   };
 
   useEffect(() => {
+    axios.get("https://restcountries.com/v3.1/all")
+      .then((response) => {
+        const countryList = response.data
+          .map(country => ({
+            value: `${country.idd.root}${country.idd.suffixes?.[0] || ""}`,
+            label: `${country.idd.root}${country.idd.suffixes?.[0] || ""}`
+          }))
+          .filter(country => country.value !== "undefined");
+
+        setCountryCodes(countryList);
+        setMentorCountryCode(countryList.find(c => c.value === "+91")); 
+      })
+      .catch(error => console.error("Error fetching country codes:", error));
+  }, []);
+
+  useEffect(() => {
     fetchData();
   }, []);
 
   // Open Add/Edit Modal
   const handleOpenModal = (mentor = null) => {
-    setFormData(
-      mentor
-        ? { 
-            id: mentor.id, 
-            name: mentor.name || '', 
-            email: mentor.email || '', 
-            PhNumber: mentor.PhNumber || '', 
-            location: mentor.location || locations[0], 
-            Designation: Array.isArray(mentor.Designation) ? mentor.Designation : [], 
-            userType: 'mentor'
-          }
-        : { 
-            name: '', 
-            email: '', 
-            PhNumber: '', 
-            location: locations[0], 
-            Designation: [], 
-            userType: 'mentor' 
-          }
-    );
+    if (mentor) {
+      // ✅ Extract country code and phone number properly
+      const match = mentor.PhNumber ? mentor.PhNumber.match(/^(\+\d+)(\d{10})$/) : null;
+      const countryCode = match ? match[1] : "+91"; // Default to India if not found
+      const extractedPhoneNumber = match ? match[2] : "";
+  
+      setFormData({
+        id: mentor.id,
+        name: mentor.name || '',
+        email: mentor.email || '',
+        PhNumber: extractedPhoneNumber, // ✅ Set only the number, without country code
+        location: mentor.location || locations[0],
+        Designation: Array.isArray(mentor.Designation) ? mentor.Designation : [],
+        userType: 'mentor',
+      });
+  
+      // ✅ Ensure country codes are available before setting country code
+      const foundCountryCode = countryCodes.find(c => c.value === countryCode);
+      setMentorCountryCode(foundCountryCode || { value: "+91", label: "+91" });
+    } else {
+      // ✅ Set default values for new mentor
+      setFormData({
+        name: '',
+        email: '',
+        PhNumber: '',
+        location: locations[0],
+        Designation: [],
+        userType: 'mentor',
+      });
+  
+      setMentorCountryCode({ value: "+91", label: "+91" });
+    }
+  
     setIsModalOpen(true);
   };
   
@@ -113,6 +143,7 @@ const  designations =["Python","Flask","Java","AdvancedJava","MySQL","DataScienc
     const formattedData = {
       ...formData,
       Designation: formData.Designation,
+      PhNumber: mentorCountryCode?.value + formData.PhNumber,
     };
   
     try {
@@ -289,13 +320,23 @@ const  designations =["Python","Flask","Java","AdvancedJava","MySQL","DataScienc
             {/* Phone Number Input */}
             <div>
               <label className="block text-sm font-semibold text-gray-700 mb-1">Phone Number</label>
-              <input
-                type="number"
-                className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-400 outline-none"
-                placeholder="Enter phone number"
-                value={formData.PhNumber}
-                onChange={(e) => setFormData({ ...formData, PhNumber: e.target.value })}
-              />
+              <div className="flex items-center border border-gray-300 rounded-md p-2">
+                <Select
+                  options={countryCodes}
+                  value={mentorCountryCode}
+                  onChange={setMentorCountryCode}
+                  placeholder="Select Code"
+                  className="mr-2 w-1/3"
+                /> 
+                <input
+                  type="number"
+                  className="flex-1 px-2 py-1 text-gray-800 outline-none"
+                  placeholder="Enter phone number"
+                  value={formData.PhNumber}
+                  onChange={(e) => setFormData({ ...formData, PhNumber: e.target.value })}
+                  required
+                />
+              </div>
             </div>
 
             {/* Designation (Multi-Select) */}
