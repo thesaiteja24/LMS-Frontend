@@ -8,8 +8,13 @@ import { NavigationMCq } from "./NavigationMCQ";
 import { NavigationCoding } from "./NavigationCoding";
 
 const ExamContent = () => {
-  const { selectedMCQ, codingQuestions, handleSubmit } =
-    useContext(ExamContext);
+  const {
+    selectedMCQ,
+    codingQuestions,
+    handleSubmit,
+    studentName,
+    studentExamId,
+  } = useContext(ExamContext);
 
   return (
     <div className="min-h-screen h-full parent bg-[#E1EFFF] flex flex-col justify-evenly">
@@ -22,7 +27,10 @@ const ExamContent = () => {
             <span>Daily Test</span>
           </div>
           <div className="student-details flex flex-row justify-evenly items-center bg-white w-full mt-2 mr-2 ml-0.5 MCQ_Stats rounded-2xl text-center p-4 text-2xl shadow-[0px_4px_12px_0px_rgba(3,104,255,0.15)]">
-            <div>Naga Siva Sai Teja</div>
+            <div className="flex flex-col justify-start items-start">
+              <div>{studentName}</div>
+              <div className="text-sm"><b>Exam Id: &nbsp;</b>{studentExamId}</div>
+            </div>
             <div className="flex flex-row gap-4 justify-evenly items-center answered">
               <button
                 type="button"

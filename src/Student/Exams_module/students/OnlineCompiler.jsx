@@ -10,8 +10,8 @@ import { oneDark } from "@codemirror/theme-one-dark";
  * On "Run", calls the backend with the user's code, then shows test results
  * (including hidden test case pass/fail).
  */
-const OnlineCompiler = ({ question, existingData = {}, onRun }) => {
-  // Track the question ID so that if the user navigates to a new question,
+const OnlineCompiler = ({ question, existingData = {}, onRun = () => {} }) => {
+  // We track the question ID so that if the user navigates to a new question,
   // we reset local states from `existingData`.
   const [currentQuestionId, setCurrentQuestionId] = useState(
     question.question_id
@@ -99,31 +99,46 @@ const OnlineCompiler = ({ question, existingData = {}, onRun }) => {
       const { message, results } = await response.json();
       console.log("Backend Response:", { message, results });
 
-      // Summarize test results
-      const passedCount = results.filter((r) => r.status === "Passed").length;
-      const failedCount = results.filter((r) => r.status === "Failed").length;
-      const summary = { passed: passedCount, failed: failedCount };
+      // Compute status for each test case by comparing expected and actual outputs.
+      const computedResults = results.map((result) => {
+        const status =
+          typeof result.status === "string"
+            ? result.status
+            : result.actual_output.trim() === result.expected_output.trim()
+            ? "Passed"
+            : "Failed";
+        return { ...result, status };
+      });
+
+      // Summarize test results using the computed status values.
+      const summary = computedResults.reduce(
+        (acc, result) => {
+          if (result.status === "Passed") {
+            acc.passed++;
+          } else {
+            acc.failed++;
+          }
+          return acc;
+        },
+        { passed: 0, failed: 0 }
+      );
       setTestCaseSummary(summary);
 
       // Build an HTML snippet for the output
-      let outputHtml = results
+      let outputHtml = computedResults
         .map((result, index) => {
           if (result.type === "hidden") {
             // For hidden tests, show minimal info
             return `
-              <div class="mb-2">
-                <h4 class="font-semibold">Hidden Test Case ${index + 1}: ${
-              result.status
-            }</h4>
+              <div style="margin-bottom: 10px;">
+                <h4>Hidden Test Case ${index + 1}: ${result.status}</h4>
               </div>
             `;
           } else {
             // For sample tests, show full info
             return `
-              <div class="mb-2">
-                <h4 class="font-semibold">Test Case ${index + 1}: ${
-              result.status
-            }</h4>
+              <div style="margin-bottom: 10px;">
+                <h4>Test Case ${index + 1}: ${result.status}</h4>
                 <p><strong>Input:</strong> ${result.input}</p>
                 <p><strong>Expected Output:</strong> ${
                   result.expected_output
@@ -156,8 +171,22 @@ const OnlineCompiler = ({ question, existingData = {}, onRun }) => {
 
   return (
     <div className="w-full h-full bg-white rounded-2xl my-4 mx-2 p-6 flex flex-col gap-2 shadow-[0px_4px_12px_0px_rgba(3,104,255,0.15)]">
+      {/* Language Select */}
+      <div className="mb-4">
+        <label className="block font-semibold mb-1">Select Language:</label>
+        <select
+          value={language}
+          onChange={(e) => setLanguage(e.target.value)}
+          className="p-2 border rounded w-full"
+        >
+          <option value="JavaScript">JavaScript</option>
+          <option value="Python">Python</option>
+          <option value="Java">Java</option>
+        </select>
+      </div>
+
       {/* Editor */}
-      <div className="">
+      <div className="mb-4">
         <CodeMirror
           value={code}
           height="300px"
@@ -168,45 +197,44 @@ const OnlineCompiler = ({ question, existingData = {}, onRun }) => {
       </div>
 
       {/* Custom Input */}
-      {/* <div className="mb-4">
+      <div className="mb-4">
         <label className="flex items-center space-x-2">
           <input
             type="checkbox"
             checked={customInputEnabled}
             onChange={() => setCustomInputEnabled((prev) => !prev)}
-            className="form-checkbox h-5 w-5"
           />
           <span className="font-semibold">Enable Custom Input</span>
         </label>
         {customInputEnabled && (
           <textarea
             rows={4}
-            className="w-full mt-2 p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full mt-2 p-2 border rounded"
             placeholder="Enter custom input"
             value={customInput}
             onChange={(e) => setCustomInput(e.target.value)}
           />
         )}
-      </div> */}
+      </div>
 
       {/* Run Button */}
       <button
         onClick={handleRun}
         disabled={loading}
-        className="px-4 py-2 text-white bg-blue-600 rounded hover:bg-blue-700 transition-colors"
+        className="px-4 py-2 text-white bg-blue-600 rounded hover:bg-blue-700"
       >
         {loading ? "Running..." : "Run"}
       </button>
 
       {/* Results */}
-      <div className="mt-4 p-4 border border-gray-200 rounded bg-gray-50">
+      <div className="mt-4 p-2 border rounded bg-white">
         <p className="font-semibold mb-2">
-          Test Summary: Passed {testCaseSummary.passed} / Failed{" "}
-          {testCaseSummary.failed}
+          Test Summary: {testCaseSummary.passed} Passed /{" "}
+          {testCaseSummary.failed} Failed
         </p>
         <div
-          className="max-h-[150px] overflow-y-auto text-sm"
           dangerouslySetInnerHTML={{ __html: output }}
+          style={{ maxHeight: "150px", overflowY: "auto" }}
         />
       </div>
     </div>
