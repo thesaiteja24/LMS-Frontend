@@ -47,7 +47,7 @@ function ConductExam() {
   const navigate = useNavigate();
 
   const examData = location.state?.exam || null; // The exam details passed to this route
-  const studentName = studentDetails?.name || "No Name";
+  const studentName = studentDetails?.name || "Student Name";
 
   // Basic exam states
   const [currentSection, setCurrentSection] = useState("MCQ"); // "MCQ" or "Coding"

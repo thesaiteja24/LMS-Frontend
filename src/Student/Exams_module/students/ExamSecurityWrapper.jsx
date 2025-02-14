@@ -1,6 +1,8 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useContext } from "react";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { ExamContext } from "./ExamModule/ExamContext";
+import { useNavigate } from "react-router-dom";
 
 /**
  * Basic deterrents:
@@ -13,6 +15,8 @@ import "react-toastify/dist/ReactToastify.css";
  *  - (No pointer lock used here)
  */
 const ExamSecurityWrapper = ({ children }) => {
+  const { handleSubmit } = useContext(ExamContext);
+  const navigate = useNavigate();
   useEffect(() => {
     // 1) Disable Right-Click
     const handleContextMenu = (e) => {
@@ -45,6 +49,10 @@ const ExamSecurityWrapper = ({ children }) => {
         e.key === "F5" ||
         ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "r")
       ) {
+        e.preventDefault();
+        toast.error("Reload is disabled during the exam!");
+      }
+      if (e.key === "esc") {
         e.preventDefault();
         toast.error("Reload is disabled during the exam!");
       }
@@ -86,9 +94,27 @@ const ExamSecurityWrapper = ({ children }) => {
     // 4) Warn on Tab Switch / Visibility
     const handleVisibilityChange = () => {
       if (document.hidden) {
-        toast.warn("Tab switching is not allowed!");
+        // Get the current warn count from localStorage (defaulting to 0)
+        let warnCount = parseInt(localStorage.getItem("warnCount") || "0", 10);
+        warnCount++;
+        localStorage.setItem("warnCount", warnCount);
+
+        if (warnCount < 3) {
+          toast.error(
+            `Warning: You switched tabs ${warnCount} time${
+              warnCount > 1 ? "s" : ""
+            }!`
+          );
+        } else {
+          toast.error(
+            "You have switched tabs too many times. Your exam will now be submitted."
+          );
+          handleSubmit();
+          navigate("/exam-dashboard");
+        }
       }
     };
+
     document.addEventListener("visibilitychange", handleVisibilityChange);
 
     // 5) Prevent back navigation

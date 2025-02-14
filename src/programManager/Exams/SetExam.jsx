@@ -6,12 +6,15 @@ import "react-toastify/dist/ReactToastify.css";
 import { ToastContainer } from "react-toastify";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPen, faTrash } from "@fortawesome/free-solid-svg-icons";
+import { useNavigate } from "react-router-dom";
 
 export const SetExam = () => {
+  const navigate = useNavigate();
   const location = useLocation();
   const managerId = localStorage.getItem("Manager");
   const managerLocation = localStorage.getItem("location");
   const { examData, batch } = location.state || {}; // Data from ManagerExamDashboard
+  const [creatingExam, setCreatingExam] = useState(false);
 
   // **🔹 New State Variables**
   const [dayOrder, setDayOrder] = useState("");
@@ -46,6 +49,10 @@ export const SetExam = () => {
 
   const [isEditing, setIsEditing] = useState(false);
   const [isTimeCollapsed, setIsTimeCollapsed] = useState(true);
+
+  const totalMCQCount = totalMCQs.easy + totalMCQs.medium + totalMCQs.hard;
+  const totalCodingCount =
+    totalCoding.easy + totalCoding.medium + totalCoding.hard;
 
   // **🔹 Extract unique Day Orders from examData & Filter by valid day orders**
   useEffect(() => {
@@ -136,11 +143,9 @@ export const SetExam = () => {
         (item) => item.dayOrder === dayOrder
       );
       if (subjectData) {
-        setTotalMCQs(
-          subjectData.mcqDifficulty || { easy: 0, medium: 0, hard: 0 }
-        );
+        setTotalMCQs(subjectData.MCQ_Stats || { easy: 0, medium: 0, hard: 0 });
         setTotalCoding(
-          subjectData.codingDifficulty || { easy: 0, medium: 0, hard: 0 }
+          subjectData.Coding_Stats || { easy: 0, medium: 0, hard: 0 }
         );
         setExamTopics([
           ...subjectData.subTopics,
@@ -261,15 +266,16 @@ export const SetExam = () => {
       return;
     }
 
-    const overallTotalTime = examQuestions.reduce(
-      (sum, subject) => sum + subject.timeConstraints.totalTime,
-      0
-    );
+    setCreatingExam(true); // Disable button and show loading text
+
     const newExam = {
       batch: batch?.Batch,
       subjects: examQuestions,
-      totalExamTime: overallTotalTime,
-      dayOrder, // This could be relevant if your endpoint uses a single dayOrder or all dayOrders
+      totalExamTime: examQuestions.reduce(
+        (sum, subject) => sum + subject.timeConstraints.totalTime,
+        0
+      ),
+      dayOrder,
       startDate,
       startTime,
       managerId,
@@ -279,28 +285,17 @@ export const SetExam = () => {
     try {
       await axios.post(
         `${process.env.REACT_APP_BACKEND_URL}/api/v1/generate-exam-paper`,
-        newExam,
-        { headers: { "Content-Type": "application/json" } }
+        newExam
       );
-      toast.success(
-        `Exam Created Successfully! Total Duration: ${overallTotalTime} mins`
-      );
-
-      // Clear everything for the next exam creation, if needed
-      setExamQuestions([]);
-      setDayOrder("");
-      setSubject("");
-      setSelectedMCQs({ easy: 0, medium: 0, hard: 0 });
-      setSelectedCoding({ easy: 0, medium: 0, hard: 0 });
-      setTotalMCQs({ easy: 0, medium: 0, hard: 0 });
-      setTotalCoding({ easy: 0, medium: 0, hard: 0 });
-      setExamTopics([]);
-      setIsEditing(false);
-      // If you want to preserve date/time for multiple exam setups, remove these lines:
-      setStartDate("");
-      setStartTime("");
+      toast.success("Exam Created Successfully!", {
+        onClose: () => navigate("/create-exam"),
+      });
     } catch (error) {
-      toast.error(error.response?.data?.message || "An error occurred!");
+      toast.error(error.response?.data?.message || "An error occurred!", {
+        onClose: () => navigate("/create-exam"),
+      });
+    } finally {
+      setCreatingExam(false); // Re-enable button after request
     }
   };
 
@@ -342,11 +337,9 @@ export const SetExam = () => {
         (s) => s.dayOrder === dayOrderToEdit
       );
       if (subjectData) {
-        setTotalMCQs(
-          subjectData.mcqDifficulty || { easy: 0, medium: 0, hard: 0 }
-        );
+        setTotalMCQs(subjectData.MCQ_Stats || { easy: 0, medium: 0, hard: 0 });
         setTotalCoding(
-          subjectData.codingDifficulty || { easy: 0, medium: 0, hard: 0 }
+          subjectData.Coding_Stats || { easy: 0, medium: 0, hard: 0 }
         );
         setExamTopics([
           ...subjectData.subTopics,
@@ -472,10 +465,16 @@ export const SetExam = () => {
               )}
             </div>
           )}
+          <>
+            {/* Error Messages */}
+            {subject && totalMCQCount === 0 && totalCodingCount === 0 && (
+              <p className="text-center text-red-500 font-bold mb-4">
+                No questions available for this subject.
+              </p>
+            )}
 
-          {/* MCQ Questions */}
-          {subject &&
-            totalMCQs.easy + totalMCQs.medium + totalMCQs.hard > 0 && (
+            {/* MCQ Questions */}
+            {subject && totalMCQCount > 0 && (
               <div className="mb-6">
                 <h3 className="text-2xl font-semibold text-gray-800 mb-4">
                   MCQ Questions
@@ -514,9 +513,14 @@ export const SetExam = () => {
               </div>
             )}
 
-          {/* Coding Questions */}
-          {subject &&
-            totalCoding.easy + totalCoding.medium + totalCoding.hard > 0 && (
+            {subject && totalMCQCount === 0 && totalCodingCount > 0 && (
+              <p className="text-center text-red-500 font-bold mb-4">
+                No MCQ questions available.
+              </p>
+            )}
+
+            {/* Coding Questions */}
+            {subject && totalCodingCount > 0 && (
               <div className="mb-6">
                 <h3 className="text-2xl font-semibold text-gray-800 mb-4">
                   Coding Questions
@@ -555,18 +559,28 @@ export const SetExam = () => {
               </div>
             )}
 
+            {subject && totalCodingCount === 0 && totalMCQCount > 0 && (
+              <p className="text-center text-red-500 font-bold mb-4">
+                No coding questions available.
+              </p>
+            )}
+          </>
           {/* Set Questions / Update Questions Button */}
           {(totalMCQs.easy + totalMCQs.medium + totalMCQs.hard > 0 ||
             totalCoding.easy + totalCoding.medium + totalCoding.hard > 0) && (
             <>
               <button
                 onClick={handleSetQuestions}
-                className="relative inline-flex items-center justify-center p-0.5 mb-2 me-2 overflow-hidden text-md font-bold text-gray-900 rounded-lg group bg-gradient-to-br from-red-400 to-blue-600 group-hover:from-red-400 group-hover:to-blue-600 hover:text-white focus:ring-red-200 dark:focus:ring-red-800"
+                className={`mt-4 px-6 py-3 text-white rounded-lg ${
+                  creatingExam
+                    ? "bg-gray-500 cursor-not-allowed"
+                    : "bg-blue-600 hover:bg-blue-700"
+                }`}
+                disabled={creatingExam}
               >
-                <span className="relative p-4 transition-all ease-in duration-75 bg-white rounded-md group-hover:bg-transparent group-hover:dark:bg-transparent">
-                  {isEditing ? "Update Questions" : "Set Questions"}
-                </span>
+                {creatingExam ? "Creating Exam..." : "Set Questions"}
               </button>
+
               {isEditing && (
                 <button
                   onClick={handleCancelEdit}
@@ -710,11 +724,14 @@ export const SetExam = () => {
             {/* Create Exam Button */}
             <button
               onClick={handleCreateExam}
-              className="mt-4 relative inline-flex items-center justify-center p-0.5 mb-2 me-2 overflow-hidden text-md font-bold text-gray-900 rounded-lg group bg-gradient-to-br from-green-400 to-blue-600 group-hover:from-red-400 group-hover:to-blue-600 hover:text-white focus:ring-red-200 dark:focus:ring-red-800"
+              className={`mt-4 px-6 py-3 text-white rounded-lg ${
+                creatingExam
+                  ? "bg-gray-500 cursor-not-allowed"
+                  : "bg-green-600 hover:bg-green-700"
+              }`}
+              disabled={creatingExam}
             >
-              <span className="relative p-4 transition-all ease-in duration-75 bg-white rounded-md group-hover:bg-transparent group-hover:dark:bg-transparent">
-                Create Exam
-              </span>
+              {creatingExam ? "Creating Exam..." : "Create Exam"}
             </button>
           </div>
         )}
