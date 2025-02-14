@@ -1,9 +1,13 @@
 import React, { createContext, useState, useEffect } from "react";
 import { useStudent } from "../../../../contexts/StudentProfileContext";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
+
 export const ExamContext = createContext();
 
 export const ExamProvider = ({ children }) => {
+  const navigate = useNavigate();
   const { studentDetails } = useStudent();
   const [examData, setExamData] = useState(null);
   const [existingData, setExistingData] = useState({});
@@ -123,53 +127,51 @@ export const ExamProvider = ({ children }) => {
   };
 
   const handleSubmit = async () => {
-    // Build the payload using exam identifiers and answers.
     if (!examData) {
       console.error("No exam data available");
+      toast.error("No exam data available");
       return;
     }
 
-    // Initialize the payload with required identifiers.
     const payload = {
       examId: examData.exam.examId,
       studentExamId: examData.exam.studentExamId,
     };
 
-    // Include MCQ answers.
     mcqQuestions.forEach((q) => {
       if (q.answered) {
         payload[q.questionId] = {
-          selectedOption: q.answer, // your answer value
+          selectedOption: q.answer,
         };
       }
     });
 
-    // Include coding answers.
     codingQuestions.forEach((q) => {
       if (q.answered) {
         payload[q.questionId] = {
-          // Assume you store a testCaseSummary from your online compiler evaluations.
           testCaseSummary: q.testCaseSummary || {},
         };
       }
     });
-    console.log(payload);
+
     try {
       const response = await axios.post(
-        `${process.env.REACT_APP_BACKEND_URL}/api/v1/submitExam`,
+        `${process.env.REACT_APP_BACKEND_URL}/api/v1/submit-exam`,
         payload
       );
 
       if (response.data.success) {
-        console.log("Exam submitted successfully:", response.data.analysis);
-        // You can update context state, localStorage, or navigate to a results page:
-        // localStorage.setItem("examAnalysis", JSON.stringify(response.data.analysis));
-        // navigate("/exam-results");
+        toast.success("Exam submitted successfully!");
+        navigate("/exam-dashboard");
+        localStorage.setItem("warnCount", 0);
       } else {
-        console.error("Submission failed:", response.data.message);
+        toast.error("Submission failed: " + response.data.message);
       }
     } catch (error) {
+      toast.error("Error during exam submission: " + error.message);
       console.error("Error during exam submission:", error);
+      navigate("/exam-dashboard");
+      localStorage.setItem("warnCount", 0);
     }
   };
 

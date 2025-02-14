@@ -141,6 +141,9 @@ const ExamDashboard = () => {
       </div>
     );
   }
+  window.addEventListener("popstate", () => {
+    window.location.reload();
+  });
 
   return (
     <div className="p-4">
