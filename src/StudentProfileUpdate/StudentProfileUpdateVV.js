@@ -86,8 +86,11 @@ const fetchResumeScore = async () => {
 };
 
   const fetchResume =useCallback( async () => {
+    if (!studentDetails || !studentDetails.studentId) { // ✅ Ensure studentDetails exists
+      console.error("❌ Student details not available yet.");
+      return;
+  }
     try {
-      if (!studentDetails?.studentId) return;
       const response = await axios.get(
         `${process.env.REACT_APP_BACKEND_URL}/api/v1/updateresume`,
         {
@@ -112,7 +115,7 @@ const fetchResumeScore = async () => {
       console.error("❌ Error fetching resume:", error);
       setResumeUrl(null); // Reset if no resume is found
     }
-  },[resumeId,studentDetails?.studentId]);
+  },[resumeId,studentDetails]);
 
 
  
@@ -180,7 +183,7 @@ const fetchResumeScore = async () => {
   /* profile code*/
   const fetchProfilePicture =useCallback(async () => {
     try {
-        if (!studentDetails?.studentId) {
+        if (!studentDetails || !studentDetails.studentId){
             console.error("❌ Student ID is missing in studentDetails.");
             return;
         }
@@ -207,15 +210,18 @@ const fetchResumeScore = async () => {
     } catch (error) {
         console.error("❌ Error fetching profile picture:", error);
     }
-},[studentDetails.studentId]);
+},[studentDetails]);
 
 // ✅ Fetch profile picture once when the component mounts
 useEffect(() => {
-    if (studentDetails?.studentId && resumeId) {
-        fetchProfilePicture();
-        fetchResume()
-    }
-}, [studentDetails,fetchProfilePicture,fetchResume,resumeId]);
+  if (!studentDetails || !studentDetails.studentId || !resumeId) {
+      console.warn("⚠️ Waiting for student details to load...");
+      return;
+  }
+  fetchProfilePicture();
+  fetchResume();
+}, [studentDetails, fetchProfilePicture, fetchResume, resumeId]);
+
 
 
 // ✅ Call once when the component mounts
@@ -244,6 +250,12 @@ useEffect(() => {
   };
 
   return (
+    <>
+    {(!studentDetails || loading) ? (
+      <div className="min-h-screen flex items-center justify-center">
+        <p className="text-gray-500 text-lg">Loading student details...</p>
+      </div>
+    ) :(
     <div className="min-h-screen bg-gradient-to-br from-blue-100 to-purple-200 flex items-center justify-center px-4 py-6">
       {edit ? (
         <StudentProfileV />
@@ -499,6 +511,7 @@ useEffect(() => {
           )}
         </div>
       )}
-    </div>
+    </div>)}
+    </>
   );
 }
