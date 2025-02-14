@@ -263,7 +263,7 @@ const SubjectDetails = () => {
               ></iframe>
             </div>
           ) :  (
-            <div className="w-full max-w-3xl flex flex-col items-center justify-center bg-white/20 backdrop-blur-lg shadow-xl rounded-lg p-8 animate-fadeIn border border-gray-200">
+            <div className="w-full max-w-3xl flex flex-col items-center justify-center bg-white/20  shadow-xl rounded-lg p-8 animate-fadeIn border border-gray-200">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               className="w-16 h-16 text-indigo-500 animate-pulse"

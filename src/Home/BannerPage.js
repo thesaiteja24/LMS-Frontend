@@ -6,7 +6,7 @@ const StatsChart = React.lazy(() => import("./StatsChart"));
 
 const BannerPage = () => {
   const { dashboardData, loading } = useDashboard();
-  const [count,setCount] =useState(3500)
+  const [count,setCount] =useState(0)
   // const [isPlayerVisible, setIsPlayerVisible] = useState(false);
 
   // const handleVideoLoad = () => {

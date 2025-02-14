@@ -7,6 +7,7 @@ import { useUniqueBatches } from '../../contexts/UniqueBatchesContext';
 import { read, utils } from "xlsx";
 import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
+import Select from "react-select";
 
 
 import {
@@ -35,6 +36,31 @@ export default function ProgramManagerSignup() {
     parentNumber: "",
     location: "",
   });
+
+  const [studentCountryCode, setStudentCountryCode] = useState(null);
+  const [parentCountryCode, setParentCountryCode] = useState(null);
+  const [countryCodes, setCountryCodes] = useState([]);
+
+  // 🔹 Fetch Country Codes from API
+  useEffect(() => {
+    axios.get("https://restcountries.com/v3.1/all")
+      .then((response) => {
+        const countryList = response.data
+        .map(country => ({
+          value: `${country.idd.root}${country.idd.suffixes?.[0] || ""}`,
+          label: `${country.idd.root}${country.idd.suffixes?.[0] || ""}`
+        }))
+          .filter(country => country.value !== "undefined"); // Ensure valid country codes
+
+        setCountryCodes(countryList);
+        setStudentCountryCode(countryList.find(c => c.value === "+91")); // Default: India
+        setParentCountryCode(countryList.find(c => c.value === "+91")); // Default: India
+      })
+      .catch(error => console.error("Error fetching country codes:", error));
+  }, []);
+
+
+
   const [excelData, setExcelData] = useState([]);
   const [loading, setLoading] = useState(false);
   const [useExcel, setUseExcel] = useState(false);
@@ -132,6 +158,9 @@ export default function ProgramManagerSignup() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    const studentPhone = studentCountryCode?.value + formData.studentPhNumber;
+    const parentPhone = parentCountryCode?.value + formData.parentNumber;
     setLoading(true);
   
     try {
@@ -154,6 +183,8 @@ export default function ProgramManagerSignup() {
           ...formData,
           studentId: formData.studentId.toUpperCase(),
           batchNo: formData.batchNo.toUpperCase(),
+          studentPhNumber: studentPhone,
+          parentNumber: parentPhone,
         });
       } else {
         response = await axios.post(endpoint, { excelData });
@@ -341,45 +372,58 @@ export default function ProgramManagerSignup() {
         </div>
       </div>
 
-      {/* Student Phone Number */}
       <div className="mb-4">
-        <label htmlFor="studentPhNumber" className="block text-black font-semibold mb-2">
-          Student Phone Number
-        </label>
-        <div className="flex items-center border border-gray-300 rounded-md p-2">
-          <FaPhone className="text-black mr-2" />
-          <input
-            id="studentPhNumber"
-            name="studentPhNumber"
-            type="number"
-            placeholder="Enter Student Phone Number"
-            value={formData.studentPhNumber}
-            onChange={handleChange}
-            className="flex-1 px-2 py-1 text-gray-800 outline-none font-medium"
-            required
-          />
-        </div>
-      </div>
+            <label className="block text-black font-semibold mb-2">
+              Student Phone Number
+            </label>
+            <div className="flex items-center border border-gray-300 rounded-md p-2">
+            <FaPhone className="text-black mr-2" />
 
-      {/* Parent Phone Number */}
-      <div className="mb-4">
-        <label htmlFor="parentNumber" className="block text-black font-semibold mb-2">
-          Parent Phone Number
-        </label>
-        <div className="flex items-center border border-gray-300 rounded-md p-2">
-          <FaPhone className="text-black mr-2" />
-          <input
-            id="parentNumber"
-            name="parentNumber"
-            type="number"
-            placeholder="Enter Parent Phone Number"
-            value={formData.parentNumber}
-            onChange={handleChange}
-            className="flex-1 px-2 py-1 text-gray-800 outline-none font-medium"
-            required
-          />
-        </div>
-      </div>
+              <Select
+                options={countryCodes}
+                value={studentCountryCode}
+                onChange={setStudentCountryCode}
+                placeholder="Select Code"
+                className="mr-2 w-1/5"
+              />
+              <input
+                name="studentPhNumber"
+                type="number"
+                placeholder="Enter Student Phone Number"
+                value={formData.studentPhNumber}
+                onChange={handleChange}
+                className="flex-1 px-2 py-1 text-gray-800 outline-none font-medium"
+                required
+              />
+            </div>
+          </div>
+
+          {/* Parent Phone Number */}
+          <div className="mb-4">
+            <label className="block text-black font-semibold mb-2">
+              Parent Phone Number
+            </label>
+            <div className="flex items-center border border-gray-300 rounded-md p-2">
+            <FaPhone className="text-black mr-2" />
+
+              <Select
+                options={countryCodes}
+                value={parentCountryCode}
+                onChange={setParentCountryCode}
+                placeholder="Select Code"
+                className="mr-2 w-1/5"
+              />
+              <input
+                name="parentNumber"
+                type="number"
+                placeholder="Enter Parent Phone Number"
+                value={formData.parentNumber}
+                onChange={handleChange}
+                className="flex-1 px-2 py-1 text-gray-800 outline-none font-medium"
+                required
+              />
+            </div>
+          </div>
 
       {/* Location */}
       <div className="mb-4">

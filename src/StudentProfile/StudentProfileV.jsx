@@ -22,7 +22,7 @@ const [showCPassword, setShowCPassword] = useState(false);
         name: studentDetails?.name || '',
         age: studentDetails?.age || '',
         gender: studentDetails?.gender || '',
-        mobileNumber: studentDetails?.phone || '', // Assuming `phone` field from API
+        // mobileNumber: studentDetails?.phone || '', // Assuming `phone` field from API
         collegeUSNNumber: studentDetails?.collegeUSNNumber || '',
         githubLink: studentDetails?.githubLink || '',
         arrears: studentDetails?.arrears || true, // Defaulting to false
@@ -46,7 +46,7 @@ const [showCPassword, setShowCPassword] = useState(false);
         name: '',
         age: '',
         gender: '',
-        mobileNumber: '',
+        // mobileNumber: '',
         collegeUSNNumber: '',
         githubLink: '',
         qualification: '',
@@ -100,9 +100,9 @@ const [showCPassword, setShowCPassword] = useState(false);
         return /^[a-zA-Z\s]+$/.test(name) ? '' : 'Name must contain only letters and spaces.';
     };
 
-    const validateMobileNumber = (number) => {
-        return /^\d{10}$/.test(number) ? '' : 'Mobile number must be 10 digits.';
-    };
+    // const validateMobileNumber = (number) => {
+    //     return /^\d{10}$/.test(number) ? '' : 'Mobile number must be 10 digits.';
+    // };
 
     const validateCollegeUSNNumber = (usn) => {
         return /^[a-zA-Z0-9]{1,12}$/.test(usn) ? '' : 'USN must be up to 12 alphanumeric characters.';
@@ -143,9 +143,9 @@ const [showCPassword, setShowCPassword] = useState(false);
             case 'name':
                 errorMessage = validateName(value);
                 break;
-            case 'mobileNumber':
-                errorMessage = validateMobileNumber(value);
-                break;
+            // case 'mobileNumber':
+            //     errorMessage = validateMobileNumber(value);
+            //     break;
             case 'collegeUSNNumber':
                 errorMessage = validateCollegeUSNNumber(value);
                 break;
@@ -290,7 +290,7 @@ const [showCPassword, setShowCPassword] = useState(false);
         const newErrors = {
             name: validateName(formData.name),
             gender: formData.gender ? '' : 'Please select a gender.', 
-            mobileNumber: validateMobileNumber(formData.mobileNumber),
+            // mobileNumber: validateMobileNumber(formData.mobileNumber),
             collegeUSNNumber: validateCollegeUSNNumber(formData.collegeUSNNumber),
             githubLink: validateGithubLink(formData.githubLink),
             password: validatePassword(formData.password),
@@ -342,7 +342,7 @@ const [showCPassword, setShowCPassword] = useState(false);
                     state: formData.state,
                     collegeName: formData.collegeName,
                     qualification: formData.qualification,
-                    mobileNumber: Number(formData.mobileNumber),
+                    // mobileNumber: Number(formData.mobileNumber),
                     age: Number(age),
                     collegeUSNNumber: formData.collegeUSNNumber,
                     githubLink: formData.githubLink,
@@ -360,8 +360,34 @@ const [showCPassword, setShowCPassword] = useState(false);
                     },
                 }
             );
+
+            if (formData.resume) {
+                const resumeFormData = new FormData();
+                resumeFormData.append("resume", formData.resume);
+                resumeFormData.append("student_id", localStorage.getItem("student_id")); // ✅ Append student_id
+            
+                console.log("✅ Sending resume and student_id to ATS API...");
+                console.log("FormData Contents:", Object.fromEntries(resumeFormData.entries())); // Debugging
+            
+                try {
+                    const atsResponse = await axios.post(
+                        `${process.env.REACT_APP_BACKEND_URL}/api/v1/atscheck`,
+                        resumeFormData,
+                        { headers: { "Content-Type": "multipart/form-data" } }
+                    );
+            
+                    console.log("✅ ATS API Response:", atsResponse.data);
+                } catch (error) {
+                    console.error("❌ Error sending resume to ATS API:", error);
+                }
+            } else {
+                console.error("❌ Resume not found before sending to ATS API.");
+            }
+            
     
-            console.log("Signup Response:", response.data);
+
+            
+    
             await fetchStudentsData();
             await fetchStudentDetails();
     
@@ -385,8 +411,9 @@ const [showCPassword, setShowCPassword] = useState(false);
         setFormData({
             name: studentDetails.name || '',
             age: studentDetails.age || '',
-            gender: studentDetails.gender?.trim().toLowerCase() === "male" ? "Male" : "Female", // ✅ Fix gender
-            mobileNumber: studentDetails.phone || '',
+            gender: studentDetails.gender && ["Male", "Female"].includes(studentDetails.gender) 
+            ? studentDetails.gender 
+            : '', // Set an empty string instead of defaulting to "Female"            // mobileNumber: studentDetails.phone || '',
             collegeUSNNumber: studentDetails.collegeUSNNumber || '',
             githubLink: studentDetails.githubLink || '',
             arrears: studentDetails.arrears === "true", // ✅ Ensure boolean
@@ -444,37 +471,7 @@ const [showCPassword, setShowCPassword] = useState(false);
         {errors.age && <p className="error-message">{errors.age}</p>}
     </div>
 
-    {/* Gender Selection */}
-    <div className="form-group">
-        <label>Gender <span style={{ color: 'red' }}>*</span></label>
-        <div className="radio-group">
-            <div className="radio-option">
-                <input
-                    type="radio"
-                    id="male"
-                    name="gender"
-                    value="Male"
-                    checked={formData.gender === "Male"}
-                    onChange={handleChange}
-                    required
-                />
-                <label htmlFor="male">Male</label>
-            </div>
-            <div className="radio-option">
-                <input
-                    type="radio"
-                    id="female"
-                    name="gender"
-                    value="Female"
-                    checked={formData.gender === "Female"}
-                    onChange={handleChange}
-                    required
-                />
-                <label htmlFor="female">Female</label>
-            </div>
-        </div>
-        {errors.gender && <p className="error-message">{errors.gender}</p>}
-    </div>
+ 
 </div>
 
 
@@ -523,7 +520,7 @@ const [showCPassword, setShowCPassword] = useState(false);
     </div>
 </div>
                 <div className="input-group">
-                    <div className="form-group">
+                    {/* <div className="form-group">
                         <label>WhatsApp Number <span style={{ color: 'red' }}>*</span></label>
                         <input
                             type="number"
@@ -534,6 +531,37 @@ const [showCPassword, setShowCPassword] = useState(false);
                             required
                         />
                         {errors.mobileNumber && <p className="error-message">{errors.mobileNumber}</p>}
+                    </div> */}
+                       {/* Gender Selection */}
+                    <div className="form-group">
+                        <label>Gender <span style={{ color: 'red' }}>*</span></label>
+                        <div className="radio-group">
+                            <div className="radio-option">
+                                <input
+                                    type="radio"
+                                    id="male"
+                                    name="gender"
+                                    value="Male"
+                                    checked={formData.gender === "Male"}
+                                    onChange={handleChange}
+                                    required
+                                />
+                                <label htmlFor="male">Male</label>
+                            </div>
+                            <div className="radio-option">
+                                <input
+                                    type="radio"
+                                    id="female"
+                                    name="gender"
+                                    value="Female"
+                                    checked={formData.gender === "Female"}
+                                    onChange={handleChange}
+                                    required
+                                />
+                                <label htmlFor="female">Female</label>
+                            </div>
+                        </div>
+                        {errors.gender && <p className="error-message">{errors.gender}</p>}
                     </div>
                     <div className="form-group">
                         <label>Highest Qualification <span style={{ color: 'red' }}>*</span></label>

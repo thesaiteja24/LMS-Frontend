@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { FaEdit, FaTrash } from "react-icons/fa";
 import Swal from "sweetalert2";
 import axios from "axios";
+import Select from "react-select";
 
 const Bdemanagement = () => {
   const [data, setData] = useState([]);
@@ -10,12 +11,15 @@ const Bdemanagement = () => {
   const [formData, setFormData] = useState({
     name: "",
     email: "",
-    PhNumber: "",
     location: "",
     userType: "BDE",
   });
 
   const locations = ["vijayawada", "hyderabad", "bangalore"];
+  const [countryCodes, setCountryCodes] = useState([]);
+  const [selectedCountryCode, setSelectedCountryCode] = useState(null);
+  const [phoneNumber, setPhoneNumber] = useState("");
+
 
 
   const fetchData = async () => {
@@ -29,6 +33,23 @@ const Bdemanagement = () => {
     }
   };
 
+  useEffect(() => {
+    axios.get("https://restcountries.com/v3.1/all")
+      .then((response) => {
+        const countryList = response.data
+          .map(country => ({
+            value: `${country.idd.root}${country.idd.suffixes?.[0] || ""}`,
+            label: `${country.idd.root}${country.idd.suffixes?.[0] || ""}`
+          }))
+          .filter(country => country.value !== "undefined");
+
+        setCountryCodes(countryList);
+        setSelectedCountryCode(countryList.find(c => c.value === "+91")); // Default: India
+      })
+      .catch(error => console.error("Error fetching country codes:", error));
+  }, []);
+
+
   // Fetch BDE data from API
   useEffect(() => {
    
@@ -38,17 +59,45 @@ const Bdemanagement = () => {
 
   // Open Add/Edit Modal
   const handleOpenModal = (bde = null) => {
-    setFormData(
-      bde || { name: "", email: "", PhNumber: "", location: locations[0], userType: "BDE" }
-    );
+    if (bde) {
+      // 🔹 Extract country code and phone number
+      const match = bde.PhNumber.match(/^(\+\d+)(\d{10})$/);
+      const countryCode = match ? match[1] : "+91"; // Default to India if not found
+      const extractedPhoneNumber = match ? match[2] : "";
+
+      setFormData({
+        id: bde.id,
+        name: bde.name,
+        email: bde.email,
+        location: bde.location,
+        userType: "BDE",
+      });
+
+      setSelectedCountryCode(countryCodes.find(c => c.value === countryCode) || { value: "+91", label: "+91" });
+      setPhoneNumber(extractedPhoneNumber);
+    } else {
+      setFormData({
+        name: "",
+        email: "",
+        location: locations[0],
+        userType: "BDE",
+      });
+
+      setSelectedCountryCode({ value: "+91", label: "+91" });
+      setPhoneNumber("");
+    }
+    
     setIsModalOpen(true);
   };
+
 
   // Close Modal
   const handleCloseModal = () => {
     setIsModalOpen(false);
     setIsSaving(false);
-    setFormData({ name: "", email: "", PhNumber: "", location: "", userType: "BDE" });
+    setFormData({ name: "", email: "", location: "", userType: "BDE" });
+    setSelectedCountryCode({ value: "+91", label: "+91" });
+    setPhoneNumber("");
   };
 
   // Validate Email
@@ -58,12 +107,12 @@ const Bdemanagement = () => {
   };
 
   // Validate Phone Number
-  const isValidPhone = (PhNumber) => {
+  const isValidPhone = (phoneNumber ) => {
     const phoneRegex =/^[9876]\d{9}$/;
-    return phoneRegex.test(PhNumber);
+    return phoneRegex.test(phoneNumber );
   };
   const handleSave = async () => {
-    if (!formData.name || !formData.email || !formData.PhNumber || !formData.location) {
+    if (!formData.name || !formData.email || !phoneNumber  || !formData.location) {
       Swal.fire({ icon: "error", title: "Please fill all fields." });
       return;
     }
@@ -72,8 +121,7 @@ const Bdemanagement = () => {
       Swal.fire({ icon: "error", title: "Invalid email format." });
       return;
     }
-  
-    if (!isValidPhone(formData.PhNumber)) {
+    if (!isValidPhone(phoneNumber)) {
       Swal.fire({
         icon: "error",
         title: "Invalid phone number.",
@@ -83,6 +131,12 @@ const Bdemanagement = () => {
     }
   
     setIsSaving(true); // Start loading state
+
+    const formattedData = {
+      ...formData,
+      PhNumber: selectedCountryCode?.value + phoneNumber, // Append country code
+    };
+
   
     try {
       let response;
@@ -90,10 +144,10 @@ const Bdemanagement = () => {
   
       if (formData.id) {
         // 🔹 Update Existing BDE (PUT request)
-        response = await axios.put(apiUrl, formData);
+        response = await axios.put(apiUrl, formattedData);
       } else {
         // 🔹 Add New BDE (POST request)
-        response = await axios.post(apiUrl, formData);
+        response = await axios.post(apiUrl, formattedData);
       }
   
       if (response.status === 200 || response.status === 201) {
@@ -235,13 +289,26 @@ const Bdemanagement = () => {
                 value={formData.email}
                 onChange={(e) => setFormData({ ...formData, email: e.target.value })}
               />
-              <input
-                type="Number"
-                className="w-full px-4 py-2 border rounded focus:outline-none"
-                placeholder="Phone Number"
-                value={formData.PhNumber}
-                onChange={(e) => setFormData({ ...formData, PhNumber: e.target.value })}
-              />
+               <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-1">Phone Number</label>
+                <div className="flex items-center border border-gray-300 rounded-md p-2">
+                  <Select
+                    options={countryCodes}
+                    value={selectedCountryCode}
+                    onChange={setSelectedCountryCode}
+                    placeholder="Select Code"
+                    className="mr-2 w-1/3"
+                  />
+                   <input
+                    type="number"
+                    className="flex-1 px-2 py-1 text-gray-800 outline-none"  
+                    placeholder="Enter phone number"
+                    value={phoneNumber}
+                    onChange={(e) => setPhoneNumber(e.target.value)}
+                    required
+                  />
+                </div>
+              </div>
               <select
                 className="w-full px-4 py-2 border rounded focus:outline-none"
                 value={formData.location}
