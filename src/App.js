@@ -65,6 +65,8 @@ import UploadQuestions from "./Mentor/ManageExams/UploadQuestions.jsx";
 import { Parent } from "./Student/Exams_module/students/ExamModule/Parent.jsx";
 import { useLocation } from "react-router-dom";
 import { ExamProvider } from "./Student/Exams_module/students/ExamModule/ExamContext.jsx";
+import { NewDashboard } from "./NewDashboard/NewDashboard.jsx";
+import { ToastContainer } from "react-toastify";
 
 const ProtectedRoute = ({ children, allowedRoles }) => {
   const userType = localStorage.getItem("userType");
@@ -110,6 +112,18 @@ export default function App() {
 
   return (
     <div style={{ overflow: "auto", height: "100vh" }}>
+      <ToastContainer
+        position="top-right"
+        autoClose={3000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="colored"
+      />
       <Location />
       <ScrollToTop />
 
@@ -784,6 +798,5 @@ export default function App() {
       </div>
       {/* <Footer /> */}
     </div>
-    // <Parent />
   );
 }
