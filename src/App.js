@@ -51,7 +51,6 @@ import WeeklyExam from "./Student/Exams_module/students/WeeklyExam.jsx";
 import GrandExam from "./Student/Exams_module/students/GrandExam.jsx";
 import SurpriseExam from "./Student/Exams_module/students/SurpriseExam.jsx";
 import ExamDashboard from "./Student/Exams_module/students/ExamModule/ExamDashboard.jsx";
-import ExamPage from "./Student/Exams_module/students/ExamPage.jsx";
 import ExamAnalytics from "./Student/Exams_module/students/ExamAnalytics.jsx";
 import MentorBatches from "./Mentor/MentorBatches.jsx";
 import LogoWrapper from "./Mentor/LogoWrapper.jsx";
@@ -59,7 +58,6 @@ import EnquiryForm from "./RequestForm/EnquiryForm.jsx";
 import SubjectDetails from "./Curriculam/SubjectDetails.jsx";
 import { ManagerExamDashboard } from "./programManager/Exams/ManagerExamDashboard.jsx";
 import { SetExam } from "./programManager/Exams/SetExam.jsx";
-import ConductExam from "./Student/Exams_module/students/ConductExam.jsx";
 import ExamSecurityWrapper from "./Student/Exams_module/students/ExamSecurityWrapper.jsx";
 import ExamAnalysis from "./Student/Exams_module/students/ExamAnalysis.jsx";
 import { DailyQuestionBank } from "./Mentor/ManageExams/QuestionBanks/DailyQuestionBank.jsx";
@@ -102,7 +100,7 @@ export default function App() {
 
   const Location = ({ children }) => {
     const location = useLocation();
-    const hideHeader = location.pathname == "/conduct-exam";
+    const hideHeader = location.pathname === "/conduct-exam";
     return (
       <div>
         {!hideHeader && <SidebarV setIsAuthenticated={setIsAuthenticated} />}
@@ -181,7 +179,8 @@ export default function App() {
                   replace
                 />
               ) : (
-                <StudentLogin setIsAuthenticated={setIsAuthenticated} />              )
+                <StudentLogin setIsAuthenticated={setIsAuthenticated} />
+              )
             }
           />
 
