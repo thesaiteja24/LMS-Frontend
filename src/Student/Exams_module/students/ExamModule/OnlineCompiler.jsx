@@ -4,7 +4,7 @@ import { javascript } from "@codemirror/lang-javascript";
 import { python } from "@codemirror/lang-python";
 import { java } from "@codemirror/lang-java";
 import { oneDark } from "@codemirror/theme-one-dark";
-import { ExamContext } from "./ExamModule/ExamContext";
+import { ExamContext } from "./ExamContext";
 
 const OnlineCompiler = () => {
   // Get context values
