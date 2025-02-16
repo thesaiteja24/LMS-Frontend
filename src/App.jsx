@@ -46,22 +46,15 @@ import InstructorCompletion from "./programManager/InstructorCompletion.jsx";
 import StudentLocationWise from "./programManager/StudentLocationWise.jsx";
 import LeaveRequestPage from "./StudentProfile/LeaveRequestPage.jsx";
 import MentorExamDashboard from "./Mentor/MentorExamDashboard.jsx";
-import DailyExam from "./Student/Exams_module/students/DailyExam.jsx";
-import WeeklyExam from "./Student/Exams_module/students/WeeklyExam.jsx";
-import GrandExam from "./Student/Exams_module/students/GrandExam.jsx";
-import SurpriseExam from "./Student/Exams_module/students/SurpriseExam.jsx";
 import ExamDashboard from "./Student/Exams_module/students/ExamModule/ExamDashboard.jsx";
-import ExamPage from "./Student/Exams_module/students/ExamPage.jsx";
-import ExamAnalytics from "./Student/Exams_module/students/ExamAnalytics.jsx";
 import MentorBatches from "./Mentor/MentorBatches.jsx";
 import LogoWrapper from "./Mentor/LogoWrapper.jsx";
 import EnquiryForm from "./RequestForm/EnquiryForm.jsx";
 import SubjectDetails from "./Curriculam/SubjectDetails.jsx";
 import { ManagerExamDashboard } from "./programManager/Exams/ManagerExamDashboard.jsx";
 import { SetExam } from "./programManager/Exams/SetExam.jsx";
-import ConductExam from "./Student/Exams_module/students/ConductExam.jsx";
-import ExamSecurityWrapper from "./Student/Exams_module/students/ExamSecurityWrapper.jsx";
-import ExamAnalysis from "./Student/Exams_module/students/ExamAnalysis.jsx";
+import ExamSecurityWrapper from "./Student/Exams_module/students/ExamModule/ExamSecurityWrapper.jsx";
+import { ExamAnalysis } from "./Student/Exams_module/students/ExamAnalysis/ExamAnalysis";
 import { DailyQuestionBank } from "./Mentor/ManageExams/QuestionBanks/DailyQuestionBank.jsx";
 import UploadQuestions from "./Mentor/ManageExams/UploadQuestions.jsx";
 import { Parent } from "./Student/Exams_module/students/ExamModule/Parent.jsx";
@@ -181,7 +174,8 @@ export default function App() {
                   replace
                 />
               ) : (
-                <StudentLogin setIsAuthenticated={setIsAuthenticated} />              )
+                <StudentLogin setIsAuthenticated={setIsAuthenticated} />
+              )
             }
           />
 
@@ -495,51 +489,6 @@ export default function App() {
               </ProtectedRoute>
             }
           />
-          {/* student online exams scheduling */}
-
-          <Route
-            path="/daily-exam"
-            element={
-              <ProtectedRoute allowedRoles={["student_login_details"]}>
-                <DailyExam />
-              </ProtectedRoute>
-            }
-          />
-
-          <Route
-            path="/exam-analytics"
-            element={
-              <ProtectedRoute allowedRoles={["student_login_details"]}>
-                <ExamAnalytics />
-              </ProtectedRoute>
-            }
-          />
-
-          <Route
-            path="/weekly-exam"
-            element={
-              <ProtectedRoute allowedRoles={["student_login_details"]}>
-                <WeeklyExam />
-              </ProtectedRoute>
-            }
-          />
-
-          <Route
-            path="/grand-exam"
-            element={
-              <ProtectedRoute allowedRoles={["student_login_details"]}>
-                <GrandExam />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/surprise-exam"
-            element={
-              <ProtectedRoute allowedRoles={["student_login_details"]}>
-                <SurpriseExam />
-              </ProtectedRoute>
-            }
-          />
 
           <Route
             path="/exam-dashboard"
@@ -785,6 +734,5 @@ export default function App() {
       </div>
       {/* <Footer /> */}
     </div>
-    // <Parent />
   );
 }

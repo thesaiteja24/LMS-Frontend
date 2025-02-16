@@ -63,7 +63,10 @@ export const SidebarV = ({ setIsAuthenticated }) => {
         }
       );
       const contentType = response.headers["content-type"];
-      if (contentType.includes("image/png") || contentType.includes("image/jpeg")) {
+      if (
+        contentType.includes("image/png") ||
+        contentType.includes("image/jpeg")
+      ) {
         const imageUrl = URL.createObjectURL(response.data);
         setProfilePicture(imageUrl);
       } else {
@@ -116,15 +119,31 @@ export const SidebarV = ({ setIsAuthenticated }) => {
           { label: "Jobs List", path: "/jobslist", icon: FaBook },
           { label: "Course", path: "/courses", icon: FaClipboard },
           { label: "Exams", path: "/exam-dashboard", icon: FaFileAlt },
-          { label: "Temp", path: "/parent", icon: FaFileAlt },
-          { label: "Mock Interviews", path: "/mock-interviews", icon: FaMicrophoneAlt },
-          { label: "Leave Request", path: "/leave-request-page", icon: MdOutlineRequestQuote },
+          { label: "Reports", path: "/exam-repors", icon: PiExam },
+          {
+            label: "Mock Interviews",
+            path: "/mock-interviews",
+            icon: FaMicrophoneAlt,
+          },
+          {
+            label: "Leave Request",
+            path: "/leave-request-page",
+            icon: MdOutlineRequestQuote,
+          },
           { label: "Logout", action: handleLogout, icon: FaSignOutAlt },
         ];
       case "super":
         return [
-          { label: "Admin Dashboard", path: "/admin-dashboard", icon: FaChartBar },
-          { label: "Manager Dashboard", path: "/manager-dashboard", icon: FaTachometerAlt },
+          {
+            label: "Admin Dashboard",
+            path: "/admin-dashboard",
+            icon: FaChartBar,
+          },
+          {
+            label: "Manager Dashboard",
+            path: "/manager-dashboard",
+            icon: FaTachometerAlt,
+          },
           { label: "Manage Jobs List", path: "/jobs-dashboard", icon: FaBook },
           { label: "Students List", path: "/studentslist", icon: FaUsers },
           { label: "Student Search", path: "/studentsearch", icon: FaSearch },
@@ -132,43 +151,103 @@ export const SidebarV = ({ setIsAuthenticated }) => {
         ];
       case "superAdmin":
         return [
-          { label: "Admin Dashboard", path: "/admin-dashboard", icon: FaChartBar },
-          { label: "Manager Dashboard", path: "/manager-dashboard", icon: FaTachometerAlt },
+          {
+            label: "Admin Dashboard",
+            path: "/admin-dashboard",
+            icon: FaChartBar,
+          },
+          {
+            label: "Manager Dashboard",
+            path: "/manager-dashboard",
+            icon: FaTachometerAlt,
+          },
           { label: "Manage BDEs", path: "/bdes", icon: FaBriefcase },
-          { label: "Manage Mentors", path: "/mentors", icon: FaChalkboardTeacher },
-          { label: "Manage Program Managers", path: "/program-managers", icon: FaSchool },
+          {
+            label: "Manage Mentors",
+            path: "/mentors",
+            icon: FaChalkboardTeacher,
+          },
+          {
+            label: "Manage Program Managers",
+            path: "/program-managers",
+            icon: FaSchool,
+          },
           { label: "Students List", path: "/studentslist", icon: FaUsers },
           { label: "Student Search", path: "/studentsearch", icon: FaSearch },
           { label: "Curriculum", path: "/curriculum", icon: FaBookOpen },
-          { label: "Manage Jobs List", path: "/jobs-dashboard", icon: FaLayerGroup },
+          {
+            label: "Manage Jobs List",
+            path: "/jobs-dashboard",
+            icon: FaLayerGroup,
+          },
           { label: "Logout", action: handleLogout, icon: FaSignOutAlt },
         ];
       case "BDE_data":
         return [
           { label: "Add Job", path: "/addjob", icon: FaPlusSquare },
-          { label: "Students List", path: "/managestudentslist", icon: FaUsers },
+          {
+            label: "Students List",
+            path: "/managestudentslist",
+            icon: FaUsers,
+          },
           { label: "Student Data", path: "/studentdata", icon: FaSearch },
-          { label: "Manage Jobs List", path: "/jobs-dashboard", icon: FaLayerGroup },
+          {
+            label: "Manage Jobs List",
+            path: "/jobs-dashboard",
+            icon: FaLayerGroup,
+          },
           { label: "Logout", action: handleLogout, icon: FaSignOutAlt },
         ];
       case "Mentors":
         return [
-          { label: "Mentor Dashboard", path: "/mentor-dashboard", icon: FaTachometerAlt },
+          {
+            label: "Mentor Dashboard",
+            path: "/mentor-dashboard",
+            icon: FaTachometerAlt,
+          },
           { label: "Courses", path: "/course", icon: FaChalkboardTeacher },
           { label: "Attendance", path: "/attendance", icon: FaClipboard },
           { label: "Student List", path: "/mentorstudentslist", icon: FaUsers },
-          { label: "Upload Questions", path: "/upload-questions", icon: IoMdCloudUpload },
-          { label: "Reports", path: "/mentor-reports", icon: TbReportAnalytics },
+          {
+            label: "Upload Questions",
+            path: "/upload-questions",
+            icon: IoMdCloudUpload,
+          },
+          {
+            label: "Reports",
+            path: "/mentor-reports",
+            icon: TbReportAnalytics,
+          },
           { label: "Logout", action: handleLogout, icon: FaSignOutAlt },
         ];
       case "Manager":
         return [
-          { label: "Manager Dashboard", path: "/manager-dashboard", icon: FaTachometerAlt },
-          { label: "Students List", path: "/managestudentslist", icon: FaUsers },
+          {
+            label: "Manager Dashboard",
+            path: "/manager-dashboard",
+            icon: FaTachometerAlt,
+          },
+          {
+            label: "Students List",
+            path: "/managestudentslist",
+            icon: FaUsers,
+          },
           { label: "Student Data", path: "/studentdata", icon: FaSearch },
-          { label: "Manage Jobs List", path: "/jobs-dashboard", icon: FaLayerGroup },
-          { label: "Student Enrollment", path: "/student-enroll", icon: FaSchool },
-          { label: "Student Attendance", path: "/studentattendance", icon: FaClipboard },
+          {
+            label: "Manage Jobs List",
+            path: "/jobs-dashboard",
+            icon: FaLayerGroup,
+          },
+          {
+            label: "Student Enrollment",
+            path: "/student-enroll",
+            icon: FaSchool,
+          },
+          {
+            label: "Student Attendance",
+            path: "/studentattendance",
+            icon: FaClipboard,
+          },
           { label: "Batch Schedule", path: "/batchschedule", icon: FaUsers },
           { label: "Create Batch", path: "/createbatch", icon: FaPlusSquare },
           { label: "Scheduling Exam", path: "/create-exam", icon: PiExam },
@@ -217,7 +296,8 @@ export const SidebarV = ({ setIsAuthenticated }) => {
             "flex items-center gap-3 px-4 py-2 text-sm font-medium rounded-md transition-colors w-full",
             {
               "bg-[#ffffff] text-[#0C1BAA] font-semibold rounded-md": isActive,
-              "text-[#ffffff] hover:bg-[#ffffff] hover:text-[#0C1BAA] font-semibold": !isActive,
+              "text-[#ffffff] hover:bg-[#ffffff] hover:text-[#0C1BAA] font-semibold":
+                !isActive,
             }
           )}
           onClick={() => {
@@ -231,7 +311,9 @@ export const SidebarV = ({ setIsAuthenticated }) => {
           }}
         >
           <Icon size={18} />
-          <span className={classNames({ hidden: isCollapsed, block: !isCollapsed })}>
+          <span
+            className={classNames({ hidden: isCollapsed, block: !isCollapsed })}
+          >
             {label}
           </span>
           {subItems && (
@@ -293,7 +375,9 @@ export const SidebarV = ({ setIsAuthenticated }) => {
           onClick={() => setIsCollapsed((prev) => !prev)}
         >
           {!isCollapsed && (
-            <span className="mr-2 text-xl font-bold">{roleDisplayNames[userType]}</span>
+            <span className="mr-2 text-xl font-bold">
+              {roleDisplayNames[userType]}
+            </span>
           )}
           <FaChevronLeft
             className={classNames("transition-transform", {
@@ -330,23 +414,26 @@ export const SidebarV = ({ setIsAuthenticated }) => {
           ))}
         </div>
         {logoutItem && (
-  <div className="px-2 pb-4 mt-auto">
-    <button
-      className={classNames(
-        "flex items-center gap-3 px-4 py-2 text-sm font-semibold rounded-md transition-colors w-full",
-        "bg-[#0C1BAA] text-[#ffffff] hover:bg-[#ffffff] hover:text-[#0C1BAA]"
-      )}
-      onClick={logoutItem.action}
-    >
-      <logoutItem.icon size={18} />
-      <span className={classNames({ hidden: isCollapsed, block: !isCollapsed })}>
-        {logoutItem.label}
-      </span>
-    </button>
-  </div>
-)}
-
-
+          <div className="px-2 pb-4 mt-auto">
+            <button
+              className={classNames(
+                "flex items-center gap-3 px-4 py-2 text-sm font-semibold rounded-md transition-colors w-full",
+                "bg-[#0C1BAA] text-[#ffffff] hover:bg-[#ffffff] hover:text-[#0C1BAA]"
+              )}
+              onClick={logoutItem.action}
+            >
+              <logoutItem.icon size={18} />
+              <span
+                className={classNames({
+                  hidden: isCollapsed,
+                  block: !isCollapsed,
+                })}
+              >
+                {logoutItem.label}
+              </span>
+            </button>
+          </div>
+        )}
       </div>
       {isMobileMenuOpen && (
         <div
