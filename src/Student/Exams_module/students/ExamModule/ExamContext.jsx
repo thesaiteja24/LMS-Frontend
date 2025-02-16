@@ -156,7 +156,7 @@ export const ExamProvider = ({ children }) => {
 
     try {
       const response = await axios.post(
-        `${process.env.REACT_APP_BACKEND_URL}/api/v1/submit-exam`,
+        `${import.meta.env.VITE_BACKEND_URL}/api/v1/submit-exam`,
         payload
       );
 

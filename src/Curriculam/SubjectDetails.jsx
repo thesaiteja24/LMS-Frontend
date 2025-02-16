@@ -2,16 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { useStudent } from "../contexts/StudentProfileContext";
-import {
-  FaCheckCircle,
-  FaBookOpen,
-  FaEdit,
-  FaLock,
-  FaTimes,
-  FaStar,
-  FaRegStar,
-  FaArrowLeft,
-} from "react-icons/fa";
+import { FaCheckCircle, FaBookOpen, FaEdit, FaLock, FaBars, FaTimes, FaStar, FaRegStar,FaArrowLeft } from "react-icons/fa";
 import Swal from "sweetalert2";
 import "sweetalert2/dist/sweetalert2.min.css";
 import "./SubjectDetails.css";
@@ -50,14 +41,8 @@ const SubjectDetails = () => {
     setError("");
     try {
       const response = await axios.get(
-        `${process.env.REACT_APP_BACKEND_URL}/api/v1/stdcurriculum`,
-        {
-          params: {
-            location: localStorage.getItem("location"),
-            batchNo: studentDetails.BatchNo,
-            subject,
-          },
-        }
+        `${import.meta.env.VITE_BACKEND_URL}/api/v1/stdcurriculum`,
+        { params: { location: localStorage.getItem("location"), batchNo: studentDetails.BatchNo, subject } }
       );
       const curriculumData = response.data.std_curiculum || [];
       setCurriculum(curriculumData);
@@ -72,14 +57,8 @@ const SubjectDetails = () => {
   const fetchMentorSyllabus = async (subject) => {
     try {
       const response = await axios.get(
-        `${process.env.REACT_APP_BACKEND_URL}/api/v1/mentorsyllabus`,
-        {
-          params: {
-            subject,
-            location: localStorage.getItem("location"),
-            batches: studentDetails.BatchNo,
-          },
-        }
+        `${import.meta.env.VITE_BACKEND_URL}/api/v1/mentorsyllabus`,
+        { params: { subject, location: localStorage.getItem("location"), batches: studentDetails.BatchNo } }
       );
       setMentorSyllabus(response.data.curriculum || []);
       mergeCurriculums(curriculum, response.data.curriculum || []);
@@ -89,9 +68,7 @@ const SubjectDetails = () => {
   };
 
   const mergeCurriculums = (studentCurriculum, mentorCurriculum) => {
-    const studentCurriculumIds = new Set(
-      studentCurriculum.map((item) => item.CurriculumId)
-    );
+    const studentCurriculumIds = new Set(studentCurriculum.map((item) => item.CurriculumId));
     const combinedSyllabus = [...studentCurriculum];
 
     mentorCurriculum.forEach((mentorTopic) => {
@@ -125,9 +102,7 @@ const SubjectDetails = () => {
       }
 
       const filteredSubTopics = item.SubTopics.filter(
-        (sub) =>
-          sub.subTopic &&
-          !futurePrevSubTopics.has(sub.subTopic.trim().toLowerCase())
+        (sub) => sub.subTopic && !futurePrevSubTopics.has(sub.subTopic.trim().toLowerCase())
       );
 
       filteredCurriculum.unshift({ ...item, SubTopics: filteredSubTopics });
@@ -140,14 +115,10 @@ const SubjectDetails = () => {
     try {
       const url = new URL(videoUrl);
       if (url.hostname.includes("youtube.com") && url.searchParams.get("v")) {
-        return `https://www.youtube.com/embed/${url.searchParams.get(
-          "v"
-        )}?controls=1&modestbranding=1&rel=0&showinfo=0&fs=0&disablekb=1`;
+        return `https://www.youtube.com/embed/${url.searchParams.get("v")}?controls=1&modestbranding=1&rel=0&showinfo=0&fs=0&disablekb=1`;
       }
       if (url.hostname.includes("youtu.be")) {
-        return `https://www.youtube.com/embed/${url.pathname.slice(
-          1
-        )}?controls=1&modestbranding=1&rel=0&showinfo=0&fs=0&disablekb=1`;
+        return `https://www.youtube.com/embed/${url.pathname.slice(1)}?controls=1&modestbranding=1&rel=0&showinfo=0&fs=0&disablekb=1`;
       }
       if (url.hostname.includes("drive.google.com")) {
         const fileId = url.pathname.split("/d/")[1]?.split("/")[0];
@@ -208,45 +179,34 @@ const SubjectDetails = () => {
     <div className="flex min-h-screen bg-gray-100 relative transition-all duration-500 ease-in-out">
       {/* Sidebar Toggle Button */}
 
-      {!sidebarOpen && (
-        <button
-          className="absolute top-2 left-2 mr-10 text-white bg-gray-900 p-3 rounded-md text-2xl focus:outline-none hover:bg-gray-800 transition-all duration-500 ease-in-out z-50"
-          onClick={() => setSidebarOpen(!sidebarOpen)}
-        >
-          {!sidebarOpen && <img src="/icon.svg" alt="Menu Icon" />}
-          {/* Use SVG as a component */}
-        </button>
-      )}
+      {!sidebarOpen&&      <button
+        className="absolute top-2 left-2 mr-10 text-white bg-gray-900 p-3 rounded-md text-2xl focus:outline-none hover:bg-gray-800 transition-all duration-500 ease-in-out z-50"
+        onClick={() => setSidebarOpen(!sidebarOpen)}
+      >
+  {!sidebarOpen && <img src="/icon.svg" alt="Menu Icon" />}
+  {/* Use SVG as a component */}      
+</button>}
+
 
       {/* Sidebar */}
       <div
         ref={sidebarRef}
-        className={`scrollable-sidebar  bg-gray-900 text-white h-screen flex flex-col transition-all duration-500 ease-in-out shadow-lg rounded-r-2xl ${
-          sidebarOpen
-            ? "w-80 overflow-y-auto p-4"
-            : "w-0 opacity-0 overflow-hidden"
-        }`}
-        style={{
-          position:
-            sidebarOpen && window.innerWidth <= 768 ? "fixed" : "relative",
-        }} // Adjust position based on screen size
+        className={`scrollable-sidebar  bg-gray-900 text-white h-screen flex flex-col transition-all duration-500 ease-in-out shadow-lg rounded-r-2xl ${sidebarOpen ? "w-80 overflow-y-auto p-4" : "w-0 opacity-0 overflow-hidden"}`}
+        style={{ position: sidebarOpen && window.innerWidth <= 768 ? 'fixed'  : 'relative' }} // Adjust position based on screen size
       >
         <div className="flex items-center justify-between mb-4 ">
-          <div className="flex justify-end mb-1 ">
-            <button
-              onClick={() => navigate("/courses")}
-              className="flex items-center  gap-2 px-2 py-2 mr-2 text-white bg-indigo-700 rounded-md shadow-md hover:bg-indigo-600 transition-transform transform hover:scale-105"
-            >
-              <FaArrowLeft className="text-lg" />
-            </button>
-          </div>
+        <div className="flex justify-end mb-1 ">
+        <button
+        onClick={() => navigate('/courses')}
+        className="flex items-center  gap-2 px-2 py-2 mr-2 text-white bg-indigo-700 rounded-md shadow-md hover:bg-indigo-600 transition-transform transform hover:scale-105"
+      >
+        <FaArrowLeft className="text-lg" />
+      </button>
+        </div>
           <h2 className="text-2xl font-bold border-b pb-3 flex-grow text-center">
             {state?.subject?.name} Curriculum
           </h2>
-          <button
-            className="text-white text-2xl hover:text-gray-400 focus:outline-none ml-2"
-            onClick={() => setSidebarOpen(false)}
-          >
+          <button className="text-white text-2xl hover:text-gray-400 focus:outline-none ml-2" onClick={() => setSidebarOpen(false)}>
             <FaTimes />
           </button>
         </div>
@@ -260,14 +220,8 @@ const SubjectDetails = () => {
               tabIndex={0}
               aria-disabled={item.locked}
               className={`flex items-center gap-3 p-3 rounded-lg transition shadow-md 
-                ${
-                  item.locked ? "bg-gray-700 cursor-not-allowed opacity-50" : ""
-                }
-                ${
-                  selectedTopic?.Topics === item.Topics
-                    ? "bg-indigo-700"
-                    : "bg-gray-800 hover:bg-gray-700 cursor-pointer"
-                }
+                ${item.locked ? "bg-gray-700 cursor-not-allowed opacity-50" : ""}
+                ${selectedTopic?.Topics === item.Topics ? "bg-indigo-700" : "bg-gray-800 hover:bg-gray-700 cursor-pointer"}
               `}
             >
               {item.locked ? (
@@ -275,17 +229,11 @@ const SubjectDetails = () => {
               ) : (
                 <FaCheckCircle className="text-green-400" />
               )}
-              {item.type === "video" && (
-                <FaBookOpen className="text-blue-400" />
-              )}
-              {item.type === "practice" && (
-                <FaEdit className="text-yellow-400" />
-              )}
+              {item.type === "video" && <FaBookOpen className="text-blue-400" />}
+              {item.type === "practice" && <FaEdit className="text-yellow-400" />}
               <div>
                 <p className="text-md font-medium text-white">{item.Topics}</p>
-                {item.duration && (
-                  <p className="text-sm text-gray-300">{item.duration}</p>
-                )}
+                {item.duration && <p className="text-sm text-gray-300">{item.duration}</p>}
               </div>
             </li>
           ))}
@@ -293,12 +241,9 @@ const SubjectDetails = () => {
       </div>
 
       {/* Right Content Section */}
-      <div
-        className={`flex-1 h-screen overflow-y-auto p-4 lg:p-12 ${
-          sidebarOpen && window.innerWidth > 768 ? "ml-10" : ""
-        }`}
-      >
+      <div className={`flex-1 h-screen overflow-y-auto p-4 lg:p-12 ${sidebarOpen && window.innerWidth > 768 ? "ml-10" : ""}`}>
         {/* Header */}
+     
 
         {/* Topic Title */}
         <h1 className="text-2xl lg:text-4xl ml-10  font-bold text-indigo-800 mb-6 text-center md:text-left">
@@ -306,7 +251,7 @@ const SubjectDetails = () => {
         </h1>
 
         {/* Video Section */}
-        <div>
+        <div >
           {selectedTopic?.VideoUrl ? (
             <div className="w-full  rounded-lg overflow-hidden shadow-lg">
               <iframe
@@ -317,44 +262,38 @@ const SubjectDetails = () => {
                 sandbox="allow-same-origin allow-scripts allow-forms"
               ></iframe>
             </div>
-          ) : (
+          ) :  (
             <div className="w-full max-w-3xl flex flex-col items-center justify-center bg-white/20  shadow-xl rounded-lg p-8 animate-fadeIn border border-gray-200">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="w-16 h-16 text-indigo-500 animate-pulse"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M12 8v4l3 3m9-9a9 9 0 11-18 0 9 9 0 0118 0z"
-                />
-              </svg>
-              <h2 className="text-2xl font-bold text-indigo-600 mt-4">
-                Coming Soon!
-              </h2>
-              <p className="text-gray-600 mt-2 text-center max-w-md">
-                We're working hard to bring you this content. Stay tuned!
-              </p>
-            </div>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="w-16 h-16 text-indigo-500 animate-pulse"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M12 8v4l3 3m9-9a9 9 0 11-18 0 9 9 0 0118 0z"
+              />
+            </svg>
+            <h2 className="text-2xl font-bold text-indigo-600 mt-4">Coming Soon!</h2>
+            <p className="text-gray-600 mt-2 text-center max-w-md">
+              We're working hard to bring you this content. Stay tuned!
+            </p>
+          </div>
+          
           )}
         </div>
 
         {/* Subtopics Section */}
-        {selectedTopic?.SubTopics?.length > 0 ||
-        selectedTopic?.PreviousSubTopics?.length > 0 ? (
+        {selectedTopic?.SubTopics?.length > 0 || selectedTopic?.PreviousSubTopics?.length > 0 ? (
           <div className="mt-10 bg-white rounded-2xl shadow-md p-6  w-full">
-            <h2 className="text-xl font-semibold text-indigo-700 mb-4">
-              SubTopics Covered:
-            </h2>
+            <h2 className="text-xl font-semibold text-indigo-700 mb-4">SubTopics Covered:</h2>
             <ul className="list-disc pl-6 space-y-2 text-gray-700">
               {selectedTopic?.SubTopics?.map((sub, index) => (
-                <li key={index} className="text-lg">
-                  {sub.subTopic}
-                </li>
+                <li key={index} className="text-lg">{sub.subTopic}</li>
               ))}
               {selectedTopic?.PreviousSubTopics?.map((prev, index) => (
                 <li key={`prev-${index}`} className="text-lg text-gray-500">
@@ -375,9 +314,7 @@ const SubjectDetails = () => {
               >
                 ✕
               </button>
-              <h2 className="text-2xl font-bold text-gray-800 mb-6 text-center">
-                Rate your session
-              </h2>
+              <h2 className="text-2xl font-bold text-gray-800 mb-6 text-center">Rate your session</h2>
               <div className="flex justify-center items-center mb-8 space-x-3">
                 {[1, 2, 3, 4, 5].map((star) => (
                   <button

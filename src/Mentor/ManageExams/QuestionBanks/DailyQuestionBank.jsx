@@ -13,8 +13,8 @@ export const DailyQuestionBank = () => {
   const location = localStorage.getItem("location");
   const mentorId = localStorage.getItem("Mentors");
 
-  const API_FETCH_SCHEDULE = `${process.env.REACT_APP_BACKEND_URL}/api/v1/fetch-daily-exam-syllabus`;
-  const API_CHECK_EXAM = `${process.env.REACT_APP_BACKEND_URL}/api/v1/check-exam-status`;
+  const API_FETCH_SCHEDULE = `${import.meta.env.VITE_BACKEND_URL}/api/v1/fetch-daily-exam-syllabus`;
+  const API_CHECK_EXAM = `${import.meta.env.VITE_BACKEND_URL}/api/v1/check-exam-status`;
 
   useEffect(() => {
     if (selectedBatch) {
@@ -93,7 +93,7 @@ export const DailyQuestionBank = () => {
 
     const requestBody = { subject: item.Subject, Tags };
 
-    const requestUrl = `${process.env.REACT_APP_BACKEND_URL}/api/v1/fetch-daily-question-bank`;
+    const requestUrl = `${import.meta.env.VITE_BACKEND_URL}/api/v1/fetch-daily-question-bank`;
 
     try {
       const response = await axios.post(requestUrl, requestBody, {

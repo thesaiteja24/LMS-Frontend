@@ -93,7 +93,7 @@ const ViewBatch = () => {
   const handleSave = async (batchId) => {
     setIsSaving(true);
     try {
-      await axios.put(`${process.env.REACT_APP_BACKEND_URL}/api/v1/batches`, {
+      await axios.put(`${import.meta.env.VITE_BACKEND_URL}/api/v1/batches`, {
         id: batchId,
         StartDate: editedData.StartDate,
         EndDate: editedData.EndDate,

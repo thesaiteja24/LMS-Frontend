@@ -112,7 +112,7 @@ const StudentAttendanceData = () => {
 
     setLoading(true);
     try {
-      const response = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/v1/getattends`, {
+      const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/v1/getattends`, {
         params: {
           location: selectedLocation,
           techStack: selectedTechStack,

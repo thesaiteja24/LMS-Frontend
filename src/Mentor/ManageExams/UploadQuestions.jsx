@@ -1,7 +1,7 @@
 import React, { useState, useRef } from "react";
 import * as XLSX from "xlsx";
 import axios from "axios";
-import {  toast } from "react-toastify";
+import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 const UploadQuestions = () => {
@@ -39,7 +39,7 @@ const UploadQuestions = () => {
         const jsonData = XLSX.utils.sheet_to_json(sheet);
 
         const response = await axios.post(
-          `${process.env.REACT_APP_BACKEND_URL}/api/v1/uploadquestions`,
+          `${import.meta.env.VITE_BACKEND_URL}/api/v1/uploadquestions`,
           jsonData,
           { headers: { "Content-Type": "application/json" } }
         );
@@ -80,6 +80,18 @@ const UploadQuestions = () => {
 
   return (
     <div className="upload-section bg-transparent shadow-md rounded-lg p-8 mx-auto max-w-2xl">
+      <ToastContainer
+        position="top-right"
+        autoClose={3000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="colored"
+      />
       <h3 className="text-2xl text-center font-semibold text-blue-800 mb-6">
         Upload Questions
       </h3>

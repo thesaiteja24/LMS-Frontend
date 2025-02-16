@@ -45,7 +45,7 @@ const AttendanceTableData = ({ searchQuery, onStudentSelect }) => {
     setLoading(true);
     setError("");
     try {
-      const response = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/v1/getattends`, {
+      const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/v1/getattends`, {
         params: {
           subject: selectedSubject,
           batch: selectedBatch,

@@ -3,6 +3,7 @@ import { useLocation } from "react-router-dom";
 import axios from "axios";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { ToastContainer } from "react-toastify";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPen, faTrash } from "@fortawesome/free-solid-svg-icons";
 import { useNavigate } from "react-router-dom";
@@ -59,7 +60,7 @@ export const SetExam = () => {
     const fetchValidDayOrders = async () => {
       try {
         const response = await axios.get(
-          `${process.env.REACT_APP_BACKEND_URL}/api/v1/validate-daily-dayorder?batch=${batchValue}&managerId=${managerId}&managerLocation=${managerLocation}`
+          `${import.meta.env.VITE_BACKEND_URL}/api/v1/validate-daily-dayorder?batch=${batchValue}&managerId=${managerId}&managerLocation=${managerLocation}`
         );
 
         if (examData?.data) {
@@ -283,7 +284,7 @@ export const SetExam = () => {
 
     try {
       await axios.post(
-        `${process.env.REACT_APP_BACKEND_URL}/api/v1/generate-exam-paper`,
+        `${import.meta.env.VITE_BACKEND_URL}/api/v1/generate-exam-paper`,
         newExam
       );
       toast.success("Exam Created Successfully!", {
@@ -371,6 +372,19 @@ export const SetExam = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-r from-blue-100 to-purple-100 flex items-center justify-center p-6">
+      <ToastContainer
+        position="top-right"
+        autoClose={3000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="colored"
+      />
+
       <div className="flex flex-col lg:flex-row lg:w-[90%] mx-auto gap-6 justify-center">
         {/* Left Panel - Setting up questions */}
         <div className="bg-white p-8 rounded-lg shadow-lg w-full lg:w-[60%]">

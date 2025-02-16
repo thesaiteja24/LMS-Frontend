@@ -12,7 +12,7 @@ export const WeeklyQuestionBank = () => {
   const mentorId = localStorage.getItem("Mentors");
 
   // Endpoint to fetch the exam syllabus data
-  const API_ENDPOINT = `${process.env.REACT_APP_BACKEND_URL}/api/v1/fetch-daily-exam-syllabus`;
+  const API_ENDPOINT = `${import.meta.env.VITE_BACKEND_URL}/api/v1/fetch-daily-exam-syllabus`;
 
   useEffect(() => {
     if (selectedBatch) {
@@ -90,7 +90,7 @@ export const WeeklyQuestionBank = () => {
     console.log("Request Payload:", JSON.stringify(requestBody, null, 2));
 
     // API endpoint for fetching questions (using the same endpoint as before)
-    const requestUrl = `${process.env.REACT_APP_BACKEND_URL}/api/v1/fetch-daily-question-bank`;
+    const requestUrl = `${import.meta.env.VITE_BACKEND_URL}/api/v1/fetch-daily-question-bank`;
 
     try {
       const response = await axios.post(requestUrl, requestBody, {

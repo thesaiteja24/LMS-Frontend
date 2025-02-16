@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { ToastContainer } from "react-toastify";
 
 export const ManagerExamDashboard = () => {
   const navigate = useNavigate();
@@ -38,7 +39,7 @@ export const ManagerExamDashboard = () => {
     try {
       // API call to fetch exam details for the batch
       const response = await axios.get(
-        `${process.env.REACT_APP_BACKEND_URL}/api/v1/get-daily-exam-details`,
+        `${import.meta.env.VITE_BACKEND_URL}/api/v1/get-daily-exam-details`,
         {
           params: { batch: batch.Batch }, // Pass batch as query parameter
         }
@@ -68,6 +69,18 @@ export const ManagerExamDashboard = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-purple-50 flex flex-col items-center p-6">
+      <ToastContainer
+        position="top-right"
+        autoClose={3000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="colored"
+      />
       <h1 className="text-4xl font-extrabold text-center text-gray-800 mb-8">
         <span className="bg-black bg-clip-text">Scheduling Exam</span>
       </h1>
