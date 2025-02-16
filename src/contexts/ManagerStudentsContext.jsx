@@ -19,7 +19,7 @@ export const StudentsManageProvider = ({ children }) => {
     setError(null);
 
     try {
-      const response = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/v1/stdlocations`, {
+      const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/v1/stdlocations`, {
         params: { location }, // Use stored location
       });
 

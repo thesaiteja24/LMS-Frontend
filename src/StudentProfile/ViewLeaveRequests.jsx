@@ -14,7 +14,7 @@ const ViewLeaveRequests = () => {
     try {
       const { studentId, location } = studentDetails;
       const response = await axios.get(
-        `${process.env.REACT_APP_BACKEND_URL}/api/v1/stdleave`,
+        `${import.meta.env.VITE_BACKEND_URL}/api/v1/stdleave`,
         { params: { studentId, location } }
       );
       setLeaveRequests(response.data.leaves || []);

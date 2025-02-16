@@ -37,7 +37,7 @@ const CreateExam = () => {
             }
         
         try {
-            const response = await axios.post(`${process.env.REACT_APP_BACKEND_URL}/api/v1/createxam`,payload );
+            const response = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/v1/createxam`,payload );
             if (response.data.success) {
                 navigate(`/add-questions/${examId}`, {replace:true});
             } else {

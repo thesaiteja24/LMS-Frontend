@@ -14,7 +14,7 @@ export const UniqueBatchesProvider = ({ children }) => {
     if (batches.length > 0) return; // Prevent unnecessary fetches
     setLoading(true);
     try {
-      const response = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/v1/batches`, {
+      const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/v1/batches`, {
         params: { location }, 
       });
       setBatches(response.data.data);

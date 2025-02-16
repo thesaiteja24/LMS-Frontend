@@ -26,7 +26,7 @@ const StudentLocationWise = () => {
       setAttendance([]);
   
       // Construct the URL with query parameters
-      const apiUrl = `${process.env.REACT_APP_BACKEND_URL}/api/v1/searchstudent?studentId=${id}&location=${location}`;
+      const apiUrl = `${import.meta.env.VITE_BACKEND_URL}/api/v1/searchstudent?studentId=${id}&location=${location}`;
   
       // API call using GET method
       const response = await axios.get(apiUrl);

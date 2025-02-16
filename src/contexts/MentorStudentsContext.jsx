@@ -33,7 +33,7 @@ export const StudentsMentorProvider = ({ children }) => {
       }
 
       const response = await axios.get(
-        `${process.env.REACT_APP_BACKEND_URL}/api/v1/mentorstds`,
+        `${import.meta.env.VITE_BACKEND_URL}/api/v1/mentorstds`,
         { params: { location, mentorId: mentorId,batch:selectedBatch } }
       );
 

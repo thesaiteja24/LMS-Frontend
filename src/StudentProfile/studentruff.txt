@@ -39,7 +39,7 @@ export default function StudentProfile() {
   useEffect(() => {
     const fetchStudentDetails = async () => {
       try {
-        const response = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/v1/getstudentdetails?student_id=${student_id}`);
+        const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/v1/getstudentdetails?student_id=${student_id}`);
         console.log("profile component", response.data);
         setStudentDetails(response.data);
         setLoading(false);
@@ -61,7 +61,7 @@ export default function StudentProfile() {
         return;
       }
       const response = await axios.post(
-        `${process.env.REACT_APP_BACKEND_URL}/api/v1/updateresume`,
+        `${import.meta.env.VITE_BACKEND_URL}/api/v1/updateresume`,
         { resume: file, student_id },
         {
           headers: {

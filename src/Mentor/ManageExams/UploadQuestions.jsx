@@ -39,7 +39,7 @@ const UploadQuestions = () => {
         const jsonData = XLSX.utils.sheet_to_json(sheet);
 
         const response = await axios.post(
-          `${process.env.REACT_APP_BACKEND_URL}/api/v1/uploadquestions`,
+          `${import.meta.env.VITE_BACKEND_URL}/api/v1/uploadquestions`,
           jsonData,
           { headers: { "Content-Type": "application/json" } }
         );

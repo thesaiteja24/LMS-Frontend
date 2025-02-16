@@ -60,7 +60,7 @@ export const SetExam = () => {
     const fetchValidDayOrders = async () => {
       try {
         const response = await axios.get(
-          `${process.env.REACT_APP_BACKEND_URL}/api/v1/validate-daily-dayorder?batch=${batchValue}&managerId=${managerId}&managerLocation=${managerLocation}`
+          `${import.meta.env.VITE_BACKEND_URL}/api/v1/validate-daily-dayorder?batch=${batchValue}&managerId=${managerId}&managerLocation=${managerLocation}`
         );
 
         if (examData?.data) {
@@ -284,7 +284,7 @@ export const SetExam = () => {
 
     try {
       await axios.post(
-        `${process.env.REACT_APP_BACKEND_URL}/api/v1/generate-exam-paper`,
+        `${import.meta.env.VITE_BACKEND_URL}/api/v1/generate-exam-paper`,
         newExam
       );
       toast.success("Exam Created Successfully!", {

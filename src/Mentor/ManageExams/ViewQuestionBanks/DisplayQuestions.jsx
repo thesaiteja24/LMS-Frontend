@@ -68,7 +68,7 @@ const DisplayQuestions = () => {
 
     try {
       const response = await axios.post(
-        `${process.env.REACT_APP_BACKEND_URL}/api/v1/store-daily-exam-questions`,
+        `${import.meta.env.VITE_BACKEND_URL}/api/v1/store-daily-exam-questions`,
         payload,
         {
           headers: {

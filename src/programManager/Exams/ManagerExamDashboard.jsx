@@ -39,7 +39,7 @@ export const ManagerExamDashboard = () => {
     try {
       // API call to fetch exam details for the batch
       const response = await axios.get(
-        `${process.env.REACT_APP_BACKEND_URL}/api/v1/get-daily-exam-details`,
+        `${import.meta.env.VITE_BACKEND_URL}/api/v1/get-daily-exam-details`,
         {
           params: { batch: batch.Batch }, // Pass batch as query parameter
         }

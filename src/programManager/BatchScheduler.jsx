@@ -167,7 +167,7 @@ const BatchScheduler = () => {
     try {
 
       const response = await axios.put(
-        `${process.env.REACT_APP_BACKEND_URL}/api/v1/schedule`,
+        `${import.meta.env.VITE_BACKEND_URL}/api/v1/schedule`,
         updatedRow
       ); 
       if (response.status === 200) {
@@ -217,7 +217,7 @@ const BatchScheduler = () => {
   const fetchMentors = useCallback (async () => {
     setLoadingMentors(true);
     try {
-      const response = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/v1/schedule`, {
+      const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/v1/schedule`, {
         params: { location },
       });
       
@@ -307,7 +307,7 @@ const BatchScheduler = () => {
   setLoadingAddSchedule(true);
 
     try {
-      await axios.post(`${process.env.REACT_APP_BACKEND_URL}/api/v1/schedule`, newBatch);
+      await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/v1/schedule`, newBatch);
       Swal.fire({
         icon: "success",
         title: "Batch Added",
@@ -537,7 +537,7 @@ const BatchScheduler = () => {
       {showTable && <Table
         data={scheduleData}
         onEditRow={handleEditRow}
-        // deleteApi={`${process.env.REACT_APP_BACKEND_URL}/api/v1/schedule`}
+        // deleteApi={`${import.meta.env.VITE_BACKEND_URL}/api/v1/schedule`}
       />}
     </div>
   );

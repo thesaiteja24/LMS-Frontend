@@ -24,7 +24,7 @@ export const DailyProvider = ({ children }) => {
 
       try {
         console.log(`Fetching exam details for batch: ${batchNo}, student: ${studentId}, date: ${today}`);
-        const response = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/v1/viewexam`, {
+        const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/v1/viewexam`, {
           params: { batchNo, studentId, Date: today },
         });
 

@@ -38,7 +38,7 @@ const Table = ({ data, onEditRow }) => {
   
       if (result.isConfirmed) {
         // Using Axios to delete the row
-        const response = await axios.delete(`${process.env.REACT_APP_BACKEND_URL}/api/v1/schedule`, {
+        const response = await axios.delete(`${import.meta.env.VITE_BACKEND_URL}/api/v1/schedule`, {
           params: { id },
         });
   
