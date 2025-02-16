@@ -12,14 +12,8 @@ export const StudentsMentorProvider = ({ children }) => {
   const [classes, setClasses] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-   const [location, setLocation] = useState(localStorage.getItem("location"));
 
-   useEffect(() => {
-    const storedLocation = localStorage.getItem("location");
-    if (storedLocation) {
-      setLocation(storedLocation);
-    }
-  }, []);
+ const location = localStorage.getItem("location")
 
   const fetchMentorStudents = useCallback(async (selectedBatch) => {
     setLoading(true);
@@ -49,9 +43,7 @@ export const StudentsMentorProvider = ({ children }) => {
     }
   }, [location]);
 
-  // useEffect(() => {
-  //   fetchMentorStudents();
-  // }, [fetchMentorStudents]);
+
 
   const contextValue = useMemo(
     () => ({

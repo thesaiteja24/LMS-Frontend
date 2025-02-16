@@ -16,7 +16,7 @@ const MentorBatches = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        await fetchMentorStudents();
+        await fetchMentorStudents(selectedBatch);
       } catch (error) {
         console.error("Error fetching mentor data:", error);
       } finally {

@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
+import axios from "axios";
 import {
   FaBars,
   FaChevronLeft,
@@ -18,6 +19,7 @@ import {
   FaChalkboardTeacher,
   FaBookOpen,
   FaTachometerAlt,
+  FaUserCircle,
 } from "react-icons/fa";
 import { IoMdCloudUpload } from "react-icons/io";
 import { TbReportAnalytics } from "react-icons/tb";
@@ -25,22 +27,65 @@ import { PiExam } from "react-icons/pi";
 import { MdOutlineRequestQuote } from "react-icons/md";
 import { useLocation, useNavigate } from "react-router-dom";
 import classNames from "classnames";
- 
+import { useStudent } from "../contexts/StudentProfileContext";
+
 export const SidebarV = ({ setIsAuthenticated }) => {
   const location = useLocation();
   const navigate = useNavigate();
+  const { studentDetails, loading } = useStudent();
+  const [profilePicture, setProfilePicture] = useState(null);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isCollapsed, setIsCollapsed] = useState(false);
-  const userType = localStorage.getItem("userType") || "null";
   const [isLoggedOut, setIsLoggedOut] = useState(false);
 
+  const userType = localStorage.getItem("userType") || "null";
+
   const roleDisplayNames = {
-    student_login_details: "Student",
-    Mentors: "Mentor",
-    BDE_data: "Business Development Executive",
-    Manager: "Program Manager",
-    admin: "Admin",
-    superAdmin: "Admin",
+    student_login_details: "STUDENT",
+    Mentors: "MENTOR",
+    BDE_data: "BDE",
+    Manager: "MANAGER",
+    admin: "ADMIN",
+    superAdmin: "ADMIN",
+  };
+
+  const fetchProfilePicture = useCallback(async () => {
+    try {
+      if (!studentDetails || !studentDetails.studentId) {
+        console.error("❌ Student ID is missing in studentDetails.");
+        return;
+      }
+      const response = await axios.get(
+        `${import.meta.env.VITE_BACKEND_URL}/api/v1/pic`,
+        {
+          params: { student_id: studentDetails.studentId },
+          responseType: "blob",
+        }
+      );
+      const contentType = response.headers["content-type"];
+      if (contentType.includes("image/png") || contentType.includes("image/jpeg")) {
+        const imageUrl = URL.createObjectURL(response.data);
+        setProfilePicture(imageUrl);
+      } else {
+        console.error("❌ Unsupported file type received:", contentType);
+      }
+    } catch (error) {
+      console.error("❌ Error fetching profile picture:", error);
+    }
+  }, [studentDetails]);
+
+  useEffect(() => {
+    if (!studentDetails || !studentDetails.studentId) {
+      console.warn("⚠️ Waiting for student details to load...");
+      return;
+    }
+    fetchProfilePicture();
+  }, [studentDetails, fetchProfilePicture]);
+
+  const userProfile = {
+    avatarUrl: profilePicture,
+    name: studentDetails?.name,
+    id: studentDetails?.studentId,
   };
 
   useEffect(() => {
@@ -52,14 +97,13 @@ export const SidebarV = ({ setIsAuthenticated }) => {
   }, [isMobileMenuOpen]);
 
   const handleLogout = () => {
-    localStorage.clear(); // Clear user data
-    setIsAuthenticated(false); // Update state
+    localStorage.clear();
+    setIsAuthenticated(false);
     setIsLoggedOut(true);
-    navigate("/", { replace: true }); // Redirect to home
+    navigate("/", { replace: true });
   };
 
   const handleNavigation = (path) => {
-    console.log("Navigating to:", path); // ✅ Debugging Log
     navigate(path);
     setIsMobileMenuOpen(false);
   };
@@ -71,160 +115,73 @@ export const SidebarV = ({ setIsAuthenticated }) => {
           { label: "Profile", path: "/student-profile", icon: FaUser },
           { label: "Jobs List", path: "/jobslist", icon: FaBook },
           { label: "Course", path: "/courses", icon: FaClipboard },
-
-          { label: "Exams", path: "/exam-dashboard", icon: FaFileAlt },
-          // { label: "ATS", path: "/ats-upload", icon: FaLayerGroup },
+          { label: "Exams", path: "/exam-dashboard", icon: FaFileAlt },
           { label: "Temp", path: "/parent", icon: FaFileAlt },
-          {
-            label: "Mock Interviews",
-            path: "/mock-interviews",
-            icon: FaMicrophoneAlt,
-          },
-          {
-            label: "Leave Request",
-            path: "/leave-request-page",
-            icon: MdOutlineRequestQuote,
-          },
-
+          { label: "Mock Interviews", path: "/mock-interviews", icon: FaMicrophoneAlt },
+          { label: "Leave Request", path: "/leave-request-page", icon: MdOutlineRequestQuote },
           { label: "Logout", action: handleLogout, icon: FaSignOutAlt },
         ];
-
       case "super":
         return [
-          {
-            label: "Admin Dashboard",
-            path: "/admin-dashboard",
-            icon: FaChartBar,
-          },
-          {
-            label: "Manager Dashboard",
-            path: "/manager-dashboard",
-            icon: FaTachometerAlt,
-          },
+          { label: "Admin Dashboard", path: "/admin-dashboard", icon: FaChartBar },
+          { label: "Manager Dashboard", path: "/manager-dashboard", icon: FaTachometerAlt },
           { label: "Manage Jobs List", path: "/jobs-dashboard", icon: FaBook },
           { label: "Students List", path: "/studentslist", icon: FaUsers },
           { label: "Student Search", path: "/studentsearch", icon: FaSearch },
           { label: "Logout", action: handleLogout, icon: FaSignOutAlt },
         ];
-
       case "superAdmin":
         return [
-          {
-            label: "Admin Dashboard",
-            path: "/admin-dashboard",
-            icon: FaChartBar,
-          },
-          {
-            label: "Manager Dashboard",
-            path: "/manager-dashboard",
-            icon: FaTachometerAlt,
-          },
+          { label: "Admin Dashboard", path: "/admin-dashboard", icon: FaChartBar },
+          { label: "Manager Dashboard", path: "/manager-dashboard", icon: FaTachometerAlt },
           { label: "Manage BDEs", path: "/bdes", icon: FaBriefcase },
-          {
-            label: "Manage Mentors",
-            path: "/mentors",
-            icon: FaChalkboardTeacher,
-          },
-          {
-            label: "Manage Program Managers",
-            path: "/program-managers",
-            icon: FaSchool,
-          },
+          { label: "Manage Mentors", path: "/mentors", icon: FaChalkboardTeacher },
+          { label: "Manage Program Managers", path: "/program-managers", icon: FaSchool },
           { label: "Students List", path: "/studentslist", icon: FaUsers },
           { label: "Student Search", path: "/studentsearch", icon: FaSearch },
           { label: "Curriculum", path: "/curriculum", icon: FaBookOpen },
-          {
-            label: "Manage Jobs List",
-            path: "/jobs-dashboard",
-            icon: FaLayerGroup,
-          },
+          { label: "Manage Jobs List", path: "/jobs-dashboard", icon: FaLayerGroup },
           { label: "Logout", action: handleLogout, icon: FaSignOutAlt },
         ];
-
       case "BDE_data":
         return [
           { label: "Add Job", path: "/addjob", icon: FaPlusSquare },
-          {
-            label: "Students List",
-            path: "/managestudentslist",
-            icon: FaUsers,
-          },
+          { label: "Students List", path: "/managestudentslist", icon: FaUsers },
           { label: "Student Data", path: "/studentdata", icon: FaSearch },
-          {
-            label: "Manage Jobs List",
-            path: "/jobs-dashboard",
-            icon: FaLayerGroup,
-          },
+          { label: "Manage Jobs List", path: "/jobs-dashboard", icon: FaLayerGroup },
           { label: "Logout", action: handleLogout, icon: FaSignOutAlt },
         ];
-
       case "Mentors":
         return [
-          {
-            label: "Mentor Dashboard",
-            path: "/mentor-dashboard",
-            icon: FaTachometerAlt,
-          },
+          { label: "Mentor Dashboard", path: "/mentor-dashboard", icon: FaTachometerAlt },
           { label: "Courses", path: "/course", icon: FaChalkboardTeacher },
           { label: "Attendance", path: "/attendance", icon: FaClipboard },
           { label: "Student List", path: "/mentorstudentslist", icon: FaUsers },
-
-          {
-            label: "Upload Questions",
-            path: "/upload-questions",
-            icon: IoMdCloudUpload,
-          },
-          {
-            label: "Reports",
-            path: "/mentor-reports",
-            icon: TbReportAnalytics,
-          },
-
+          { label: "Upload Questions", path: "/upload-questions", icon: IoMdCloudUpload },
+          { label: "Reports", path: "/mentor-reports", icon: TbReportAnalytics },
           { label: "Logout", action: handleLogout, icon: FaSignOutAlt },
         ];
-
       case "Manager":
         return [
-          {
-            label: "Manager Dashboard",
-            path: "/manager-dashboard",
-            icon: FaTachometerAlt,
-          },
-          {
-            label: "Students List",
-            path: "/managestudentslist",
-            icon: FaUsers,
-          },
+          { label: "Manager Dashboard", path: "/manager-dashboard", icon: FaTachometerAlt },
+          { label: "Students List", path: "/managestudentslist", icon: FaUsers },
           { label: "Student Data", path: "/studentdata", icon: FaSearch },
-          {
-            label: "Manage Jobs List",
-            path: "/jobs-dashboard",
-            icon: FaLayerGroup,
-          },
-          {
-            label: "Student Enrollment",
-            path: "/student-enroll",
-            icon: FaSchool,
-          },
-          {
-            label: "Student Attendance",
-            path: "/studentattendance",
-            icon: FaClipboard,
-          },
+          { label: "Manage Jobs List", path: "/jobs-dashboard", icon: FaLayerGroup },
+          { label: "Student Enrollment", path: "/student-enroll", icon: FaSchool },
+          { label: "Student Attendance", path: "/studentattendance", icon: FaClipboard },
           { label: "Batch Schedule", path: "/batchschedule", icon: FaUsers },
           { label: "Create Batch", path: "/createbatch", icon: FaPlusSquare },
-
           { label: "Scheduling Exam", path: "/create-exam", icon: PiExam },
-
           { label: "Logout", action: handleLogout, icon: FaSignOutAlt },
         ];
-
       default:
         return [];
     }
   };
 
-  const menuItems = getMenuItems(userType, handleLogout);
+  const allMenuItems = getMenuItems(userType, handleLogout);
+  const menuItems = allMenuItems.filter((item) => item.label !== "Logout");
+  const logoutItem = allMenuItems.find((item) => item.label === "Logout");
 
   const isLoggedIn = !!localStorage.getItem("userType") && !isLoggedOut;
   if (!isLoggedIn) {
@@ -249,23 +206,23 @@ export const SidebarV = ({ setIsAuthenticated }) => {
       </div>
     );
   }
+
   const MenuItem = ({ icon: Icon, label, path, action, subItems }) => {
     const [isSubMenuOpen, setIsSubMenuOpen] = useState(false);
     const isActive = location.pathname === path;
-
     return (
       <>
         <button
           className={classNames(
             "flex items-center gap-3 px-4 py-2 text-sm font-medium rounded-md transition-colors w-full",
             {
-              "bg-indigo-600 text-white": isActive,
-              "text-white hover:bg-indigo-700 hover:text-white": !isActive,
+              "bg-[#ffffff] text-[#0C1BAA] font-semibold rounded-md": isActive,
+              "text-[#ffffff] hover:bg-[#ffffff] hover:text-[#0C1BAA] font-semibold": !isActive,
             }
           )}
           onClick={() => {
             if (action) {
-              action(); // ✅ Executes handleLogout if it's the Logout button
+              action();
             } else if (subItems) {
               setIsSubMenuOpen((prev) => !prev);
             } else {
@@ -274,9 +231,7 @@ export const SidebarV = ({ setIsAuthenticated }) => {
           }}
         >
           <Icon size={18} />
-          <span
-            className={classNames({ hidden: isCollapsed, block: !isCollapsed })}
-          >
+          <span className={classNames({ hidden: isCollapsed, block: !isCollapsed })}>
             {label}
           </span>
           {subItems && (
@@ -284,6 +239,7 @@ export const SidebarV = ({ setIsAuthenticated }) => {
               className={classNames("ml-auto transition-transform", {
                 "rotate-90": isSubMenuOpen,
               })}
+              size={16}
             />
           )}
         </button>
@@ -292,7 +248,7 @@ export const SidebarV = ({ setIsAuthenticated }) => {
             {subItems.map((subItem, subIndex) => (
               <button
                 key={subIndex}
-                className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-white rounded-md hover:bg-indigo-700 transition-colors w-full"
+                className="flex items-center gap-2 px-3 py-2 text-sm font-bold text-[#ffffff] rounded-md hover:bg-[#ffffff] hover:text-[#0C1BAA] transition-colors w-full"
                 onClick={() => handleNavigation(subItem.path)}
               >
                 <subItem.icon size={16} />
@@ -307,45 +263,61 @@ export const SidebarV = ({ setIsAuthenticated }) => {
 
   return (
     <>
-      <div className="flex justify-between items-center  px-4  bg-white text-white">
-        <img
-          src="https://res.cloudinary.com/db2bpf0xw/image/upload/v1734849439/codegnan-logo_qxnxrq.webp"
-          alt="Codegnan Logo"
-          className="max-w-[200px] max-h-[90px] object-contain"
-        />
-
+      <div className="flex items-center px-4 bg-[#ffffff] text-black">
         <button
-          className="p-2 rounded-md bg-black text-white"
+          className="p-2 rounded-md bg-black text-[#ffffff] mr-2"
           onClick={() => setIsMobileMenuOpen((prev) => !prev)}
           aria-expanded={isMobileMenuOpen}
           aria-label="Toggle sidebar"
         >
           <FaBars size={20} />
         </button>
+        <img
+          src="https://res.cloudinary.com/db2bpf0xw/image/upload/v1734849439/codegnan-logo_qxnxrq.webp"
+          alt="Codegnan Logo"
+          className="max-w-[200px] max-h-[90px] object-contain"
+        />
       </div>
       <div
         className={classNames(
-          "fixed inset-y-0 right-0 z-40 bg-gray-900 text-white transition-transform duration-300 w-64 overflow-y-auto", // Changed left-0 to right-0
+          "fixed inset-y-0 left-0 z-40 bg-[#0C1BAA] text-[#ffffff] font-bold transition-transform duration-300 flex flex-col",
+          isCollapsed ? "w-16" : "w-64",
           {
-            "translate-x-0": isMobileMenuOpen, // Sidebar visible
-            "translate-x-full": !isMobileMenuOpen, // Sidebar hidden offscreen
+            "translate-x-0": isMobileMenuOpen,
+            "-translate-x-full": !isMobileMenuOpen,
           }
         )}
       >
-        <div className="p-4">
-          <button
-            className="flex items-center justify-between w-full text-white"
-            onClick={() => setIsCollapsed((prev) => !prev)}
-          >
-            <span>{roleDisplayNames[userType]}</span>
-            <FaChevronLeft
-              className={classNames("transition-transform", {
-                "rotate-180": !isCollapsed,
-              })}
+        <button
+          className="mt-4 mb-2 flex items-center justify-center text-white focus:outline-none"
+          onClick={() => setIsCollapsed((prev) => !prev)}
+        >
+          {!isCollapsed && (
+            <span className="mr-2 text-xl font-bold">{roleDisplayNames[userType]}</span>
+          )}
+          <FaChevronLeft
+            className={classNames("transition-transform", {
+              "rotate-180": !isCollapsed,
+            })}
+            size={24}
+          />
+        </button>
+        {userType === "student_login_details" && (
+          <div className="flex flex-col items-center justify-center w-full py-4 px-2 bg-[#0A158F]">
+            <img
+              src={userProfile.avatarUrl}
+              alt={userProfile.name}
+              className="w-16 h-16 rounded-full object-cover"
             />
-          </button>
-        </div>
-        <div className="mt-6 space-y-2">
+            {!isCollapsed && (
+              <div className="mt-2 text-center">
+                <h2 className="font-semibold text-base">{userProfile.name}</h2>
+                <p className="text-sm opacity-90">ID : {userProfile.id}</p>
+              </div>
+            )}
+          </div>
+        )}
+        <div className="flex-grow flex flex-col space-y-2 w-full mt-2 px-2">
           {menuItems.map((item, index) => (
             <MenuItem
               key={index}
@@ -357,6 +329,24 @@ export const SidebarV = ({ setIsAuthenticated }) => {
             />
           ))}
         </div>
+        {logoutItem && (
+  <div className="px-2 pb-4 mt-auto">
+    <button
+      className={classNames(
+        "flex items-center gap-3 px-4 py-2 text-sm font-semibold rounded-md transition-colors w-full",
+        "bg-[#0C1BAA] text-[#ffffff] hover:bg-[#ffffff] hover:text-[#0C1BAA]"
+      )}
+      onClick={logoutItem.action}
+    >
+      <logoutItem.icon size={18} />
+      <span className={classNames({ hidden: isCollapsed, block: !isCollapsed })}>
+        {logoutItem.label}
+      </span>
+    </button>
+  </div>
+)}
+
+
       </div>
       {isMobileMenuOpen && (
         <div

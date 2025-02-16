@@ -20,7 +20,7 @@ const AttendanceTable = () => {
   const [searchQuery, setSearchQuery] = useState(""); // Search query
 
   useEffect(() => {
-    fetchMentorStudents();
+    fetchMentorStudents(selectedBatch);
   }, [fetchMentorStudents]);
 
   useEffect(() => {
