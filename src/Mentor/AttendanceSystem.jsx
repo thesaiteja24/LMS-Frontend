@@ -23,7 +23,7 @@ export default function AttendanceSystem() {
   const location = localStorage.getItem("location");
 
   useEffect(() => {
-    fetchMentorStudents();
+    fetchMentorStudents(selectedBatch);
   }, [fetchMentorStudents]);
 
   // Extract subjects and batches from scheduleData

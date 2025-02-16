@@ -14,7 +14,7 @@ const Course = () => {
   const [selectedBatch, setSelectedBatch] = useState(""); // Add this at the top
 
   useEffect(() => {
-    fetchMentorStudents();
+    fetchMentorStudents(selectedBatch);
   }, [fetchMentorStudents]);
 
   useEffect(() => {
