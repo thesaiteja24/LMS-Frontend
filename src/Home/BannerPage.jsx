@@ -7,13 +7,7 @@ const StatsChart = React.lazy(() => import("./StatsChart"));
 const BannerPage = () => {
   const { dashboardData, loading } = useDashboard();
   const [count,setCount] =useState(0)
-  // const [isPlayerVisible, setIsPlayerVisible] = useState(false);
 
-  // const handleVideoLoad = () => {
-  //   setIsPlayerVisible(true);
-  // };
-
-  // const videoId = "uTBlsOoiMQs"; 
 
   useEffect(() => {
     if (!loading && dashboardData) {
@@ -21,7 +15,7 @@ const BannerPage = () => {
         (acc, value) => acc + value,
         0
       );
-      setCount(totalPlaced===0?3500:totalPlaced); // Update state when data is available
+      setCount(totalPlaced===0?3500:totalPlaced); 
     }
   }, [dashboardData, loading]);
   
