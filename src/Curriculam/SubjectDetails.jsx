@@ -41,7 +41,7 @@ const SubjectDetails = () => {
     setError("");
     try {
       const response = await axios.get(
-        `${process.env.REACT_APP_BACKEND_URL}/api/v1/stdcurriculum`,
+        `${import.meta.env.VITE_BACKEND_URL}/api/v1/stdcurriculum`,
         { params: { location: localStorage.getItem("location"), batchNo: studentDetails.BatchNo, subject } }
       );
       const curriculumData = response.data.std_curiculum || [];
@@ -57,7 +57,7 @@ const SubjectDetails = () => {
   const fetchMentorSyllabus = async (subject) => {
     try {
       const response = await axios.get(
-        `${process.env.REACT_APP_BACKEND_URL}/api/v1/mentorsyllabus`,
+        `${import.meta.env.VITE_BACKEND_URL}/api/v1/mentorsyllabus`,
         { params: { subject, location: localStorage.getItem("location"), batches: studentDetails.BatchNo } }
       );
       setMentorSyllabus(response.data.curriculum || []);

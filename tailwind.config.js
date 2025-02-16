@@ -1,16 +1,8 @@
-module.exports = {
-  content: ['./src/**/*.{html,js,jsx,ts,tsx}'], // Adjust paths based on your project structure
+/** @type {import('tailwindcss').Config} */
+export default {
+  content: ["./index.html", "./src/**/*.{js,ts,jsx,tsx}"],
   theme: {
-    extend: {
-      colors: {
-        "primary-blue": "#0059a0",
-        "secondary-purple": "#4f46e5",
-      },
-      animation: {
-        pulse: "pulse 2s infinite",
-        bounce: "bounce 2s infinite",
-      },
-    },
+    extend: {},
   },
   plugins: [],
 };

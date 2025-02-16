@@ -470,7 +470,7 @@ function ConductExam() {
       toast.info("Submitting your exam, please wait...");
 
       const response = await axios.post(
-        `${process.env.REACT_APP_BACKEND_URL}/api/v1/submit-exam`,
+        `${import.meta.env.VITE_BACKEND_URL}/api/v1/submit-exam`,
         responses,
         { headers: { "Content-Type": "application/json" } }
       );

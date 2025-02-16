@@ -55,7 +55,7 @@ const CurriculumManagement = () => {
  
   const fetchCurriculumData = useCallback( async () => {
     try {
-      const response = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/v1/syllabus`);
+      const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/v1/syllabus`);
       if (response.status === 200 && response.data?.data) {
         const formattedData = response.data.data.map((item) => ({
           ...item,
@@ -148,7 +148,7 @@ const CurriculumManagement = () => {
         didOpen: () => Swal.showLoading(),
       });
 
-      const response = await axios.post(`${process.env.REACT_APP_BACKEND_URL}/api/v1/syllabus`, newCurriculum);
+      const response = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/v1/syllabus`, newCurriculum);
       if (response.status === 200) {
         Swal.fire({
           icon: "success",
@@ -329,7 +329,7 @@ const CurriculumManagement = () => {
     }
     try {
       setIsSubmitting(true);
-      const response = await axios.post(`${process.env.REACT_APP_BACKEND_URL}/api/v1/syllabus`, excelData);
+      const response = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/v1/syllabus`, excelData);
       if (response.status === 200) {
         Swal.fire({
           icon: "success",

@@ -21,7 +21,7 @@ const AddQuestions = () => {
     useEffect(() => {
         const fetchExamDetails = async () => {
             try {
-                const response = await axios.get(`${process.env.REACT_APP_BACKEND_URL}api/v1/getexam/${examId}`);
+                const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}api/v1/getexam/${examId}`);
                 if (response.data.success) {
                     setTotalScore(response.data.exam.totalScore);
                     setAllocatedScore(response.data.exam.totalAllocatedScore || 0);
@@ -75,7 +75,7 @@ const AddQuestions = () => {
                           examId,
                       };
 
-            const response = await axios.post(`${process.env.REACT_APP_BACKEND_URL}/api/v1/add-question`, payload);
+            const response = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/v1/add-question`, payload);
 
             if (response.data.success) {
                 setSuccessMessage("Question added successfully!");

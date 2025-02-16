@@ -46,7 +46,7 @@ export default function AttendanceSystem() {
       const payload = { batches, subject, location };
       try {
         const response = await axios.post(
-          `${process.env.REACT_APP_BACKEND_URL}/api/v1/attend`,
+          `${import.meta.env.VITE_BACKEND_URL}/api/v1/attend`,
           payload
         );
 
@@ -124,7 +124,7 @@ export default function AttendanceSystem() {
 
     try {
       const checkResponse = await axios.post(
-        `${process.env.REACT_APP_BACKEND_URL}/api/v1/attendcheck`,
+        `${import.meta.env.VITE_BACKEND_URL}/api/v1/attendcheck`,
         { subject: selectedSubject, batch: selectedBatch, date: checkDate }
       );
 
@@ -138,7 +138,7 @@ export default function AttendanceSystem() {
       }
 
       const response = await axios.post(
-        `${process.env.REACT_APP_BACKEND_URL}/api/v1/attendance`,
+        `${import.meta.env.VITE_BACKEND_URL}/api/v1/attendance`,
         payload
       );
 

@@ -18,7 +18,7 @@ const LiveClasses = () => {
 
     setLoading(true);
     try {
-      const url = `${process.env.REACT_APP_BACKEND_URL}/api/v1/schedule`;
+      const url = `${import.meta.env.VITE_BACKEND_URL}/api/v1/schedule`;
       const response = await axios.get(url, { params: { location: storedLocation } });
 
       const classes = response.data.schedule_data.map((classItem) => {

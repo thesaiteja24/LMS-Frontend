@@ -330,7 +330,7 @@ const [showCPassword, setShowCPassword] = useState(false);
     
         try {
             const response = await axios.post(
-                `${process.env.REACT_APP_BACKEND_URL}/api/v1/signup`,
+                `${import.meta.env.VITE_BACKEND_URL}/api/v1/signup`,
                 {
                     name: formData.name,
                     email: email,
@@ -371,7 +371,7 @@ const [showCPassword, setShowCPassword] = useState(false);
             
                 try {
                     const atsResponse = await axios.post(
-                        `${process.env.REACT_APP_BACKEND_URL}/api/v1/atscheck`,
+                        `${import.meta.env.VITE_BACKEND_URL}/api/v1/atscheck`,
                         resumeFormData,
                         { headers: { "Content-Type": "multipart/form-data" } }
                     );

@@ -27,7 +27,7 @@ const ExamPage = () => {
   const fetchQuestions = useCallback( async () => {
     try {
       setLoading(true);
-      const response = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/v1/questions`, {
+      const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/v1/questions`, {
         params: { batchNo },
       });
 
@@ -135,7 +135,7 @@ const ExamPage = () => {
     const totalScore = formattedData.reduce((acc, question) => acc + (question?.score || 0), 0);
 
     try {
-      await axios.post(`${process.env.REACT_APP_BACKEND_URL}/api/v1/answers`, {
+      await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/v1/answers`, {
         studentId,
         totalScore,
         batchNo,

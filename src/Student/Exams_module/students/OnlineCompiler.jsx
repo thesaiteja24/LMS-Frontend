@@ -110,7 +110,7 @@ const OnlineCompiler = () => {
 
     try {
       const response = await fetch(
-        `${process.env.REACT_APP_BACKEND_URL}/api/v1/submissions`,
+        `${import.meta.env.VITE_BACKEND_URL}/api/v1/submissions`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },

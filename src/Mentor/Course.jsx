@@ -43,7 +43,7 @@ const Course = () => {
     if (selectedSubject && selectedBatch && location) {
       try {
         const response = await axios.get(
-          `${process.env.REACT_APP_BACKEND_URL}/api/v1/mentorsyllabus`,
+          `${import.meta.env.VITE_BACKEND_URL}/api/v1/mentorsyllabus`,
           {
             params: {
               subject: selectedSubject,

@@ -30,7 +30,7 @@ const ExamDashboard = () => {
       try {
         setLoading(true);
         const response = await axios.get(
-          `${process.env.REACT_APP_BACKEND_URL}/api/v1/get-available-exams?batch=${batch}&location=${location}`
+          `${import.meta.env.VITE_BACKEND_URL}/api/v1/get-available-exams?batch=${batch}&location=${location}`
         );
         if (response.data.success) {
           setExams(response.data.exams);
@@ -55,7 +55,7 @@ const ExamDashboard = () => {
       try {
         setStatusLoading(true);
         const response = await axios.get(
-          `${process.env.REACT_APP_BACKEND_URL}/api/v1/exam-status?studentId=${studentId}&batch=${batch}&location=${location}`
+          `${import.meta.env.VITE_BACKEND_URL}/api/v1/exam-status?studentId=${studentId}&batch=${batch}&location=${location}`
         );
         if (response.data.success && response.data.completedExamIds) {
           setCompletedExams(new Set(response.data.completedExamIds));
@@ -110,7 +110,7 @@ const ExamDashboard = () => {
 
       // Call the start exam API
       const response = await axios.post(
-        `${process.env.REACT_APP_BACKEND_URL}/api/v1/startexam`,
+        `${import.meta.env.VITE_BACKEND_URL}/api/v1/startexam`,
         { examId, batch, studentId, location }
       );
 

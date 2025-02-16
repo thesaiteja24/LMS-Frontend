@@ -15,7 +15,7 @@ const LeaveRequest = () => {
   // Fetch leave requests from the API
   const fetchLeaveRequests = useCallback(async () => {
     try {
-      const response = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/v1/leaves`, {
+      const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/v1/leaves`, {
         params: { location },
       });
       const data = response.data.leaves || [];
@@ -37,7 +37,7 @@ const LeaveRequest = () => {
   // Update leave request status
   const updateLeaveStatus = async (studentId, status) => {
     try {
-      await axios.put(`${process.env.REACT_APP_BACKEND_URL}/api/v1/leaves`, { studentId, status,managerId:id });
+      await axios.put(`${import.meta.env.VITE_BACKEND_URL}/api/v1/leaves`, { studentId, status,managerId:id });
       setLeaveRequests((prev) =>
         prev.map((request) =>
           request.studentId === studentId ? { ...request, status } : request

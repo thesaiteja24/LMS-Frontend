@@ -80,7 +80,7 @@ const ApplyLeaveRequest = () => {
   
     try {
        await axios.post(
-        `${process.env.REACT_APP_BACKEND_URL}/api/v1/stdleave`,
+        `${import.meta.env.VITE_BACKEND_URL}/api/v1/stdleave`,
         payload
       );
   
