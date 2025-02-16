@@ -1,7 +1,7 @@
 import React, { useEffect, useContext } from "react";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { ExamContext } from "./ExamModule/ExamContext";
+import { ExamContext } from "./ExamContext";
 import { useNavigate } from "react-router-dom";
 
 /**
