@@ -2,7 +2,7 @@ import React, { useContext } from "react";
 import { ExamContext } from "./ExamContext";
 
 const SectionSwitcher = () => {
-  const { selectedMCQ, setSelectedMCQ } = useContext(ExamContext);
+  const { selectedMCQ, setSelectedMCQ,  } = useContext(ExamContext);
   return (
     <div className="section-switching flex flex-row justify-evenly items-center bg-white text-center p-4">
       <button

@@ -4,31 +4,41 @@ import { ExamContext } from "./ExamContext";
 const CountdownTimer = () => {
   const { examData, handleSubmit } = useContext(ExamContext);
 
-  // Ensure examData is always accessed safely
-  const totalExamTime = examData?.exam?.totalExamTime;
+  // Extract exam details safely
+  const totalExamTime = examData?.exam?.totalExamTime || 0;
   const startTime = examData?.exam?.startTime;
   const startDate = examData?.exam?.startDate;
 
-  // Convert startDate and startTime to a JavaScript timestamp
-  const examStartTimestamp = new Date(`${startDate}T${startTime}`).getTime();
-  const [examEndTimestamp, setExamEndTimestamp] = useState(
-    examStartTimestamp + totalExamTime * 60 * 1000
-  );
+  const [examEndTimestamp, setExamEndTimestamp] = useState(null);
+  const [timeLeft, setTimeLeft] = useState(0);
 
-  // Calculate the initial remaining time when component mounts
-  const calculateRemainingTime = () => {
-    const now = Date.now();
-    return Math.max(0, Math.floor((examEndTimestamp - now) / 1000));
-  };
+  useEffect(() => {
+    if (startDate && startTime && totalExamTime) {
+      const examStartTimestamp = new Date(
+        `${startDate}T${startTime}`
+      ).getTime();
+      const endTimestamp = examStartTimestamp + totalExamTime * 60 * 1000;
+      setExamEndTimestamp(endTimestamp);
 
-  // State initialization
-  const [timeLeft, setTimeLeft] = useState(calculateRemainingTime());
+      const calculateRemainingTime = () => {
+        const now = Date.now();
+        return Math.max(0, Math.floor((endTimestamp - now) / 1000));
+      };
+
+      setTimeLeft(calculateRemainingTime());
+    }
+  }, [startDate, startTime, totalExamTime]);
 
   // Start the countdown timer
   useEffect(() => {
+    if (!examEndTimestamp) return;
+
     const intervalId = setInterval(() => {
       setTimeLeft((prevTimeLeft) => {
-        const newTimeLeft = calculateRemainingTime();
+        const newTimeLeft = Math.max(
+          0,
+          Math.floor((examEndTimestamp - Date.now()) / 1000)
+        );
         if (newTimeLeft <= 0) {
           clearInterval(intervalId);
           handleSubmit(); // Auto-submit only when the timer reaches zero
@@ -38,7 +48,13 @@ const CountdownTimer = () => {
     }, 1000);
 
     return () => clearInterval(intervalId);
-  }, [examEndTimestamp, handleSubmit]); // Only rerun when examEndTimestamp changes
+  }, [examEndTimestamp, handleSubmit]);
+
+  if (examEndTimestamp === null) {
+    return (
+      <div className="text-center p-4 text-red-500">Loading exam data...</div>
+    );
+  }
 
   // Calculate hours, minutes, and seconds
   const hours = Math.floor(timeLeft / 3600);
@@ -51,33 +67,25 @@ const CountdownTimer = () => {
         Time Left
       </div>
       <div className="p-4">
-        {examData && examData.exam ? (
-          <div className="flex flex-row items-center justify-center space-x-6 p-4">
-            <img src="ExamModule/clock.png" alt="Clock" className="w-12 h-12" />
-            <div className="flex flex-col items-center">
-              <span className="font-bold">
-                {String(hours).padStart(2, "0")}
-              </span>
-              <span className="text-sm text-gray-600">Hours</span>
-            </div>
-            <div className="flex flex-col items-center">
-              <span className="font-bold">
-                {String(minutes).padStart(2, "0")}
-              </span>
-              <span className="text-sm text-gray-600">Minutes</span>
-            </div>
-            <div className="flex flex-col items-center">
-              <span className="font-bold">
-                {String(seconds).padStart(2, "0")}
-              </span>
-              <span className="text-sm text-gray-600">Seconds</span>
-            </div>
+        <div className="flex flex-row items-center justify-center space-x-6 p-4">
+          <img src="ExamModule/clock.png" alt="Clock" className="w-12 h-12" />
+          <div className="flex flex-col items-center">
+            <span className="font-bold">{String(hours).padStart(2, "0")}</span>
+            <span className="text-sm text-gray-600">Hours</span>
           </div>
-        ) : (
-          <div className="text-center p-4 text-red-500">
-            Loading exam data...
+          <div className="flex flex-col items-center">
+            <span className="font-bold">
+              {String(minutes).padStart(2, "0")}
+            </span>
+            <span className="text-sm text-gray-600">Minutes</span>
           </div>
-        )}
+          <div className="flex flex-col items-center">
+            <span className="font-bold">
+              {String(seconds).padStart(2, "0")}
+            </span>
+            <span className="text-sm text-gray-600">Seconds</span>
+          </div>
+        </div>
       </div>
     </div>
   );
