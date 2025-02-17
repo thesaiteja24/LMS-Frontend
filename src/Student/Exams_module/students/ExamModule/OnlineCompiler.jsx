@@ -171,7 +171,7 @@ const OnlineCompiler = () => {
   };
 
   return (
-    <div className="w-2/3 h-full bg-white rounded-2xl my-4 mx-2 p-6 flex flex-col gap-2">
+    <div className="w-[55%] h-full bg-white rounded-2xl my-4 mx-2 p-6 flex flex-col gap-2">
       {/* Language Selector + Run Button */}
       <div className="flex flex-row items-center gap-4 justify-between">
         <div className="flex flex-row items-center">

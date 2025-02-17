@@ -218,15 +218,25 @@ export const ExamProvider = ({ children }) => {
 
       if (response.data.success) {
         toast.success("Exam submitted successfully!");
-        navigate("/exam-dashboard");
+        console.log(response);
+
+        // Navigate to Exam Dashboard & pass response as state
+        navigate("/exam-analysis", {
+          state: { submissionResult: response.data },
+        });
+
         localStorage.setItem("warnCount", 0);
+        localStorage.setItem("examData", "");
       } else {
         toast.error("Submission failed: " + response.data.message);
       }
     } catch (error) {
       toast.error("Error during exam submission: " + error.message);
       console.error("Error during exam submission:", error);
-      navigate("/exam-dashboard");
+
+      // Navigate to Exam Dashboard with error details
+      navigate("/exam-analysis", { state: { error: error.message } });
+
       localStorage.setItem("warnCount", 0);
     }
   };
