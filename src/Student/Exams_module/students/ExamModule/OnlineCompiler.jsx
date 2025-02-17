@@ -197,7 +197,7 @@ const OnlineCompiler = () => {
   };
 
   return (
-    <div className="w-full h-full bg-white rounded-2xl my-4 mx-2 p-6 flex flex-col gap-2 shadow-[0px_4px_12px_0px_rgba(3,104,255,0.15)]">
+    <div className="w-2/3 h-full bg-white rounded-2xl my-4 mx-2 p-6 flex flex-col gap-2">
       {!questionId ? (
         <div className="text-center text-red-500 font-bold">
           No question available

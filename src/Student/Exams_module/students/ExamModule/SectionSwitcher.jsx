@@ -13,6 +13,7 @@ const SectionSwitcher = () => {
     return (
       <div className="text-center p-4 font-bold text-lg bg-white shadow-md rounded-xl">
         MCQ Section
+        {setSelectedMCQ(true)}
       </div>
     );
   }
@@ -21,6 +22,7 @@ const SectionSwitcher = () => {
     return (
       <div className="text-center p-4 font-bold text-lg bg-white shadow-md rounded-xl">
         Coding Section
+        {setSelectedMCQ(false)}
       </div>
     );
   }

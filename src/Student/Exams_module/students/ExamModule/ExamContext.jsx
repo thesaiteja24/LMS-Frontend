@@ -21,7 +21,6 @@ export const ExamProvider = ({ children }) => {
   const startTime = examData?.exam.startTime;
   const startDate = examData?.exam.startDate;
   const totalExamTime = examData?.exam.totalExamTime;
-  console.log(startDate, startTime, totalExamTime);
 
   const totalScore = examData?.exam.subjects.reduce((acc, subject) => {
     const mcqScore = subject.MCQs
@@ -193,6 +192,7 @@ export const ExamProvider = ({ children }) => {
         score: currentCodingQuestion.Score,
         type: currentCodingQuestion.Question_Type,
         difficulty: currentCodingQuestion.Difficulty,
+        language: currentCodingQuestion.Subject,
       }
     : {};
 
