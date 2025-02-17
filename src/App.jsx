@@ -507,7 +507,7 @@ export default function App() {
               <ProtectedRoute allowedRoles={["student_login_details"]}>
                 <ExamProvider>
                   <ExamSecurityWrapper>
-                    <Parent />
+                  <Parent />
                   </ExamSecurityWrapper>
                 </ExamProvider>
               </ProtectedRoute>
