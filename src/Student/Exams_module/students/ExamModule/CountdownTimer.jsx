@@ -2,16 +2,18 @@ import React, { useContext, useEffect, useState } from "react";
 import { ExamContext } from "./ExamContext";
 
 const CountdownTimer = () => {
-  const { examData } = useContext(ExamContext);
+  const { examData, handleSubmit } = useContext(ExamContext);
 
   // Ensure examData is always accessed safely
-  const totalExamTime = examData?.exam?.totalExamTime || 0;
-  const startTime = examData?.exam?.startTime || "00:00:00";
-  const startDate = examData?.exam?.startDate || "1970-01-01";
+  const totalExamTime = examData?.exam?.totalExamTime;
+  const startTime = examData?.exam?.startTime;
+  const startDate = examData?.exam?.startDate;
 
   // Convert startDate and startTime to a JavaScript timestamp
   const examStartTimestamp = new Date(`${startDate}T${startTime}`).getTime();
-  const examEndTimestamp = examStartTimestamp + totalExamTime * 60 * 1000;
+  const [examEndTimestamp, setExamEndTimestamp] = useState(
+    examStartTimestamp + totalExamTime * 60 * 1000
+  );
 
   // Calculate the initial remaining time when component mounts
   const calculateRemainingTime = () => {
@@ -19,17 +21,24 @@ const CountdownTimer = () => {
     return Math.max(0, Math.floor((examEndTimestamp - now) / 1000));
   };
 
-  // State initialization must always happen
-  const [timeLeft, setTimeLeft] = useState(calculateRemainingTime);
+  // State initialization
+  const [timeLeft, setTimeLeft] = useState(calculateRemainingTime());
 
   // Start the countdown timer
   useEffect(() => {
     const intervalId = setInterval(() => {
-      setTimeLeft(calculateRemainingTime);
+      setTimeLeft((prevTimeLeft) => {
+        const newTimeLeft = calculateRemainingTime();
+        if (newTimeLeft <= 0) {
+          clearInterval(intervalId);
+          handleSubmit(); // Auto-submit only when the timer reaches zero
+        }
+        return newTimeLeft;
+      });
     }, 1000);
 
     return () => clearInterval(intervalId);
-  }, [examEndTimestamp]);
+  }, [examEndTimestamp, handleSubmit]); // Only rerun when examEndTimestamp changes
 
   // Calculate hours, minutes, and seconds
   const hours = Math.floor(timeLeft / 3600);

@@ -160,6 +160,12 @@ export const ExamProvider = ({ children }) => {
         payload
       );
 
+      if (document.fullscreenElement) {
+        document.exitFullscreen().catch((err) => {
+          console.error("Error exiting fullscreen:", err);
+        });
+      }
+
       if (response.data.success) {
         toast.success("Exam submitted successfully!");
         navigate("/exam-dashboard");
