@@ -19,6 +19,10 @@ export const QuestionBreakDown = ({ details }) => {
               <span className="text-gray-500">{question.questionId}</span>
             </div>
             <div className="flex gap-2">
+              <span className="font-medium">Question :</span>
+              <span className="text-gray-500">{question.question}</span>
+            </div>
+            <div className="flex gap-2">
               <span className="font-medium">Type :</span>
               <span>{question.type === "objective" ? "MCQ" : "Coding"}</span>
             </div>
@@ -40,9 +44,22 @@ export const QuestionBreakDown = ({ details }) => {
               </span>
             </div>
             {question.type === "objective" ? (
-              <div className="flex gap-2">
-                <span className="font-medium">Your Answer :</span>
-                <span>{question.submitted}</span>
+              <div>
+                <div className="flex gap-2">
+                  <span className="font-medium">Your Answer :</span>
+                  <span>{question.submitted}</span>
+                </div>
+                <div className="flex flex-col gap-2">
+                  <span className="font-medium">Options :</span>
+                  <span className="flex gap-4">
+                    <span>A: {question.options.A}</span>
+                    <span>B: {question.options.B}</span>
+                  </span>
+                  <span className="flex gap-4">
+                    <span>C: {question.options.C}</span>
+                    <span>D: {question.options.D}</span>
+                  </span>
+                </div>
               </div>
             ) : (
               <div className="flex gap-2">
