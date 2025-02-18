@@ -18,8 +18,9 @@ import {
   FaPhone,
   FaUsers,
   FaCalendarAlt,
-  FaMapMarkerAlt,
+  // FaMapMarkerAlt,
   FaDownload,
+  FaBookOpen,
 } from "react-icons/fa"; 
 
 export default function ProgramManagerSignup() {
@@ -34,7 +35,7 @@ export default function ProgramManagerSignup() {
     email: "",
     studentPhNumber: "",
     parentNumber: "",
-    location: "",
+    modeOfStudy:'Offline'
   });
 
   const [studentCountryCode, setStudentCountryCode] = useState(null);
@@ -98,7 +99,7 @@ export default function ProgramManagerSignup() {
               if (rows.length > 1) {
                   const headers = rows[0].map((header) => header.toLowerCase().trim());
   
-                  const formattedData = rows.slice(1).map((row) => {
+                      const formattedData = rows.slice(1).map((row) => {
                       const studentPh = row[headers.indexOf("studentphnumber")]?.toString().trim() || "";
                       const parentPh = row[headers.indexOf("parentnumber")]?.toString().trim() || "";
                       const batchNo = row[headers.indexOf("batchno")]?.toString().toUpperCase() || "";
@@ -116,6 +117,7 @@ export default function ProgramManagerSignup() {
                                   ? parentPh 
                                   : (parentPh.length === 10 && /^[6789]\d{9}$/.test(parentPh) ? `+91${parentPh}` : parentPh),
                           location: row[headers.indexOf("location")]?.toString().toLowerCase() || "",
+                          modeOfStudy: row[headers.indexOf("modeofstudy")]?.toString() || "",
                       };
                   });
   
@@ -172,7 +174,9 @@ export default function ProgramManagerSignup() {
         email: "example@gmail.com",
         studentPhNumber: "+918688031605",
         parentNumber: "+918688031603",
-        location
+        modeOfStudy:'Offline',
+        location,
+
       },
     ];
 
@@ -225,6 +229,7 @@ export default function ProgramManagerSignup() {
           batchNo: formData.batchNo.toUpperCase(),
           studentPhNumber: studentPhone,
           parentNumber: parentPhone,
+          location
         });
       } else {
         response = await axios.post(endpoint, { excelData });
@@ -252,7 +257,6 @@ export default function ProgramManagerSignup() {
           email: "",
           studentPhNumber: "",
           parentNumber: "",
-          location: "",
         });
   
         await fetchStudentsData();
@@ -288,7 +292,6 @@ export default function ProgramManagerSignup() {
         email: "",
         studentPhNumber: "",
         parentNumber: "",
-        location: "",
       });
   
       setExcelData([]);
@@ -302,8 +305,7 @@ export default function ProgramManagerSignup() {
       <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-xl">
       {useExcel && (
           <div className="flex justify-center gap-4 mb-4 text-center items-center">
-            {/* <span className="text-red-600"> Demo template for uploade Excel File
-            </span> */}
+            
             <button
               className="flex items-center gap-2 px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600"
               onClick={handleDownloadTemplate}
@@ -466,7 +468,7 @@ export default function ProgramManagerSignup() {
           </div>
 
       {/* Location */}
-      <div className="mb-4">
+      {/* <div className="mb-4">
         <label htmlFor="location" className="block text-black font-semibold mb-2">
           Location
         </label>
@@ -486,7 +488,25 @@ export default function ProgramManagerSignup() {
             <option value={location}>{location}</option>
           </select>
         </div>
-      </div>
+      </div> */}
+
+      <div className="mb-4">
+            <label className="block text-black font-semibold mb-2">Mode of Study</label>
+            <div className="flex items-center border border-gray-300 rounded-md p-2">
+              <FaBookOpen className="text-black mr-2" />
+              <select
+                name="modeOfStudy"
+                value={formData.modeOfStudy}
+                onChange={handleChange}
+                className="w-full px-3 py-2 text-gray-800 font-medium"
+                required
+              >
+                <option value="" disabled>Select Mode</option>
+                <option value="Online">Online</option>
+                <option value="Offline">Offline</option>
+              </select>
+            </div>
+          </div>
 
       <button
         type="submit"
