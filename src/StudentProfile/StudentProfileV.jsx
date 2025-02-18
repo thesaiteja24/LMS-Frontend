@@ -314,12 +314,7 @@ const [showCPassword, setShowCPassword] = useState(false);
             return;
         }
     
-        // Log the formData object to the console
-        console.log("Form Data:", {
-            ...formData,
-            age: Number(age), // Ensure age is a number
-            studentSkills: selectedSkills, // Include selected skills
-        });
+     
     
         Swal.fire({
             title: 'Signing up...',
@@ -366,8 +361,6 @@ const [showCPassword, setShowCPassword] = useState(false);
                 resumeFormData.append("resume", formData.resume);
                 resumeFormData.append("student_id", localStorage.getItem("student_id")); // ✅ Append student_id
             
-                console.log("✅ Sending resume and student_id to ATS API...");
-                console.log("FormData Contents:", Object.fromEntries(resumeFormData.entries())); // Debugging
             
                 try {
                     const atsResponse = await axios.post(
@@ -376,7 +369,6 @@ const [showCPassword, setShowCPassword] = useState(false);
                         { headers: { "Content-Type": "multipart/form-data" } }
                     );
             
-                    console.log("✅ ATS API Response:", atsResponse.data);
                 } catch (error) {
                     console.error("❌ Error sending resume to ATS API:", error);
                 }

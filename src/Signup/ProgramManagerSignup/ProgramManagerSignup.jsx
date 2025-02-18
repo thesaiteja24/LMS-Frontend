@@ -108,7 +108,6 @@ export default function ProgramManagerSignup() {
               location: row[headers.indexOf("location")]?.toString().toLowerCase() || "",
             }));
             setExcelData(formattedData);
-            console.log(formattedData);
           } else {
             Swal.fire({
               title: "Invalid Excel File",

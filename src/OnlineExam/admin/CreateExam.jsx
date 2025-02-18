@@ -18,13 +18,7 @@ const CreateExam = () => {
     const handleCreateExam = async (e) => {
         e.preventDefault();
 
-        console.log(examId,
-            examName,
-            examDate,
-            startTime,
-            endTime,
-            location,
-            totalScore) 
+   
             
             const payload = {
                 examId,

@@ -21,7 +21,6 @@ export default function EmailApplyJob() {
         try {
             const studentResponse = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/v1/getstudentdetails?student_id=${student_id}`);
             setStudentDetails(studentResponse.data)
-            console.log("student details",studentResponse.data)
             const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/v1/getjobdetails?job_id=${job_id}`);
             setJobDetails(response.data)
             setLoading(false); // Set loading to false when data is fetched
@@ -31,7 +30,6 @@ export default function EmailApplyJob() {
         }
     };
     async function applyJob() {
-        console.log("apply job ")
        await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/v1/applyforjob`, { job_id, student_id })
             .then((response) => {
                 if (response.status === 200) {
@@ -61,7 +59,6 @@ export default function EmailApplyJob() {
                 jobDetails && (
                     <div className='email-apply-job'>
 
-                        {console.log("job details ", jobDetails)}
                         <div className="email-apply-job-card">
                             <h3>{jobDetails.companyName}</h3>
                             <p><span className="email-apply-job-key">Job Role:</span> {jobDetails.jobRole}</p>

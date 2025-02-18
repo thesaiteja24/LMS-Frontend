@@ -40,7 +40,6 @@ const StudentProfile = () => {
     const handleAgeChange = (e) => {
         const selectedDate = e.target.value;
         const calculatedAge = calculateAge(selectedDate);
-        console.log(calculatedAge)
         setAge(calculatedAge);
         setFormData({ ...formData, age: selectedDate });
     };
@@ -71,7 +70,6 @@ const StudentProfile = () => {
     const [newSkill, setNewSkill] = useState('');
     const addSkill = () => {
       const updatedSkill=  newSkill.charAt(0).toUpperCase() + newSkill.slice(1)
-      console.log(updatedSkill)
         const skillToAdd = isOther ? updatedSkill : currentSkill;
         if (skillToAdd && !selectedSkills.includes(skillToAdd)) {
             setSelectedSkills([...selectedSkills, skillToAdd]);
@@ -158,7 +156,6 @@ const StudentProfile = () => {
         e.preventDefault(); 
         setEdit(true)
 
-      console.log(edit)
         const passwordRegex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{6,}$/;
         const graduationRegex = /^\d*\.?\d*$/;
      
@@ -237,7 +234,6 @@ const StudentProfile = () => {
                 }
             );
     
-            console.log("Signup Response:", response.data);
             await fetchStudentsData();
            await  fetchStudentDetails()
     

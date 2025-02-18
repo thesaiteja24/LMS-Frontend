@@ -36,7 +36,6 @@ const StudentSignup = () => {
     const handleAgeChange = (e) => {
         const selectedDate = e.target.value;
         const calculatedAge = calculateAge(selectedDate);
-        console.log(calculatedAge)
         setAge(calculatedAge);
         setFormData({ ...formData, age: selectedDate });
     };
@@ -142,7 +141,6 @@ const StudentSignup = () => {
     };
 
     const generateOtp = () => {
-        console.log("email value", formData.email)
         if(formData.email===""){
             alert("Please enter valid emailID")
             return ;
@@ -166,7 +164,6 @@ const StudentSignup = () => {
             axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/v1/verifyotp`, { otp: Number(value), email: formData.email })
                 .then(response => {
                     // Handle the response from the backend
-                    console.log('OTP verified:', response.data);
                     if (response.status === 200) {
                         setCheck(true)
                         setButtonClicked(true);
@@ -192,7 +189,6 @@ const StudentSignup = () => {
     const handleSubmit = (e) => {
         e.preventDefault();
         // Handle form submission
-        console.log(formData, formData.age)
         const passwordRegex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{6,}$/;
         const graduationRegex = /^\d*\.?\d*$/
         if (!passwordRegex.test(formData.password)) {
@@ -220,7 +216,6 @@ const StudentSignup = () => {
                 Swal.showLoading();
             }
         });
-        console.log("signup form \n", formData, selectedSkills, "\n\n")
         axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/v1/signup`, {
             name: formData.name,
             email: formData.email,
@@ -248,8 +243,6 @@ const StudentSignup = () => {
             }
         })
             .then((response) => {
-                console.log("", response.data)
-                console.log("student signup ", response.data)
                 Swal.fire({
                     title: "Signup Successful",
                     icon: "success"
@@ -257,7 +250,6 @@ const StudentSignup = () => {
                 navigate("/login/student")
             })
             .catch((error) => {
-                console.log("error from student signup", error)
 
                 Swal.fire({
                     icon: "error",

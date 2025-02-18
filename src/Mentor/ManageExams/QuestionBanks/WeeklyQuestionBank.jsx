@@ -31,7 +31,6 @@ export const WeeklyQuestionBank = () => {
       } else {
         setScheduleData([]);
       }
-      console.log(response.data);
     } catch (error) {
       console.error("API Call Failed:", error);
       setScheduleData([]);
@@ -87,7 +86,6 @@ export const WeeklyQuestionBank = () => {
       Tags: uniqueTags,
     };
 
-    console.log("Request Payload:", JSON.stringify(requestBody, null, 2));
 
     // API endpoint for fetching questions (using the same endpoint as before)
     const requestUrl = `${import.meta.env.VITE_BACKEND_URL}/api/v1/fetch-daily-question-bank`;
@@ -100,7 +98,6 @@ export const WeeklyQuestionBank = () => {
       });
 
       if (response.data.success) {
-        console.log("Fetched Questions:", response.data.questions);
         navigate("/view-daily-exams", {
           state: {
             batch: selectedBatch,

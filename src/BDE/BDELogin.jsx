@@ -20,7 +20,6 @@ export default function BDELogin() {
         `${import.meta.env.VITE_BACKEND_URL}/api/v1/bdelogin`,
         { username, password }
       );
-      console.log('Response from BDE login:', response.data);
       if (response.status === 200) {
         localStorage.setItem('userType', response.data.userType);
         navigate('/studentlist'); // Redirect to homepage

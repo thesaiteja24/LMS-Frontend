@@ -12,7 +12,6 @@ const MainReport = () => {
 
   const handleStudentSelect = (student) => {
     setSelectedStudent(student);
-    console.log("Selected student:", student);
   };
 
   return (

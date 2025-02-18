@@ -177,7 +177,6 @@ export default function AddJob() {
                     location,
                     BDEId
                 }).then(async (response) => {
-                    console.log(response);
                     if (response.status === 200) {
                         Swal.fire({
                             title: "Job added successfully!",

@@ -56,8 +56,6 @@ export default function BDELogin() {
       try {
         await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/v1/bdesignup`, { username, password, email })
           .then((response) => {
-            console.log(response)
-            console.log("response from bdesignup", response.data);
             if (response.status === 201) {
               Swal.fire({
                 title: "SignUp Successful",

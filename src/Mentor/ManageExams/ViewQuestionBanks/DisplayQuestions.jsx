@@ -10,7 +10,6 @@ const DisplayQuestions = () => {
   const location = useLocation();
   const { Tags, data, subTopics, previousSubTopics, subject, batch, dayOrder } =
     location.state || {}; // Ensure safe extraction of data
-  console.log("Received data:", location.state);
 
   if (!data || !data.questions) {
     return (
@@ -64,7 +63,6 @@ const DisplayQuestions = () => {
       Tags: Tags,
     };
 
-    console.log("Sending Payload:", payload);
 
     try {
       const response = await axios.post(

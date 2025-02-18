@@ -126,7 +126,6 @@ const BDEStudentsAppliedJobsList = () => {
     });
     if (result.isConfirmed) {
       try {
-        console.log(filteredStudents)
         const selectedStudentIds = filteredStudents.map(student => student.id);
         if (selectedStudentIds.length === 0) {
           Swal.fire({
@@ -136,7 +135,6 @@ const BDEStudentsAppliedJobsList = () => {
           });
           return;
         }
-        console.log("selectedStudentIds-------->",selectedStudentIds)
         const response = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/v1/updatejobapplicants`, {
           selected_student_ids: selectedStudentIds, job_id: jobId
         });

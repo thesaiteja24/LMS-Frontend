@@ -70,10 +70,8 @@ const CompanySignup = () => {
 
     if (formIsValid) {
       // Submit the form
-      console.log(companyData);
       axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/v1/companysignup`, companyData)
         .then(response => {
-          console.log('response from company signup', response.data);
           if (response.status === 200) {
             alert("Company Signup Successful")
             navigate('/login');

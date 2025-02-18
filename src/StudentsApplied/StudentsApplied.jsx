@@ -6,7 +6,6 @@ const StudentsApplied = () => {
   const [appliedJobs, setAppliedJobs] = useState([]); 
   const [loading, setLoading] = useState(true);
   const student_id = localStorage.getItem('student_id');
-console.log(student_id)
   useEffect(() => {
     const fetchAppliedJobs = async () => {
       try {

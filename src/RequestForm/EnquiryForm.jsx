@@ -61,7 +61,6 @@ const EnquiryForm = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log(formData);
     
     if (validateForm()) {
       try {
@@ -73,7 +72,6 @@ const EnquiryForm = () => {
           body: JSON.stringify(formData),
         });
 
-        console.log(response);
 
         if (response.ok) {
           await response.json();

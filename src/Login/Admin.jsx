@@ -23,7 +23,6 @@ export default function SuperAdmin() {
         `${import.meta.env.VITE_BACKEND_URL}/api/v1/admin`,
         { username, password }
       );
-      console.log('Response from admin login:', response.data);
       if (response.status === 200) {
         localStorage.setItem('userType', response.data.userType);
         localStorage.setItem('location','all')
