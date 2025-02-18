@@ -1,7 +1,7 @@
 import React, { useEffect, useContext } from "react";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { ExamContext } from "./ExamModule/ExamContext";
+import { ExamContext } from "./ExamContext";
 import { useNavigate } from "react-router-dom";
 
 /**
@@ -94,24 +94,8 @@ const ExamSecurityWrapper = ({ children }) => {
     // 4) Warn on Tab Switch / Visibility
     const handleVisibilityChange = () => {
       if (document.hidden) {
-        // Get the current warn count from localStorage (defaulting to 0)
-        let warnCount = parseInt(localStorage.getItem("warnCount") || "0", 10);
-        warnCount++;
-        localStorage.setItem("warnCount", warnCount);
-
-        if (warnCount < 3) {
-          toast.error(
-            `Warning: You switched tabs ${warnCount} time${
-              warnCount > 1 ? "s" : ""
-            }!`
-          );
-        } else {
-          toast.error(
-            "You have switched tabs too many times. Your exam will now be submitted."
-          );
           handleSubmit();
           navigate("/exam-dashboard");
-        }
       }
     };
 

@@ -4,10 +4,10 @@ import { javascript } from "@codemirror/lang-javascript";
 import { python } from "@codemirror/lang-python";
 import { java } from "@codemirror/lang-java";
 import { oneDark } from "@codemirror/theme-one-dark";
-import { ExamContext } from "./ExamModule/ExamContext";
+import { ExamContext } from "./ExamContext";
+import TestCaseTabs from "../TestCaseTabs";
 
 const OnlineCompiler = () => {
-  // Get context values
   const {
     onlineCompilerQuestion,
     existingData,
@@ -15,11 +15,9 @@ const OnlineCompiler = () => {
     updateCodingAnswer,
   } = useContext(ExamContext);
 
-  // Ensure question exists to avoid errors
   const question = onlineCompilerQuestion || { question_id: null };
   const questionId = question.question_id;
 
-  // State initialization (ensures Hooks run in the same order)
   const [language, setLanguage] = useState(
     existingData[questionId]?.language || "JavaScript"
   );
@@ -30,7 +28,9 @@ const OnlineCompiler = () => {
   const [customInput, setCustomInput] = useState(
     existingData[questionId]?.customInput || ""
   );
-  const [output, setOutput] = useState(existingData[questionId]?.output || "");
+
+  // Instead of holding HTML, we store the array of test-case results
+  const [testCases, setTestCases] = useState([]);
   const [testCaseSummary, setTestCaseSummary] = useState(
     existingData[questionId]?.testCaseSummary || { passed: 0, failed: 0 }
   );
@@ -42,7 +42,7 @@ const OnlineCompiler = () => {
     Java: java(),
   };
 
-  // Effect to update local state when switching questions
+  // Sync with existingData each time questionId changes
   useEffect(() => {
     if (questionId) {
       setLanguage(existingData[questionId]?.language || "JavaScript");
@@ -51,16 +51,16 @@ const OnlineCompiler = () => {
         existingData[questionId]?.customInputEnabled || false
       );
       setCustomInput(existingData[questionId]?.customInput || "");
-      setOutput(existingData[questionId]?.output || "");
       setTestCaseSummary(
         existingData[questionId]?.testCaseSummary || { passed: 0, failed: 0 }
       );
+
+      // If you’ve saved testCases in existingData, you could restore them here:
+      // setTestCases(existingData[questionId]?.testCases || []);
     }
   }, [questionId, existingData]);
 
-  /**
-   * Save the code in context as the user types (auto-save feature)
-   */
+  // Auto-save code to context
   const handleCodeChange = (val) => {
     setCode(val);
     setExistingData((prev) => ({
@@ -72,9 +72,7 @@ const OnlineCompiler = () => {
     }));
   };
 
-  /**
-   * Save selected language per question
-   */
+  // Save the selected language
   const handleLanguageChange = (lang) => {
     setLanguage(lang);
     setExistingData((prev) => ({
@@ -86,9 +84,7 @@ const OnlineCompiler = () => {
     }));
   };
 
-  /**
-   * Submit the code and update the response state
-   */
+  // Run code and parse test-case results
   const handleRun = async () => {
     setLoading(true);
 
@@ -117,55 +113,32 @@ const OnlineCompiler = () => {
           body: JSON.stringify(bodyData),
         }
       );
-
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
 
       const { results } = await response.json();
 
-      const computedResults = results.map((result) => ({
-        ...result,
-        status:
-          result.actual_output.trim() === result.expected_output.trim()
-            ? "Passed"
-            : "Failed",
-      }));
+      // Compute pass/fail
+      const computedResults = results.map((res) => {
+        const passed = res.actual_output.trim() === res.expected_output.trim();
+        return { ...res, status: passed ? "Passed" : "Failed" };
+      });
 
+      // Summarize
       const summary = computedResults.reduce(
-        (acc, result) => {
-          if (result.status === "Passed") {
-            acc.passed++;
-          } else {
-            acc.failed++;
-          }
+        (acc, cur) => {
+          if (cur.status === "Passed") acc.passed++;
+          else acc.failed++;
           return acc;
         },
         { passed: 0, failed: 0 }
       );
 
       setTestCaseSummary(summary);
+      setTestCases(computedResults);
 
-      const outputHtml = computedResults
-        .map((result, index) =>
-          result.type === "hidden"
-            ? `<div style="margin-bottom: 10px;"><h4>Hidden Test Case ${
-                index + 1
-              }: ${result.status}</h4></div>`
-            : `<div style="margin-bottom: 10px;">
-                <h4>Test Case ${index + 1}: ${result.status}</h4>
-                <p><strong>Input:</strong> ${result.input}</p>
-                <p><strong>Expected Output:</strong> ${
-                  result.expected_output
-                }</p>
-                <p><strong>Your Output:</strong> ${result.actual_output}</p>
-              </div>`
-        )
-        .join("");
-
-      setOutput(outputHtml);
-
-      // Store the response in context for this specific question
+      // Save in context
       setExistingData((prev) => ({
         ...prev,
         [questionId]: {
@@ -174,82 +147,77 @@ const OnlineCompiler = () => {
           customInputEnabled,
           customInput,
           testCaseSummary: summary,
-          output: outputHtml,
+          testCases: computedResults, // store array of test cases
           answered: true,
         },
       }));
 
-      // Save to updateCodingAnswer for submission
+      // Update coding answer for final exam submission
       updateCodingAnswer({
         questionId,
         sourceCode: code,
         language,
         testCaseSummary: summary,
-        output: outputHtml,
         answered: true,
+        // You can store the testCases array here if needed
       });
     } catch (error) {
       console.error("Error:", error);
-      setOutput("An error occurred while processing your code.");
+      // If you want to display an error test case or something else:
+      setTestCases([]);
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="w-full h-full bg-white rounded-2xl my-4 mx-2 p-6 flex flex-col gap-2 shadow-[0px_4px_12px_0px_rgba(3,104,255,0.15)]">
-      {!questionId ? (
-        <div className="text-center text-red-500 font-bold">
-          No question available
-        </div>
-      ) : (
-        <>
-          {/* Language Select */}
-          <div className="mb-4">
-            <label className="block font-semibold mb-1">Select Language:</label>
+    <div className="w-[55%] h-full bg-white rounded-2xl my-4 mx-2 p-6 flex flex-col gap-2">
+      {/* Language Selector + Run Button */}
+      <div className="flex flex-row items-center gap-4 justify-between">
+        <div className="flex flex-row items-center">
+          <div>
+            <label className="block font-semibold mx-4">Select Language:</label>
+          </div>
+          <div>
             <select
               value={language}
               onChange={(e) => handleLanguageChange(e.target.value)}
-              className="p-2 border rounded w-full"
+              className=" border rounded w-full"
             >
               <option value="JavaScript">JavaScript</option>
               <option value="Python">Python</option>
               <option value="Java">Java</option>
             </select>
           </div>
+        </div>
+        <button
+          onClick={handleRun}
+          disabled={loading}
+          className="px-2 text-white text-xl bg-blue-600 rounded hover:bg-blue-700"
+        >
+          {loading ? "Running..." : "Run"}
+        </button>
+      </div>
 
-          {/* Code Editor */}
-          <div className="mb-4">
-            <CodeMirror
-              value={code}
-              height="300px"
-              theme={oneDark}
-              extensions={[languageExtensions[language]]}
-              onChange={handleCodeChange}
-            />
-          </div>
+      {/* Code Editor */}
+      <div className="mb-4">
+        <CodeMirror
+          value={code}
+          height="300px"
+          theme={oneDark}
+          extensions={[languageExtensions[language]]}
+          onChange={handleCodeChange}
+        />
+      </div>
 
-          {/* Run Button */}
-          <button
-            onClick={handleRun}
-            disabled={loading}
-            className="px-4 py-2 text-white bg-blue-600 rounded hover:bg-blue-700"
-          >
-            {loading ? "Running..." : "Run"}
-          </button>
-          {/* Results Display */}
-          <div className="mt-4 p-2 border rounded bg-white">
-            <p className="font-semibold mb-2">
-              Test Summary: {testCaseSummary.passed} Passed /{" "}
-              {testCaseSummary.failed} Failed
-            </p>
-            <div
-              dangerouslySetInnerHTML={{ __html: output }}
-              style={{ maxHeight: "150px", overflowY: "auto" }}
-            />
-          </div>
-        </>
-      )}
+      {/* Test Summary and Results */}
+      <div className="p-2 border rounded bg-white overflow-auto">
+        <p className="font-semibold mb-2">
+          Test Summary: {testCaseSummary.passed} Passed /{" "}
+          {testCaseSummary.failed} Failed
+        </p>
+        <TestCaseTabs testCases={testCases} />
+      </div>
     </div>
   );
 };

@@ -16,12 +16,14 @@ export const ExamProvider = ({ children }) => {
   const [codingIndex, setCodingIndex] = useState(0);
   const [mcqQuestions, setMcqQuestions] = useState([]);
   const [codingQuestions, setCodingQuestions] = useState([]);
+
   const studentName = studentDetails?.name || "Student Name";
   const studentExamId = examData?.exam.studentExamId;
   const startTime = examData?.exam.startTime;
   const startDate = examData?.exam.startDate;
   const totalExamTime = examData?.exam.totalExamTime;
 
+  // Calculate totalScore
   const totalScore = examData?.exam.subjects.reduce((acc, subject) => {
     const mcqScore = subject.MCQs
       ? subject.MCQs.reduce((sum, q) => sum + q.Score, 0)
@@ -32,6 +34,7 @@ export const ExamProvider = ({ children }) => {
     return acc + mcqScore + codingScore;
   }, 0);
 
+  // Load examData from localStorage once
   useEffect(() => {
     const storedData = localStorage.getItem("examData");
     if (storedData) {
@@ -39,12 +42,15 @@ export const ExamProvider = ({ children }) => {
     }
   }, []);
 
+  // Extract MCQs and Coding questions for all subjects
   useEffect(() => {
+    if (!examData) return;
+
     const extractedMCQs = [];
     const extractedCoding = [];
 
     examData?.exam.subjects.forEach((subject) => {
-      if (subject.MCQs && subject.MCQs.length > 0) {
+      if (subject.MCQs?.length > 0) {
         extractedMCQs.push(
           ...subject.MCQs.map((q) => ({
             ...q,
@@ -54,7 +60,7 @@ export const ExamProvider = ({ children }) => {
           }))
         );
       }
-      if (subject.Coding && subject.Coding.length > 0) {
+      if (subject.Coding?.length > 0) {
         extractedCoding.push(
           ...subject.Coding.map((q) => ({
             ...q,
@@ -70,6 +76,7 @@ export const ExamProvider = ({ children }) => {
     setCodingQuestions(extractedCoding);
   }, [examData]);
 
+  // Update MCQ answer
   const updateMcqAnswer = (index, answer) => {
     setMcqQuestions((prevQuestions) => {
       const updated = [...prevQuestions];
@@ -78,6 +85,7 @@ export const ExamProvider = ({ children }) => {
     });
   };
 
+  // Update coding answer
   const updateCodingAnswer = (data) => {
     setCodingQuestions((prev) => {
       const updated = [...prev];
@@ -90,22 +98,61 @@ export const ExamProvider = ({ children }) => {
     });
   };
 
+  // Go to the previous question, possibly switching sections
   const handlePrevious = () => {
-    if (selectedMCQ && mcqIndex > 0) {
-      setMcqIndex(mcqIndex - 1);
-    } else if (!selectedMCQ && codingIndex > 0) {
-      setCodingIndex(codingIndex - 1);
+    if (selectedMCQ) {
+      // If we're in MCQs and not at the first MCQ, just go back one
+      if (mcqIndex > 0) {
+        setMcqIndex(mcqIndex - 1);
+      } else {
+        // If we're at the very first MCQ and there are coding questions, switch to coding
+        if (codingQuestions.length > 0) {
+          setSelectedMCQ(false);
+          setCodingIndex(codingQuestions.length - 1); // Move to last coding question
+        }
+      }
+    } else {
+      // If we're in coding and not at the first coding question, just go back one
+      if (codingIndex > 0) {
+        setCodingIndex(codingIndex - 1);
+      } else {
+        // If we're at the very first coding question, switch to last MCQ
+        if (mcqQuestions.length > 0) {
+          setSelectedMCQ(true);
+          setMcqIndex(mcqQuestions.length - 1);
+        }
+      }
     }
   };
 
+  // Go to the next question, possibly switching sections
   const handleNext = () => {
-    if (selectedMCQ && mcqIndex < mcqQuestions.length - 1) {
-      setMcqIndex(mcqIndex + 1);
-    } else if (!selectedMCQ && codingIndex < codingQuestions.length - 1) {
-      setCodingIndex(codingIndex + 1);
+    if (selectedMCQ) {
+      // If we're in MCQs and not at the last MCQ, just go to the next one
+      if (mcqIndex < mcqQuestions.length - 1) {
+        setMcqIndex(mcqIndex + 1);
+      } else {
+        // If this was the last MCQ, switch to the first coding question (if any exist)
+        if (codingQuestions.length > 0) {
+          setSelectedMCQ(false);
+          setCodingIndex(0);
+        }
+      }
+    } else {
+      // If we're in coding and not at the last coding question, go to the next one
+      if (codingIndex < codingQuestions.length - 1) {
+        setCodingIndex(codingIndex + 1);
+      } else {
+        // If this was the last coding question, switch back to the first MCQ
+        if (mcqQuestions.length > 0) {
+          setSelectedMCQ(true);
+          setMcqIndex(0);
+        }
+      }
     }
   };
 
+  // Mark question for review
   const handleMarkReview = () => {
     if (selectedMCQ) {
       setMcqQuestions((prev) => {
@@ -125,6 +172,7 @@ export const ExamProvider = ({ children }) => {
     }
   };
 
+  // Submit exam data
   const handleSubmit = async () => {
     if (!examData) {
       console.error("No exam data available");
@@ -137,6 +185,7 @@ export const ExamProvider = ({ children }) => {
       studentExamId: examData.exam.studentExamId,
     };
 
+    // Collect MCQ answers
     mcqQuestions.forEach((q) => {
       if (q.answered) {
         payload[q.questionId] = {
@@ -145,6 +194,7 @@ export const ExamProvider = ({ children }) => {
       }
     });
 
+    // Collect coding answers
     codingQuestions.forEach((q) => {
       if (q.answered) {
         payload[q.questionId] = {
@@ -159,21 +209,39 @@ export const ExamProvider = ({ children }) => {
         payload
       );
 
+      // Exit fullscreen on submission
+      if (document.fullscreenElement) {
+        document.exitFullscreen().catch((err) => {
+          console.error("Error exiting fullscreen:", err);
+        });
+      }
+
       if (response.data.success) {
         toast.success("Exam submitted successfully!");
-        navigate("/exam-dashboard");
+        console.log(response);
+
+        // Navigate to Exam Dashboard & pass response as state
+        navigate("/exam-analysis", {
+          state: { submissionResult: response.data },
+        });
+
         localStorage.setItem("warnCount", 0);
+        localStorage.setItem("examData", "");
       } else {
         toast.error("Submission failed: " + response.data.message);
       }
     } catch (error) {
       toast.error("Error during exam submission: " + error.message);
       console.error("Error during exam submission:", error);
-      navigate("/exam-dashboard");
+
+      // Navigate to Exam Dashboard with error details
+      navigate("/exam-analysis", { state: { error: error.message } });
+
       localStorage.setItem("warnCount", 0);
     }
   };
 
+  // Current coding question for the online compiler
   const currentCodingQuestion = codingQuestions[codingIndex];
   const onlineCompilerQuestion = currentCodingQuestion
     ? {
@@ -186,34 +254,43 @@ export const ExamProvider = ({ children }) => {
         score: currentCodingQuestion.Score,
         type: currentCodingQuestion.Question_Type,
         difficulty: currentCodingQuestion.Difficulty,
+        language: currentCodingQuestion.Subject,
       }
     : {};
 
   return (
     <ExamContext.Provider
       value={{
-        setExamData,
+        // State
         examData,
-        studentName,
-        studentExamId,
-        selectedMCQ,
-        setSelectedMCQ,
+        setExamData,
+        existingData,
+        setExistingData,
+        mcqQuestions,
+        codingQuestions,
         mcqIndex,
         setMcqIndex,
         codingIndex,
         setCodingIndex,
-        mcqQuestions,
-        codingQuestions,
+        selectedMCQ,
+        setSelectedMCQ,
+
+        // Derived
+        studentName,
+        studentExamId,
+        totalExamTime,
         totalScore,
-        updateMcqAnswer,
-        updateCodingAnswer,
+
+        // Methods
         handlePrevious,
         handleNext,
         handleMarkReview,
+        updateMcqAnswer,
+        updateCodingAnswer,
         handleSubmit,
+
+        // Online compiler
         onlineCompilerQuestion,
-        existingData,
-        setExistingData,
       }}
     >
       {children}
