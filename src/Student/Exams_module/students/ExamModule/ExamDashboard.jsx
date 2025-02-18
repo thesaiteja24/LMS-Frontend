@@ -185,217 +185,245 @@ const ExamDashboard = () => {
       </div>
     );
   }
-  
+
   window.addEventListener("popstate", () => {
     window.location.reload();
   });
 
   return (
-    <div className="p-4">
-      {/* Active Exams Section */}
-      {active.length > 0 && (
-        <div className="mb-6">
-          <h3 className="font-semibold text-[#132EE0] mb-3 flex flex-row items-center gap-2 text-xl border-b">
-            <img className="w-8" src="ExamModule/Exam-blue.png" alt="" />
-            Active Exams
-          </h3>
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-            {active.map((exam) => (
-              <Card
-                key={exam.examId}
-                className="cursor-pointer hover:shadow-lg"
-              >
-                <CardHeader>
-                  <CardTitle>Batch: {exam.batch}</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="flex flex-col space-y-3 p-4 bg-white shadow-md rounded-lg">
-                    <div className="flex flex-row justify-evenly">
-                      <div>
-                        <div className="flex items-center gap-2">
-                          <img
-                            src="ExamModule/Date.png"
-                            alt="Date"
-                            className="w-5 h-5"
-                          />
-                          <strong className="text-gray-700">Start Date</strong>
+    <div className="flex flex-col m-4">
+      <div className="h-full">
+        {/* Active Exams Section */}
+        {active.length > 0 && (
+          <div className="mb-6">
+            <h3 className="font-semibold text-[#132EE0] mb-3 flex flex-row items-center gap-2 text-xl border-b">
+              <img className="w-8" src="ExamModule/Exam-blue.png" alt="" />
+              Active Exams
+            </h3>
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+              {active.map((exam) => (
+                <Card
+                  key={exam.examId}
+                  className="cursor-pointer hover:shadow-lg"
+                >
+                  <CardHeader>
+                    <CardTitle>Batch: {exam.batch}</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="flex flex-col space-y-3 p-4 bg-white shadow-md rounded-lg">
+                      <div className="flex flex-row justify-evenly">
+                        <div>
+                          <div className="flex items-center gap-2">
+                            <img
+                              src="ExamModule/Date.png"
+                              alt="Date"
+                              className="w-5 h-5"
+                            />
+                            <strong className="text-gray-700">
+                              Start Date
+                            </strong>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <img
+                              src="ExamModule/Watch.png"
+                              alt="Clock"
+                              className="w-5 h-5"
+                            />
+                            <strong className="text-gray-700">
+                              Start Time
+                            </strong>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <img
+                              src="ExamModule/Sand-clock.png"
+                              alt="Duration"
+                              className="w-5 h-5"
+                            />
+                            <strong className="text-gray-700">
+                              Total Duration
+                            </strong>
+                          </div>
                         </div>
-                        <div className="flex items-center gap-2">
-                          <img
-                            src="ExamModule/Watch.png"
-                            alt="Clock"
-                            className="w-5 h-5"
-                          />
-                          <strong className="text-gray-700">Start Time</strong>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <img
-                            src="ExamModule/Sand-clock.png"
-                            alt="Duration"
-                            className="w-5 h-5"
-                          />
-                          <strong className="text-gray-700">
-                            Total Duration
-                          </strong>
+                        <div className="flex flex-col">
+                          <span className="text-gray-600">
+                            : {exam.startDate}
+                          </span>
+                          <span className="text-gray-600">
+                            : {exam.startTime}
+                          </span>
+                          <span className="text-gray-600">
+                            : {exam.totalExamTime} mins
+                          </span>
                         </div>
                       </div>
-                      <div className="flex flex-col">
-                        <span className="text-gray-600">: {exam.startDate}</span>
-                        <span className="text-gray-600">: {exam.startTime}</span>
-                        <span className="text-gray-600">
-                          : {exam.totalExamTime} mins
-                        </span>
-                      </div>
+                      <button
+                        type="button"
+                        onClick={() => handleStartExam(exam.examId)}
+                        disabled={completedExams.has(exam.examId)}
+                        className={`focus:outline-none text-white font-semibold text-xl rounded-lg px-5 py-2.5 me-2 mb-2 ${
+                          completedExams.has(exam.examId)
+                            ? "bg-gray-400 cursor-not-allowed"
+                            : "bg-[#132EE0]"
+                        }`}
+                      >
+                        {completedExams.has(exam.examId)
+                          ? "Already Attempted"
+                          : "Start Exam"}
+                      </button>
                     </div>
-                    <button
-                      type="button"
-                      onClick={() => handleStartExam(exam.examId)}
-                      disabled={completedExams.has(exam.examId)}
-                      className={`focus:outline-none text-white font-semibold text-xl rounded-lg px-5 py-2.5 me-2 mb-2 ${
-                        completedExams.has(exam.examId)
-                          ? "bg-gray-400 cursor-not-allowed"
-                          : "bg-[#132EE0]"
-                      }`}
-                    >
-                      {completedExams.has(exam.examId)
-                        ? "Already Attempted"
-                        : "Start Exam"}
-                    </button>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
           </div>
-        </div>
-      )}
-
-      {/* Upcoming Exams Section */}
-      {upcoming.length > 0 && (
-        <div className="mb-6">
-          <h3 className="font-semibold text-[#132EE0] mb-3 flex flex-row items-center gap-2 text-xl border-b">
-            <img className="w-8" src="ExamModule/Exam-blue.png" alt="" />
-            Upcoming Exams
-          </h3>
-          <div className="grid grid-cols-1 lg:grid-cols-4 gap-4">
-            {upcoming.map((exam) => (
-              <Card key={exam.examId}>
-                <CardHeader>
-                  <CardTitle>Batch: {exam.batch}</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="flex flex-col space-y-3 p-4 bg-white shadow-md rounded-lg">
-                    <div className="flex flex-row justify-evenly">
-                      <div>
-                        <div className="flex items-center gap-2">
-                          <img
-                            src="ExamModule/Date.png"
-                            alt="Date"
-                            className="w-5 h-5"
-                          />
-                          <strong className="text-gray-700">Start Date</strong>
+        )}
+      </div>
+      <div className="h-full">
+        {/* Upcoming Exams Section */}
+        {upcoming.length > 0 && (
+          <div className="mb-6">
+            <h3 className="font-semibold text-[#132EE0] mb-3 flex flex-row items-center gap-2 text-xl border-b">
+              <img className="w-8" src="ExamModule/Exam-blue.png" alt="" />
+              Upcoming Exams
+            </h3>
+            <div className="grid grid-cols-1 lg:grid-cols-4 gap-4">
+              {upcoming.map((exam) => (
+                <Card key={exam.examId}>
+                  <CardHeader>
+                    <CardTitle>Batch: {exam.batch}</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="flex flex-col space-y-3 p-4 bg-white shadow-md rounded-lg">
+                      <div className="flex flex-row justify-evenly">
+                        <div>
+                          <div className="flex items-center gap-2">
+                            <img
+                              src="ExamModule/Date.png"
+                              alt="Date"
+                              className="w-5 h-5"
+                            />
+                            <strong className="text-gray-700">
+                              Start Date
+                            </strong>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <img
+                              src="ExamModule/Watch.png"
+                              alt="Clock"
+                              className="w-5 h-5"
+                            />
+                            <strong className="text-gray-700">
+                              Start Time
+                            </strong>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <img
+                              src="ExamModule/Sand-clock.png"
+                              alt="Duration"
+                              className="w-5 h-5"
+                            />
+                            <strong className="text-gray-700">
+                              Total Duration
+                            </strong>
+                          </div>
                         </div>
-                        <div className="flex items-center gap-2">
-                          <img
-                            src="ExamModule/Watch.png"
-                            alt="Clock"
-                            className="w-5 h-5"
-                          />
-                          <strong className="text-gray-700">Start Time</strong>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <img
-                            src="ExamModule/Sand-clock.png"
-                            alt="Duration"
-                            className="w-5 h-5"
-                          />
-                          <strong className="text-gray-700">
-                            Total Duration
-                          </strong>
+                        <div className="flex flex-col">
+                          <span className="text-gray-600">
+                            : {exam.startDate}
+                          </span>
+                          <span className="text-gray-600">
+                            : {exam.startTime}
+                          </span>
+                          <span className="text-gray-600">
+                            : {exam.totalExamTime} mins
+                          </span>
                         </div>
                       </div>
-                      <div className="flex flex-col">
-                        <span className="text-gray-600">: {exam.startDate}</span>
-                        <span className="text-gray-600">: {exam.startTime}</span>
-                        <span className="text-gray-600">
-                          : {exam.totalExamTime} mins
-                        </span>
-                      </div>
+                      <ExamCountdownTimer
+                        startDate={exam.startDate}
+                        startTime={exam.startTime}
+                        totalExamTime={exam.totalExamTime}
+                      />
                     </div>
-                    <ExamCountdownTimer
-                      startDate={exam.startDate}
-                      startTime={exam.startTime}
-                      totalExamTime={exam.totalExamTime}
-                    />
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
           </div>
-        </div>
-      )}
-
-      {/* Finished Exams Section */}
-      {finished.length > 0 && (
-        <div className="mb-6">
-          <h3 className="font-semibold text-[#132EE0] mb-3 flex flex-row items-center gap-2 text-xl border-b">
-            <img className="w-8" src="ExamModule/Exam-blue.png" alt="" />
-            Finished Exams
-          </h3>
-          <div className="grid grid-cols-1 lg:grid-cols-4 gap-4">
-            {finished.map((exam) => (
-              <Card key={exam.examId}>
-                <CardHeader>
-                  <CardTitle>Batch: {exam.batch}</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="flex flex-col space-y-3 p-4 bg-white shadow-md rounded-lg">
-                    <div className="flex flex-row justify-evenly">
-                      <div>
-                        <div className="flex items-center gap-2">
-                          <img
-                            src="ExamModule/Date.png"
-                            alt="Date"
-                            className="w-5 h-5"
-                          />
-                          <strong className="text-gray-700">Start Date</strong>
+        )}
+      </div>
+      <div className="h-full">
+        {/* Finished Exams Section */}
+        {finished.length > 0 && (
+          <div className="mb-6">
+            <h3 className="font-semibold text-[#132EE0] mb-3 flex flex-row items-center gap-2 text-xl border-b">
+              <img className="w-8" src="ExamModule/Exam-blue.png" alt="" />
+              Finished Exams
+            </h3>
+            <div className="grid grid-cols-1 lg:grid-cols-4 gap-4">
+              {finished.map((exam) => (
+                <Card key={exam.examId}>
+                  <CardHeader>
+                    <CardTitle>Batch: {exam.batch}</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="flex flex-col space-y-3 p-4 bg-white shadow-md rounded-lg">
+                      <div className="flex flex-row justify-evenly">
+                        <div>
+                          <div className="flex items-center gap-2">
+                            <img
+                              src="ExamModule/Date.png"
+                              alt="Date"
+                              className="w-5 h-5"
+                            />
+                            <strong className="text-gray-700">
+                              Start Date
+                            </strong>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <img
+                              src="ExamModule/Watch.png"
+                              alt="Clock"
+                              className="w-5 h-5"
+                            />
+                            <strong className="text-gray-700">
+                              Start Time
+                            </strong>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <img
+                              src="ExamModule/Sand-clock.png"
+                              alt="Duration"
+                              className="w-5 h-5"
+                            />
+                            <strong className="text-gray-700">
+                              Total Duration
+                            </strong>
+                          </div>
                         </div>
-                        <div className="flex items-center gap-2">
-                          <img
-                            src="ExamModule/Watch.png"
-                            alt="Clock"
-                            className="w-5 h-5"
-                          />
-                          <strong className="text-gray-700">Start Time</strong>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <img
-                            src="ExamModule/Sand-clock.png"
-                            alt="Duration"
-                            className="w-5 h-5"
-                          />
-                          <strong className="text-gray-700">
-                            Total Duration
-                          </strong>
+                        <div className="flex flex-col">
+                          <span className="text-gray-600">
+                            : {exam.startDate}
+                          </span>
+                          <span className="text-gray-600">
+                            : {exam.startTime}
+                          </span>
+                          <span className="text-gray-600">
+                            : {exam.totalExamTime} mins
+                          </span>
                         </div>
                       </div>
-                      <div className="flex flex-col">
-                        <span className="text-gray-600">: {exam.startDate}</span>
-                        <span className="text-gray-600">: {exam.startTime}</span>
-                        <span className="text-gray-600">
-                          : {exam.totalExamTime} mins
-                        </span>
-                      </div>
+                      <p className="text-red-600 font-semibold text-center mt-2 text-xl">
+                        Exam Completed
+                      </p>
                     </div>
-                    <p className="text-red-600 font-semibold text-center mt-2 text-xl">
-                      Exam Completed
-                    </p>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
           </div>
-        </div>
-      )}
+        )}
+      </div>
     </div>
   );
 };
