@@ -185,7 +185,7 @@ const fetchResumeScore = async () => {
             console.error("❌ Student ID is missing in studentDetails.");
             return;
         }
-
+       console.log(studentDetails.studentId)
         const response = await axios.get(
             `${import.meta.env.VITE_BACKEND_URL}/api/v1/pic`,
             {
