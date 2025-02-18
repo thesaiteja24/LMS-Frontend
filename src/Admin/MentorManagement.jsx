@@ -11,6 +11,7 @@ const MentorManagement = () => {
   const [formData, setFormData] = useState({  name: '', email: '', PhNumber: '', location: '',Designation:'', userType: 'mentor' });
   const [countryCodes, setCountryCodes] = useState([]); 
   const [mentorCountryCode, setMentorCountryCode] = useState(null);
+  const emailRegex = /^(?!.*\.\.)[a-zA-Z0-9._%+-]+@codegnan\.com$/;
 
   const locations = ['vijayawada', 'hyderabad', 'bangalore'];
 const  designations =["Python","Flask","Java","AdvancedJava","MySQL","DataScience","DataAnalytics","Frontend","SoftSkills","Aptitude"]
@@ -95,10 +96,7 @@ const  designations =["Python","Flask","Java","AdvancedJava","MySQL","DataScienc
   };
 
   // Validate Email
-  const isValidEmail = (email) => {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return emailRegex.test(email);
-  };
+
 
   // Validate Phone Number
   const isValidPhone = (PhNumber) => {
@@ -120,10 +118,14 @@ const  designations =["Python","Flask","Java","AdvancedJava","MySQL","DataScienc
       return;
     }
   
-    if (!isValidEmail(formData.email)) {
-      Swal.fire({ icon: "error", title: "Invalid email format." });
+    if (!emailRegex.test(formData.email)) {
+      Swal.fire({ 
+          icon: "error", 
+          title: "Invalid Email!", 
+          text: "Only Codegnan email addresses (example@codegnan.com) are allowed." 
+      });
       return;
-    }
+  }
   
     if (!isValidPhone(formData.PhNumber)) {
       Swal.fire({ icon: "error", title: "Invalid phone number. Enter a valid 10-digit number." });

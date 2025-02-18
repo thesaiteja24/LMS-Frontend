@@ -19,6 +19,7 @@ const Bdemanagement = () => {
   const [countryCodes, setCountryCodes] = useState([]);
   const [selectedCountryCode, setSelectedCountryCode] = useState(null);
   const [phoneNumber, setPhoneNumber] = useState("");
+  const emailRegex = /^(?!.*\.\.)[a-zA-Z0-9._%+-]+@codegnan\.com$/;
 
 
 
@@ -101,10 +102,7 @@ const Bdemanagement = () => {
   };
 
   // Validate Email
-  const isValidEmail = (email) => {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return emailRegex.test(email);
-  };
+
 
   // Validate Phone Number
   const isValidPhone = (phoneNumber ) => {
@@ -117,10 +115,15 @@ const Bdemanagement = () => {
       return;
     }
   
-    if (!isValidEmail(formData.email)) {
-      Swal.fire({ icon: "error", title: "Invalid email format." });
+    if (!emailRegex.test(formData.email)) {
+      Swal.fire({ 
+          icon: "error", 
+          title: "Invalid Email!", 
+          text: "Only Codegnan email addresses (example@codegnan.com) are allowed." 
+      });
       return;
-    }
+  }
+
     if (!isValidPhone(phoneNumber)) {
       Swal.fire({
         icon: "error",

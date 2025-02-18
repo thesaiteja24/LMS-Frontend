@@ -26,7 +26,7 @@ export default function ProgramManagerSignup() {
   // const navigate = useNavigate();
   const { fetchStudentsData } = useStudentsData();
     const { batches,fetchBatches } = useUniqueBatches();
- 
+    const emailRegex = /^(?!.*\.\.)[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 
   const [formData, setFormData] = useState({
     studentId: "",
@@ -78,62 +78,91 @@ export default function ProgramManagerSignup() {
       fetchBatches(location);
     }, [fetchBatches,location]);
 
-  const handleFileUpload = (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
+    const handleFileUpload = (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+  
+      const fileExtension = file.name.split(".").pop().toLowerCase();
+      const reader = new FileReader();
+  
+      reader.onload = (event) => {
+          const content = event.target.result;
+  
+          if (["xlsx", "xls"].includes(fileExtension)) {
+              const data = new Uint8Array(content);
+              const workbook = read(data, { type: "array" });
+              const sheetName = workbook.SheetNames[0];
+              const sheet = workbook.Sheets[sheetName];
+              const rows = utils.sheet_to_json(sheet, { header: 1 });
+  
+              if (rows.length > 1) {
+                  const headers = rows[0].map((header) => header.toLowerCase().trim());
+  
+                  const formattedData = rows.slice(1).map((row) => {
+                      const studentPh = row[headers.indexOf("studentphnumber")]?.toString().trim() || "";
+                      const parentPh = row[headers.indexOf("parentnumber")]?.toString().trim() || "";
+                      const batchNo = row[headers.indexOf("batchno")]?.toString().toUpperCase() || "";
+  
+                      return {
+                          studentId: row[headers.indexOf("studentid")]?.toString().toUpperCase() || "",
+                          batchNo: batchNo,
+                          email: row[headers.indexOf("email")]?.toString() || "",
+                          studentPhNumber: 
+                              studentPh.startsWith("+91") 
+                                  ? studentPh 
+                                  : (studentPh.length === 10 && /^[6789]\d{9}$/.test(studentPh) ? `+91${studentPh}` : studentPh),
+                          parentNumber: 
+                              parentPh.startsWith("+91") 
+                                  ? parentPh 
+                                  : (parentPh.length === 10 && /^[6789]\d{9}$/.test(parentPh) ? `+91${parentPh}` : parentPh),
+                          location: row[headers.indexOf("location")]?.toString().toLowerCase() || "",
+                      };
+                  });
+  
+                  // 🔹 Validate batch numbers against fetched batches
+                  const validBatchNos = batches.map((batch) => batch.Batch);
+                  const invalidEntries = formattedData.filter(entry => !validBatchNos.includes(entry.batchNo));
+  
+                  if (invalidEntries.length > 0) {
+                      Swal.fire({
+                          title: "Invalid Batch Numbers Found!",
+                          text: `The following batch numbers are invalid: ${invalidEntries.map(e => e.batchNo).join(", ")}`,
+                          icon: "error",
+                      });
+                      return;
+                  }
 
-    const fileExtension = file.name.split(".").pop().toLowerCase();
-
-    const reader = new FileReader();
-    reader.onload = (event) => {
-      const content = event.target.result;
-
-      switch (fileExtension) {
-        case "xlsx":
-        case "xls": {
-          const data = new Uint8Array(content);
-          const workbook = read(data, { type: "array" });
-          const sheetName = workbook.SheetNames[0];
-          const sheet = workbook.Sheets[sheetName];
-          const rows = utils.sheet_to_json(sheet, { header: 1 });
-
-          if (rows.length > 1) {
-            const headers = rows[0].map((header) => header.toLowerCase().trim());
-            const formattedData = rows.slice(1).map((row) => ({
-              studentId: row[headers.indexOf("studentid")]?.toString().toUpperCase() || "",
-              batchNo: row[headers.indexOf("batchno")]?.toString().toUpperCase() || "",
-              email: row[headers.indexOf("email")]?.toString() || "",
-              studentPhNumber: row[headers.indexOf("studentphnumber")]?.toString() || "",
-              parentNumber: row[headers.indexOf("parentnumber")]?.toString() || "",
-              location: row[headers.indexOf("location")]?.toString().toLowerCase() || "",
-            }));
-            setExcelData(formattedData);
+                  const invalidEmails = formattedData.filter(entry => !emailRegex.test(entry.email));
+                  if (invalidEmails.length > 0) {
+                      Swal.fire({
+                          title: "Invalid Email Format!",
+                          text: `The following emails are not valid Gmail addresses: ${invalidEmails.map(e => e.email).join(", ")}`,
+                          icon: "error",
+                      });
+                      return;
+                  }
+  
+                  setExcelData(formattedData);
+              } else {
+                  Swal.fire({
+                      title: "Invalid Excel File",
+                      text: "The file is empty or missing headers.",
+                      icon: "error",
+                  });
+              }
           } else {
-            Swal.fire({
-              title: "Invalid Excel File",
-              text: "The file is empty or missing headers.",
-              icon: "error",
-            });
+              Swal.fire({
+                  title: "Invalid File",
+                  text: "Unsupported file type. Please upload Excel files (.xlsx, .xls).",
+                  icon: "error",
+              });
           }
-          break;
-        }
-
-        default:
-          Swal.fire({
-            title: "Invalid File",
-            text: "Unsupported file type. Please upload Excel, CSV, or JSON files.",
-            icon: "error",
-          });
-          break;
-      }
-    };
-
-    if (["xlsx", "xls"].includes(fileExtension)) {
+      };
+  
       reader.readAsArrayBuffer(file);
-    } else {
-      reader.readAsText(file);
-    }
   };
+  
+
 
   const handleDownloadTemplate = () => {
     const templateData = [
@@ -141,8 +170,8 @@ export default function ProgramManagerSignup() {
         studentId: "CG112",
         batchNo: "PFS-100",
         email: "example@gmail.com",
-        studentPhNumber: "8688031605",
-        parentNumber: "8688031603",
+        studentPhNumber: "+918688031605",
+        parentNumber: "+918688031603",
         location
       },
     ];
@@ -165,9 +194,21 @@ export default function ProgramManagerSignup() {
     try {
       const endpoint = `${import.meta.env.VITE_BACKEND_URL}/api/v1/addstudent`;
       let response;
+
+      
   
       // Validate phone numbers if not using Excel
       if (!useExcel) {
+        if (!emailRegex.test(formData.email)) {
+          Swal.fire({
+              icon: "error",
+              title: "Invalid Email!",
+              text: "Please enter a valid email address (no consecutive dots, proper format).",
+          });
+          setLoading(false);
+          return;
+      }
+
         if (!phoneRegex.test(formData.studentPhNumber) || !phoneRegex.test(formData.parentNumber)) {
           Swal.fire({
             icon: "error",

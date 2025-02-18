@@ -309,6 +309,9 @@ useEffect(() => {
                     <strong>Email:</strong> {studentDetails?.email || "N/A"}
                   </p>
                   <p className="text-gray-700">
+                  <strong>Date of Birth:</strong> {studentDetails?.DOB || "N/A"}  {/* ✅ Added */}
+                </p>
+                  <p className="text-gray-700">
                     <strong>Age:</strong> {studentDetails?.age || "N/A"}
                   </p>
                   <p className="text-gray-700">
@@ -332,6 +335,14 @@ useEffect(() => {
                       {studentDetails?.githubLink || "N/A"}
                     </a>
                   </p>
+                  <p className="text-gray-700">
+                <strong>Arrears:</strong> {studentDetails?.arrears ? "Yes" : "No"}  {/* ✅ Added */}
+              </p>
+              {studentDetails?.arrears && (
+                <p className="text-gray-700">
+                  <strong>Arrears Count:</strong> {studentDetails?.ArrearsCount || "N/A"}  {/* ✅ Added */}
+                </p>
+              )}
                 </div>
 
                 {/* Academic Information */}
@@ -351,13 +362,42 @@ useEffect(() => {
                   <p className="text-gray-700">
                     <strong>Qualification:</strong> {studentDetails?.qualification || "N/A"}
                   </p>
-                  <p className="text-gray-700">
-                    <strong>Graduation %:</strong>{" "}
+                 
+
+                {/* 10th Details */}
+                <h2 className="text-lg font-semibold text-gray-700 mt-4">
+                  📚 10th Standard
+                </h2>
+                <p className="text-gray-700">
+                  <strong>10th Percentage:</strong> {studentDetails?.tenthStandard || "N/A"}%  {/* ✅ Added */}
+                </p>
+                <p className="text-gray-700">
+                  <strong>10th Passout Year:</strong> {studentDetails?.TenthPassoutYear || "N/A"}  {/* ✅ Added */}
+                </p>
+
+                {/* 12th / Intermediate Details */}
+                <h2 className="text-lg font-semibold text-gray-700 mt-4">
+                  📖 Intermediate / 12th Standard
+                </h2>
+                <p className="text-gray-700">
+                  <strong>Intermediate Percentage:</strong> {studentDetails?.twelfthStandard || "N/A"}%  {/* ✅ Added */}
+                </p>
+                <p className="text-gray-700">
+                  <strong>Intermediate Passout Year:</strong> {studentDetails?.TwelfthPassoutYear || "N/A"}  {/* ✅ Added */}
+                </p>
+
+                <h2 className="text-lg font-semibold text-gray-700 mt-4">
+                🎓 Graduation
+              </h2>
+
+                <p className="text-gray-700">
+                    <strong>Graduation Percentage:</strong>{" "}
                     {studentDetails?.highestGraduationpercentage || "N/A"}%
                   </p>
+                 
                   <p className="text-gray-700">
-                    <strong>Year of Passing:</strong> {studentDetails?.yearOfPassing || "N/A"}
-                  </p>
+                  <strong>Graduation Passout Year:</strong> {studentDetails?.yearOfPassing || "N/A"}  {/* ✅ Updated */}
+                </p>
                 </div>
               </div>
 

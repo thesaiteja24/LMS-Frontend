@@ -8,6 +8,11 @@ import { useStudentsData } from '../contexts/StudentsListContext';
 import { useEdit } from '../contexts/EditContext';
 import { useStudent } from '../contexts/StudentProfileContext';
 
+const departmentList = ['CSE-AI & ML','ECE','EEE','IT','MECH','CIVIL','CSE-Blockchain','CSE-Cyber Security','CSE-Data Analytics',
+    'CSE-Software Engineering','ECE-Embedded Systems','ECE-VLSI','MECH-Robotics','CSBS','BSC-CSE','BSC-AI','BSC-CSCS','BSC-Data Science','BSC-Data Analytics','BSC-Physics','BSC-Chemistry','BSC-Mathematics','BSC-Statistics',
+    'BSC-Zoology','BSC-Botany','BCA','B.COM-Economics','B.COM-General','B.COM-Computer Application','B.COM-Finance','B.COM-Banking','B.COM-Business Process','B.COM-Management','MCA','MSC','BBA'
+]
+
 const StudentProfileV = () => {
     const [showPassword, setShowPassword] = useState(false);
 const [showCPassword, setShowCPassword] = useState(false);
@@ -17,25 +22,30 @@ const [showCPassword, setShowCPassword] = useState(false);
     const {studentDetails, fetchStudentDetails } = useStudent();
     const [isDepartmentAdded, setIsDepartmentAdded] = useState(false);
     const [newDepartment, setNewDepartment] = useState('');
-    const [departments, setDepartments] = useState(['CSE', 'ISE', 'IT', 'ECE', 'EEE', 'CIVIL', 'MECH', 'AIML', 'AIDS', 'CSD', 'MBA', 'MTECH CSE', 'IoT', 'BBA', 'BCA', 'BSC', 'MCA', 'MSC']);
+    const [departments, setDepartments] = useState(departmentList);
+    const [arrearsCount, setArrearsCount] = useState('');
+
     const [formData, setFormData] = useState({
         name: studentDetails?.name || '',
+        dob: studentDetails?.DOB || '',
         age: studentDetails?.age || '',
         gender: studentDetails?.gender || '',
-        // mobileNumber: studentDetails?.phone || '', // Assuming `phone` field from API
         collegeUSNNumber: studentDetails?.collegeUSNNumber || '',
         githubLink: studentDetails?.githubLink || '',
         arrears: studentDetails?.arrears || true, // Defaulting to false
+        arrearsCount:studentDetails?.ArrearsCount,
         qualification: studentDetails?.qualification || '',
         department: studentDetails?.department || '',
         password: studentDetails.password, // Should be empty for security reasons
         cpassword:  studentDetails.password, // Should be empty for security reasons
         state: studentDetails?.state || '',
-        cityname: studentDetails?.city || '', // Assuming `city` field from API
+        cityname: studentDetails?.city || '', 
         yearOfPassing: studentDetails?.yearOfPassing || '',
         collegeName: studentDetails?.collegeName || '',
         tenthStandard: studentDetails?.tenthStandard || '',
+        tenthPassoutYear: studentDetails?.TenthPassoutYear || '',
         twelfthStandard: studentDetails?.twelfthStandard || '',
+        twelfthPassoutYear: studentDetails?.TwelfthPassoutYear || '',
         profilePic: studentDetails?.profilePic || null,
         resume: studentDetails?.resume || null,
         highestGraduationPercentage: studentDetails?.highestGraduationpercentage || ''
@@ -46,7 +56,6 @@ const [showCPassword, setShowCPassword] = useState(false);
         name: '',
         age: '',
         gender: '',
-        // mobileNumber: '',
         collegeUSNNumber: '',
         githubLink: '',
         qualification: '',
@@ -77,32 +86,65 @@ const [showCPassword, setShowCPassword] = useState(false);
     const [isOther, setIsOther] = useState(false);
     const [newSkill, setNewSkill] = useState('');
 
-    const handleAgeChange = (e) => {
-        const selectedDate = e.target.value;
-        const calculatedAge = calculateAge(selectedDate);
-        setAge(calculatedAge);
-        setFormData({ ...formData, age: selectedDate });
-        setErrors({ ...errors, age: calculatedAge >= 18 ? '' : 'You must be at least 18 years old.' });
+    const handleArrearsChange = (e) => {
+        const value = e.target.value === 'yes' ? true : false;
+        setFormData({
+            ...formData,
+            arrears: value,
+        });
+        if (!value) {
+            setArrearsCount(''); // Reset arrears count if 'No' is selected
+        }
     };
 
-    const calculateAge = (selectedDate) => {
-        const dob = new Date(selectedDate);
+    const handleArrearsCountChange = (e) => {
+        const value = e.target.value;
+        if (/^\d*$/.test(value)) { // ✅ Allow only numeric values
+            setArrearsCount(value);
+            setFormData(prevState => ({
+                ...prevState,
+                arrearsCount: value // ✅ Ensure formData is updated
+            }));
+        }
+    };
+    
+
+    const handleDOBChange = (e) => {
+        const selectedDate = e.target.value;
+        const calculatedAge = calculateAge(selectedDate);
+        
+        setFormData(prevState => ({
+            ...prevState,
+            dob: selectedDate,
+            age: calculatedAge // ✅ Ensure age is stored in formData
+        }));
+    
+        setErrors(prevErrors => ({
+            ...prevErrors,
+            age: calculatedAge >= 18 ? '' : 'You must be at least 18 years old.'
+        }));
+    };
+    
+    const calculateAge = (dob) => {
+        if (!dob) return ''; // Handle empty dob
+        const birthDate = new Date(dob);
         const today = new Date();
-        let age = today.getFullYear() - dob.getFullYear();
-        const monthDiff = today.getMonth() - dob.getMonth();
-        if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < dob.getDate())) {
+        let age = today.getFullYear() - birthDate.getFullYear();
+        const monthDiff = today.getMonth() - birthDate.getMonth();
+        if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
             age--;
         }
         return age;
     };
+    
+    
+    
 
     const validateName = (name) => {
         return /^[a-zA-Z\s]+$/.test(name) ? '' : 'Name must contain only letters and spaces.';
     };
 
-    // const validateMobileNumber = (number) => {
-    //     return /^\d{10}$/.test(number) ? '' : 'Mobile number must be 10 digits.';
-    // };
+    
 
     const validateCollegeUSNNumber = (usn) => {
         return /^[a-zA-Z0-9]{1,12}$/.test(usn) ? '' : 'USN must be up to 12 alphanumeric characters.';
@@ -127,6 +169,11 @@ const [showCPassword, setShowCPassword] = useState(false);
         return /^[a-zA-Z0-9\s]*$/.test(value) ? '' : 'Input must not contain special characters.';
     };
 
+    const validatePassoutYear = (year) => {
+        return /^\d{4}$/.test(year) ? '' : 'Year must be exactly 4 digits.';
+    };
+    
+
     const handleChange = (e) => {
         const { name, value } = e.target;
         setFormData({
@@ -134,7 +181,6 @@ const [showCPassword, setShowCPassword] = useState(false);
             [name]: value,
         });
     
-        // Validate based on field name
         let errorMessage = '';
         switch (name) {
             case 'gender':
@@ -143,9 +189,6 @@ const [showCPassword, setShowCPassword] = useState(false);
             case 'name':
                 errorMessage = validateName(value);
                 break;
-            // case 'mobileNumber':
-            //     errorMessage = validateMobileNumber(value);
-            //     break;
             case 'collegeUSNNumber':
                 errorMessage = validateCollegeUSNNumber(value);
                 break;
@@ -157,14 +200,16 @@ const [showCPassword, setShowCPassword] = useState(false);
                 break;
             case 'cpassword':
                 errorMessage = validatePassword(value);
-                // Check if passwords match
                 if (value !== formData.password) {
                     errorMessage = 'Password and Confirm Password do not match.';
                 }
                 break;
-            case 'yearOfPassing':
-                errorMessage = validateYearOfPassing(value);
-                break;
+            case 'yearOfPassing': // ✅ Graduation passout year validation
+            case 'tenthPassoutYear': // ✅ 10th passout year validation
+            case 'twelfthPassoutYear': // ✅ 12th passout year validation
+                errorMessage = validatePassoutYear(value);
+                break;    
+            
             case 'tenthStandard':
                 errorMessage = validatePercentage(value);
                 break;
@@ -230,7 +275,7 @@ const [showCPassword, setShowCPassword] = useState(false);
 
             setFormData({
                 ...formData,
-                [fieldName]: file,
+                [fieldName]: file,handleDOBChange
             });
         }
     };
@@ -260,13 +305,7 @@ const [showCPassword, setShowCPassword] = useState(false);
         setSelectedSkills(updatedSkills);
     };
 
-    const handleArrearsChange = (e) => {
-        const value = e.target.value === 'yes' ? true : false;
-        setFormData({
-            ...formData,
-            arrears: value,
-        });
-    };
+
     const addDepartment = () => {
         const updatedDepartment = newDepartment.charAt(0).toUpperCase() + newDepartment.slice(1);
         if (updatedDepartment && !departments.includes(updatedDepartment)) {
@@ -285,34 +324,31 @@ const [showCPassword, setShowCPassword] = useState(false);
     const handleSubmit = async (e) => {
         e.preventDefault();
         setEdit(true);
+    const newErrors = {
+        name: validateName(formData.name),
+        gender: formData.gender ? '' : 'Please select a gender.', 
+        collegeUSNNumber: validateCollegeUSNNumber(formData.collegeUSNNumber),
+        githubLink: validateGithubLink(formData.githubLink),
+        password: validatePassword(formData.password),
+        cpassword: formData.password !== formData.cpassword ? 'Password and Confirm Password do not match.' : '',
+        yearOfPassing: validateYearOfPassing(formData.yearOfPassing),
+        tenthPassoutYear: validatePassoutYear(formData.tenthPassoutYear), // ✅ 10th passout year validation
+        twelfthPassoutYear: validatePassoutYear(formData.twelfthPassoutYear),
+        tenthStandard: validatePercentage(formData.tenthStandard),
+        twelfthStandard: validatePercentage(formData.twelfthStandard),
+        highestGraduationPercentage: validatePercentage(formData.highestGraduationPercentage),
+        age: formData.age >= 18 ? '' : 'You must be at least 18 years old.',
+        state: validateInput(formData.state),
+        cityname: validateInput(formData.cityname),
+        qualification: validateInput(formData.qualification),
+        collegeName: validateInput(formData.collegeName),
+    };
     
-        // Validate all fields before submission
-        const newErrors = {
-            name: validateName(formData.name),
-            gender: formData.gender ? '' : 'Please select a gender.', 
-            // mobileNumber: validateMobileNumber(formData.mobileNumber),
-            collegeUSNNumber: validateCollegeUSNNumber(formData.collegeUSNNumber),
-            githubLink: validateGithubLink(formData.githubLink),
-            password: validatePassword(formData.password),
-            cpassword: formData.password !== formData.cpassword ? 'Password and Confirm Password do not match.' : '',
-            yearOfPassing: validateYearOfPassing(formData.yearOfPassing),
-            tenthStandard: validatePercentage(formData.tenthStandard),
-            twelfthStandard: validatePercentage(formData.twelfthStandard),
-            highestGraduationPercentage: validatePercentage(formData.highestGraduationPercentage),
-            age: age >= 18 ? '' : 'You must be at least 18 years old.',
-            state: validateInput(formData.state),
-            cityname: validateInput(formData.cityname),
-            qualification: validateInput(formData.qualification),
-            collegeName: validateInput(formData.collegeName),
-            department: validateInput(formData.department),
-        };
-    
-        // Check if there are any errors
-        const hasErrors = Object.values(newErrors).some(error => error !== '');
-        if (hasErrors) {
-            setErrors(newErrors);
-            return;
-        }
+    const hasErrors = Object.values(newErrors).some(error => error !== '');
+    if (hasErrors) {
+        setErrors(newErrors);
+        return;
+    }
     
      
     
@@ -329,7 +365,8 @@ const [showCPassword, setShowCPassword] = useState(false);
                 {
                     name: formData.name,
                     email: email,
-                    gender:formData.gender,
+                    gender: formData.gender,
+                    dob: formData.dob,
                     password: formData.password,
                     cityName: formData.cityname,
                     department: formData.department,
@@ -337,15 +374,17 @@ const [showCPassword, setShowCPassword] = useState(false);
                     state: formData.state,
                     collegeName: formData.collegeName,
                     qualification: formData.qualification,
-                    // mobileNumber: Number(formData.mobileNumber),
-                    age: Number(age),
+                    age: formData.age ? Number(formData.age) : calculateAge(formData.dob),
                     collegeUSNNumber: formData.collegeUSNNumber,
                     githubLink: formData.githubLink,
                     arrears: formData.arrears,
+                    arrearsCount: formData.arrears ? Number(arrearsCount) : 0,  // ✅ Include arrears count
                     resume: formData.resume,
                     profilePic: formData.profilePic,
                     tenthStandard: Number(formData.tenthStandard),
+                    tenthPassoutYear: formData.tenthPassoutYear,
                     twelfthStandard: Number(formData.twelfthStandard),
+                    twelfthPassoutYear: formData.twelfthPassoutYear,
                     highestGraduationPercentage: Number(formData.highestGraduationPercentage),
                     studentSkills: selectedSkills,
                 },
@@ -402,29 +441,33 @@ const [showCPassword, setShowCPassword] = useState(false);
     
         setFormData({
             name: studentDetails.name || '',
+            dob: studentDetails.DOB|| '',
             age: studentDetails.age || '',
-            gender: studentDetails.gender && ["Male", "Female"].includes(studentDetails.gender) 
-            ? studentDetails.gender 
-            : '', // Set an empty string instead of defaulting to "Female"            // mobileNumber: studentDetails.phone || '',
+            gender: studentDetails.gender && ["Male", "Female"].includes(studentDetails.gender) ? studentDetails.gender : '',
             collegeUSNNumber: studentDetails.collegeUSNNumber || '',
             githubLink: studentDetails.githubLink || '',
-            arrears: studentDetails.arrears === "true", // ✅ Ensure boolean
+            arrears: studentDetails.arrears === "true",
+            arrearsCount: studentDetails.ArrearsCount ? Number(studentDetails.ArrearsCount) : '',
             qualification: studentDetails.qualification || '',
             department: studentDetails.department || '',
-            password: studentDetails.password || '',
-            cpassword: studentDetails.password || '',
+            password: '', // Empty password field for security reasons
+            cpassword: '', // Empty confirm password field for security reasons
             state: studentDetails.state || '',
             cityname: studentDetails.city || '',
             yearOfPassing: studentDetails.yearOfPassing || '',
             collegeName: studentDetails.collegeName || '',
             tenthStandard: studentDetails.tenthStandard || '',
+            tenthPassoutYear: studentDetails.TenthPassoutYear || '', 
             twelfthStandard: studentDetails.twelfthStandard || '',
+            twelfthPassoutYear: studentDetails.TwelfthPassoutYear || '',
             profilePic: studentDetails.profilePic || null,
             resume: studentDetails.resume || null,
             highestGraduationPercentage: studentDetails.highestGraduationpercentage || ''
         });
-    
-        setSelectedSkills(studentDetails.studentSkills || []); // ✅ Populate skills
+        
+        setArrearsCount(studentDetails.ArrearsCount ? Number(studentDetails.ArrearsCount) : ''); // ✅ Update arrearsCount separately
+
+        setSelectedSkills(studentDetails.studentSkills || []);
     
     }, [studentDetails]);
     
@@ -450,18 +493,19 @@ const [showCPassword, setShowCPassword] = useState(false);
 
     {/* Date of Birth Field */}
     <div className="form-group">
-        <label>Date of Birth <span style={{ color: 'red' }}>*</span></label>
-        <input
-            type="date"
-            name="age"
-            value={formData.age}
-            onChange={handleAgeChange}
-            required
-        />
-        {/* Display calculated age */}
-        {age && <p>Your age: {age} years</p>}
-        {errors.age && <p className="error-message">{errors.age}</p>}
-    </div>
+    <label>Date of Birth <span style={{ color: 'red' }}>*</span></label>
+    <input
+        type="date"
+        name="dob"
+        value={formData.dob}
+        onChange={handleDOBChange}
+        required
+    />
+    {/* Display calculated age */}
+    {formData.age && <p>Your age: {formData.age} years</p>}
+    {errors.age && <p className="error-message">{errors.age}</p>}
+</div>
+
 
  
 </div>
@@ -482,7 +526,7 @@ const [showCPassword, setShowCPassword] = useState(false);
                 required
             />
             <FontAwesomeIcon 
-                icon={showPassword ? faEyeSlash : faEye} 
+                icon={!showPassword ? faEyeSlash : faEye} 
                 className="password-icon"
                 onClick={togglePasswordVisibility}
             />
@@ -503,7 +547,7 @@ const [showCPassword, setShowCPassword] = useState(false);
                 required
             />
             <FontAwesomeIcon 
-                icon={showCPassword ? faEyeSlash : faEye} 
+                icon={!showCPassword ? faEyeSlash : faEye} 
                 className="password-icon"
                 onClick={toggleCPasswordVisibility}
             />
@@ -512,19 +556,7 @@ const [showCPassword, setShowCPassword] = useState(false);
     </div>
 </div>
                 <div className="input-group">
-                    {/* <div className="form-group">
-                        <label>WhatsApp Number <span style={{ color: 'red' }}>*</span></label>
-                        <input
-                            type="number"
-                            name="mobileNumber"
-                            placeholder='Ex: Enter Mobile Number'
-                            value={formData.mobileNumber}
-                            onChange={handleChange}
-                            required
-                        />
-                        {errors.mobileNumber && <p className="error-message">{errors.mobileNumber}</p>}
-                    </div> */}
-                       {/* Gender Selection */}
+                   
                     <div className="form-group">
                         <label>Gender <span style={{ color: 'red' }}>*</span></label>
                         <div className="radio-group">
@@ -639,7 +671,7 @@ const [showCPassword, setShowCPassword] = useState(false);
             ))}
             <option value="Others">Others</option>
         </select>
-        {isOther && !isDepartmentAdded && ( // Only show input and button if "Others" is selected and department is not added
+        {isOther && !isDepartmentAdded && ( 
             <div>
                 <input
                     type="text"
@@ -672,32 +704,94 @@ const [showCPassword, setShowCPassword] = useState(false);
                         {errors.yearOfPassing && <p className="error-message">{errors.yearOfPassing}</p>}
                     </div>
                 </div>
-                <div className="input-group">
-                    <div className="form-group">
-                        <label>10th Percentage <span style={{ color: 'red' }}>*</span></label>
-                        <input
-                            type="number"
-                            name="tenthStandard"
-                            placeholder='Ex: 92'
-                            value={formData.tenthStandard}
-                            onChange={handleChange}
-                            required
-                        />
-                        {errors.tenthStandard && <p className="error-message">{errors.tenthStandard}</p>}
-                    </div>
-                    <div className="form-group">
-                        <label>12th Percentage <span style={{ color: 'red' }}>*</span></label>
-                        <input
-                            type="number"
-                            name="twelfthStandard"
-                            placeholder='Ex: 92'
-                            value={formData.twelfthStandard}
-                            onChange={handleChange}
-                            required
-                        />
-                        {errors.twelfthStandard && <p className="error-message">{errors.twelfthStandard}</p>}
-                    </div>
-                </div>
+              {/* Academic Information */}
+<div className="input-group">
+    {/* 10th Details */}
+    <div className="form-group">
+        <label>10th Percentage <span style={{ color: 'red' }}>*</span></label>
+        <input
+            type="number"
+            name="tenthStandard"
+            placeholder="Ex: 92"
+            value={formData.tenthStandard}
+            onChange={handleChange}
+            required
+        />
+        {errors.tenthStandard && <p className="error-message">{errors.tenthStandard}</p>}
+    </div>
+
+    <div className="form-group">
+        <label>10th Passout Year <span style={{ color: 'red' }}>*</span></label>
+        <input
+            type="number"
+            name="tenthPassoutYear"
+            placeholder="Ex: 2015"
+            value={formData.tenthPassoutYear}
+            onChange={handleChange}
+            required
+        />
+         {errors.tenthPassoutYear && <p className="error-message">{errors.tenthPassoutYear}</p>}
+    </div>
+</div>
+
+<div className="input-group">
+    {/* 12th / Intermediate Details */}
+    <div className="form-group">
+        <label>12th Percentage <span style={{ color: 'red' }}>*</span></label>
+        <input
+            type="number"
+            name="twelfthStandard"
+            placeholder="Ex: 92"
+            value={formData.twelfthStandard}
+            onChange={handleChange}
+            required
+        />
+        {errors.twelfthStandard && <p className="error-message">{errors.twelfthStandard}</p>}
+    </div>
+
+    <div className="form-group">
+        <label>12th Passout Year <span style={{ color: 'red' }}>*</span></label>
+        <input
+            type="number"
+            name="twelfthPassoutYear"
+            placeholder="Ex: 2017"
+            value={formData.twelfthPassoutYear}
+            onChange={handleChange}
+            required
+        />
+         {errors.twelfthPassoutYear && <p className="error-message">{errors.twelfthPassoutYear}</p>}
+    </div>
+</div>
+
+<div className="input-group">
+    {/* Graduation Details */}
+    <div className="form-group">
+        <label>Graduated College Name (PG/UG) <span style={{ color: 'red' }}>*</span></label>
+        <input
+            type="text"
+            name="collegeName"
+            placeholder="Ex: Codegnan"
+            value={formData.collegeName}
+            onChange={handleChange}
+            required
+        />
+        {errors.collegeName && <p className="error-message">{errors.collegeName}</p>}
+    </div>
+
+    <div className="form-group">
+        <label>Graduation Passout Year <span style={{ color: 'red' }}>*</span></label>
+        <input
+            type="number"
+            name="yearOfPassing"
+            placeholder="Ex: 2021"
+            value={formData.yearOfPassing}
+            onChange={handleChange}
+            required
+        />
+        {errors.yearOfPassing && <p className="error-message">{errors.yearOfPassing}</p>}
+    </div>
+</div>
+
                 <div className="input-group">
                     <div className="form-group">
                         <label>Graduated College Name(PG/UG) <span style={{ color: 'red' }}>*</span></label>
@@ -790,34 +884,50 @@ const [showCPassword, setShowCPassword] = useState(false);
                         </div>
                     </div>
                     <div className="form-group">
-                        <label>Arrears <span style={{ color: 'red' }}>*</span></label>
-                        <div className="radio-group">
-                            <div className="radio-option">
-                                <input
-                                    type="radio"
-                                    id="arrearsYes"
-                                    name="arrears"
-                                    value="yes"
-                                    checked={formData.arrears === true}
-                                    onChange={handleArrearsChange}
-                                    required
-                                />
-                                <label htmlFor="arre arsYes">Yes</label>
-                            </div>
-                            <div className="radio-option">
-                                <input
-                                    type="radio"
-                                    id="arrearsNo"
-                                    name="arrears"
-                                    value="no"
-                                    checked={formData.arrears === false}
-                                    onChange={handleArrearsChange}
-                                    required
-                                />
-                                <label htmlFor="arrearsNo">No</label>
-                            </div>
-                        </div>
+    <label>Arrears <span style={{ color: 'red' }}>*</span></label>
+    <div className="radio-group">
+        <div className="radio-option">
+            <input
+                type="radio"
+                id="arrearsYes"
+                name="arrears"
+                value="yes"
+                checked={formData.arrears === true}
+                onChange={handleArrearsChange}
+                required
+            />
+            <label htmlFor="arrearsYes">Yes</label>
+        </div>
+        <div className="radio-option">
+            <input
+                type="radio"
+                id="arrearsNo"
+                name="arrears"
+                value="no"
+                checked={formData.arrears === false}
+                onChange={handleArrearsChange}
+                required
+            />
+            <label htmlFor="arrearsNo">No</label>
+        </div>
+    </div>
                     </div>
+
+                    {/* Conditionally show input field for arrears count */}
+                    {formData.arrears === true && (
+                        <div className="form-group">
+                            <label>How many arrears do you have? <span style={{ color: 'red' }}>*</span></label>
+                            <input
+                                type="number"
+                                name="arrearsCount"
+                                placeholder="Enter number of arrears"
+                                value={arrearsCount}
+                                onChange={handleArrearsCountChange}
+                                required
+                            />
+                        </div>
+                    )}
+
                 </div>
                 <button className='btn' type='submit'>Submit</button>
             </form>
