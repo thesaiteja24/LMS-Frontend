@@ -6,6 +6,7 @@ import { Loader } from "lucide-react";
 import { useStudent } from "../../../../contexts/StudentProfileContext";
 import { useNavigate } from "react-router-dom";
 import { ExamContext } from "./ExamContext";
+import ExamCountdownTimer from "./ExamCountDownTimer";
 
 const ExamDashboard = () => {
   const { setExamData } = useContext(ExamContext);
@@ -104,7 +105,46 @@ const ExamDashboard = () => {
 
   const { active, upcoming, finished } = categorizeExams();
 
-  // 4. Handler to start the exam – requests fullscreen and calls your start exam API
+  // 4. Tracking effect to reload the page if an exam's time window changes
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const now = new Date();
+      let shouldReload = false;
+
+      // Check if any upcoming exam has started
+      for (const exam of upcoming) {
+        const examStart = new Date(`${exam.startDate}T${exam.startTime}`);
+        if (now >= examStart) {
+          shouldReload = true;
+          break;
+        }
+      }
+
+      // Check if any active exam has ended
+      if (!shouldReload) {
+        for (const exam of active) {
+          const examStart = new Date(`${exam.startDate}T${exam.startTime}`);
+          const examEnd = new Date(
+            examStart.getTime() + exam.totalExamTime * 60000
+          );
+          if (now >= examEnd) {
+            shouldReload = true;
+            break;
+          }
+        }
+      }
+
+      if (shouldReload) {
+        clearInterval(interval);
+        // This will reload the entire /exam-dashboard page
+        window.location.reload();
+      }
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, [active, upcoming]);
+
+  // 5. Handler to start the exam – requests fullscreen and calls your start exam API
   const handleStartExam = async (examId) => {
     try {
       // Request fullscreen mode
@@ -145,6 +185,7 @@ const ExamDashboard = () => {
       </div>
     );
   }
+  
   window.addEventListener("popstate", () => {
     window.location.reload();
   });
@@ -199,12 +240,8 @@ const ExamDashboard = () => {
                         </div>
                       </div>
                       <div className="flex flex-col">
-                        <span className="text-gray-600">
-                          : {exam.startDate}
-                        </span>
-                        <span className="text-gray-600">
-                          : {exam.startTime}
-                        </span>
+                        <span className="text-gray-600">: {exam.startDate}</span>
+                        <span className="text-gray-600">: {exam.startTime}</span>
                         <span className="text-gray-600">
                           : {exam.totalExamTime} mins
                         </span>
@@ -239,7 +276,6 @@ const ExamDashboard = () => {
             <img className="w-8" src="ExamModule/Exam-blue.png" alt="" />
             Upcoming Exams
           </h3>
-          <hr />
           <div className="grid grid-cols-1 lg:grid-cols-4 gap-4">
             {upcoming.map((exam) => (
               <Card key={exam.examId}>
@@ -278,17 +314,18 @@ const ExamDashboard = () => {
                         </div>
                       </div>
                       <div className="flex flex-col">
-                        <span className="text-gray-600">
-                          : {exam.startDate}
-                        </span>
-                        <span className="text-gray-600">
-                          : {exam.startTime}
-                        </span>
+                        <span className="text-gray-600">: {exam.startDate}</span>
+                        <span className="text-gray-600">: {exam.startTime}</span>
                         <span className="text-gray-600">
                           : {exam.totalExamTime} mins
                         </span>
                       </div>
                     </div>
+                    <ExamCountdownTimer
+                      startDate={exam.startDate}
+                      startTime={exam.startTime}
+                      totalExamTime={exam.totalExamTime}
+                    />
                   </div>
                 </CardContent>
               </Card>
@@ -342,12 +379,8 @@ const ExamDashboard = () => {
                         </div>
                       </div>
                       <div className="flex flex-col">
-                        <span className="text-gray-600">
-                          : {exam.startDate}
-                        </span>
-                        <span className="text-gray-600">
-                          : {exam.startTime}
-                        </span>
+                        <span className="text-gray-600">: {exam.startDate}</span>
+                        <span className="text-gray-600">: {exam.startTime}</span>
                         <span className="text-gray-600">
                           : {exam.totalExamTime} mins
                         </span>
