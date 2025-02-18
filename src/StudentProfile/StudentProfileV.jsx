@@ -694,7 +694,7 @@ const [showCPassword, setShowCPassword] = useState(false);
                     <div className="form-group">
                         <label>Highest Qualification Year of Passing <span style={{ color: 'red' }}>*</span></label>
                         <input
-                            type="number"
+                            type="text"
                             name="yearOfPassing"
                             placeholder='Ex: 2019'
                             value={formData.yearOfPassing}
@@ -710,7 +710,7 @@ const [showCPassword, setShowCPassword] = useState(false);
     <div className="form-group">
         <label>10th Percentage <span style={{ color: 'red' }}>*</span></label>
         <input
-            type="number"
+            type="text"
             name="tenthStandard"
             placeholder="Ex: 92"
             value={formData.tenthStandard}
@@ -723,7 +723,7 @@ const [showCPassword, setShowCPassword] = useState(false);
     <div className="form-group">
         <label>10th Passout Year <span style={{ color: 'red' }}>*</span></label>
         <input
-            type="number"
+            type="text"
             name="tenthPassoutYear"
             placeholder="Ex: 2015"
             value={formData.tenthPassoutYear}
@@ -739,7 +739,7 @@ const [showCPassword, setShowCPassword] = useState(false);
     <div className="form-group">
         <label>12th Percentage <span style={{ color: 'red' }}>*</span></label>
         <input
-            type="number"
+            type="text"
             name="twelfthStandard"
             placeholder="Ex: 92"
             value={formData.twelfthStandard}
@@ -752,7 +752,7 @@ const [showCPassword, setShowCPassword] = useState(false);
     <div className="form-group">
         <label>12th Passout Year <span style={{ color: 'red' }}>*</span></label>
         <input
-            type="number"
+            type="text"
             name="twelfthPassoutYear"
             placeholder="Ex: 2017"
             value={formData.twelfthPassoutYear}
@@ -781,7 +781,7 @@ const [showCPassword, setShowCPassword] = useState(false);
     <div className="form-group">
         <label>Graduation Passout Year <span style={{ color: 'red' }}>*</span></label>
         <input
-            type="number"
+            type="text"
             name="yearOfPassing"
             placeholder="Ex: 2021"
             value={formData.yearOfPassing}
@@ -808,7 +808,7 @@ const [showCPassword, setShowCPassword] = useState(false);
                     <div className="form-group">
                         <label>Percentage(Highest Graduation) <span style={{ color: 'red' }}>*</span></label>
                         <input
-                            type="number"
+                            type="text"
                             name="highestGraduationPercentage"
                             placeholder='Ex: 92'
                             value={formData.highestGraduationPercentage}
@@ -918,7 +918,7 @@ const [showCPassword, setShowCPassword] = useState(false);
                         <div className="form-group">
                             <label>How many arrears do you have? <span style={{ color: 'red' }}>*</span></label>
                             <input
-                                type="number"
+                                type="text"
                                 name="arrearsCount"
                                 placeholder="Enter number of arrears"
                                 value={arrearsCount}

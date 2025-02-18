@@ -1,10 +1,12 @@
 import React, { useState } from "react";
+import { useUniqueBatches } from "../contexts/UniqueBatchesContext";
 import {
   FaIdCard,
   FaCalendarAlt,
   FaClock,
   FaCodeBranch,
   FaInfoCircle,
+  FaVideo,
 } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
@@ -28,13 +30,14 @@ const BatchForm = () => {
     StartDate: "",
     EndDate: "",
     Status: "",
+    GoogleMeetLink: "",
   });
 
   const [duration, setDuration] = useState(null); // Store calculated duration
   const location = localStorage.getItem("location") || "Vijayawada"; // Default to Vijayawada
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false); // Loading state
-
+  const { fetchBatches } = useUniqueBatches();
   const handleInputChange = (e) => {
     const { name, value } = e.target;
 
@@ -57,9 +60,25 @@ const BatchForm = () => {
     }
   };
 
+  const isValidGoogleMeetLink = (link) => {
+    const regex = /^(https:\/\/meet\.google\.com\/)[a-zA-Z0-9-]+$/;
+    return regex.test(link);
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
+
+    if (!isValidGoogleMeetLink(formData.GoogleMeetLink)) {
+      Swal.fire({
+        title: "Invalid Google Meet Link!",
+        text: "Please enter a valid Google Meet link (e.g., https://meet.google.com/xyz-abc-def)",
+        icon: "error",
+        confirmButtonText: "OK",
+      });
+      setIsLoading(false);
+      return;
+    }
 
     const payload = {
       BatchId: formData.BatchId.toUpperCase(),
@@ -68,6 +87,7 @@ const BatchForm = () => {
       EndDate: formData.EndDate,
       Duration: duration, // Calculated duration in days
       Status: formData.Status,
+      GoogleMeetLink: formData.GoogleMeetLink,
       location,
     };
 
@@ -89,6 +109,7 @@ const BatchForm = () => {
         StartDate: "",
         EndDate: "",
         Status: "",
+        GoogleMeetLink: "",
       });
       setDuration(null);
     } catch (err) {
@@ -104,7 +125,9 @@ const BatchForm = () => {
     }
   };
 
-  const handleViewBatches = () => {
+  const handleViewBatches = (e) => {
+    e.preventDefault()
+    fetchBatches(location)
     navigate("/viewbatch");
   };
 
@@ -240,6 +263,24 @@ const BatchForm = () => {
               </select>
             </div>
           </div>
+          <div>
+              <label htmlFor="GoogleMeetLink" className="block text-sm font-medium text-gray-700">
+                <FaVideo className="inline mr-2 text-blue-500" />
+                Google Meet Link
+              </label>
+              <input
+                type="text"
+                name="GoogleMeetLink"
+                id="GoogleMeetLink"
+                value={formData.GoogleMeetLink}
+                onChange={handleInputChange}
+                placeholder="Enter Google Meet Link"
+                className="mt-1 block w-full p-3 rounded-md border border-gray-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+
+          
+          
 
               {/* Buttons */}
               <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mt-6">
