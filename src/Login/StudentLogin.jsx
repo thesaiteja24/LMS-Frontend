@@ -62,7 +62,6 @@ export default function StudentLogin({setIsAuthenticated }) {
         localStorage.setItem('userType', response.data.user.usertype);
         localStorage.setItem('email',response.data.user.email)
         localStorage.setItem('student_id', response.data.id);
-        console.log("heloo====",response.data.Location)
         localStorage.setItem('location',response.data.Location)
         localStorage.setItem(`${response.data.user.usertype}`, response.data.id)
         // Redirect to profile page

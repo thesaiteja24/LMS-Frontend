@@ -7,10 +7,6 @@ const MentorBatches = () => {
   const [modalOpen, setModalOpen] = useState(false);
   const [loading, setLoading] = useState(true);
 
-  // // Debugging: Log incoming data
-  // console.log("Fetched Mentor Data:", mentorData);
-  // console.log("Fetched Schedule Data:", scheduleData);
-  // console.log("Fetched Students List:", studentsList);
 
   // Fetch data on component mount
   useEffect(() => {

@@ -59,7 +59,6 @@ const fetchResumeScore = async () => {
     const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/v1/atscheck`, {
       params: { student_id: resumeId },
     });
-   console.log(response)
     // navigate('/ats-result', { state: { analysis: response.data } });
 
 
@@ -103,7 +102,6 @@ const fetchResumeScore = async () => {
 
       if (contentType.includes("application/pdf") ) {
         // ✅ pdf received directly, create URL for display
-        console.log("✅ Resume fetched successfully");
 
         const pdfUrl = URL.createObjectURL(response.data);
         setResumeUrl(pdfUrl);

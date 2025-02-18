@@ -40,7 +40,6 @@ export default function StudentProfile() {
     const fetchStudentDetails = async () => {
       try {
         const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/v1/getstudentdetails?student_id=${student_id}`);
-        console.log("profile component", response.data);
         setStudentDetails(response.data);
         setLoading(false);
       } catch (error) {
@@ -54,7 +53,6 @@ export default function StudentProfile() {
     const formData = new FormData();
     formData.append('resume', file);
     formData.append('student_id', student_id);
-    console.log(formData)
     try {
       if (!file) {
         console.error('No file selected.');
@@ -76,7 +74,6 @@ export default function StudentProfile() {
         });
         navigate("/jobslist")
       }
-      console.log('Update Resume Response:', response);
     } catch (error) {
       console.error('Error updating resume:', error);
     }

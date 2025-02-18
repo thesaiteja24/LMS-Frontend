@@ -72,9 +72,7 @@ export const DailyQuestionBank = () => {
   };
 
   const handleViewQuestions = async (item) => {
-    console.log(
-      `Fetching questions for Subject: ${item.Subject}, DayOrder: ${item.DayOrder}`
-    );
+
 
     // Ensure SubTopics and PreviousSubTopics exist and filter out undefined or empty subtopic IDs
     const Tags = [
@@ -101,7 +99,6 @@ export const DailyQuestionBank = () => {
       });
 
       if (response.data.success) {
-        console.log(Tags);
         navigate("/view-daily-exams", {
           state: {
             Tags: [

@@ -84,14 +84,12 @@ export const GrandTestQuestionBank = () => {
       exam_questions: [...randomQuestions.mcq, ...randomQuestions.coding],
       type: "weekly",
     };
-    console.log(payload);
 
     try {
       const response = await axios.post(
         `${import.meta.env.VITE_BACKEND_URL}/api/v1/createweeklyexam`,
         payload
       );
-      console.log(response);
 
       if (response.status === 201) {
         Swal.fire({

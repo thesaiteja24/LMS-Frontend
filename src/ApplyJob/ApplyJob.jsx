@@ -35,7 +35,6 @@ const ApplyJob = () => {
     const handleSubmit = (e) => {
         e.preventDefault();
         // Handle form submission
-        console.log(formData);
         // Clear form fields after submission
         setFormData({
             name: '',

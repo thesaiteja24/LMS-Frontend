@@ -42,7 +42,6 @@ const RequestForm = () => {
   }, [selectedState]);
 
   const onSubmit = async (data) => {
-    console.log(data)
     if (!otpSent) {
       alert("Please send the OTP before submitting the form.");
       return;
@@ -56,7 +55,6 @@ const RequestForm = () => {
     try {
        await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/v1/requestform`, data);
       alert("Successful! Our career expert will be in touch with you.");
-      console.log('Form data submitted:', data);
     } catch (error) {
       console.error('Error submitting form:', error);
       alert("Failed to submit the form. Please try again later.");

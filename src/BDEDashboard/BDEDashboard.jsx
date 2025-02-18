@@ -58,7 +58,6 @@ const BDEDashboard = () => {
 
   const handleEditClick = (selectedJob) => {
     const jobToEdit = jobs.find((job) => job.job_id === selectedJob.job_id);
-    console.log(jobToEdit)
     if (jobToEdit) {
       setState((prevState) => ({
         ...prevState,

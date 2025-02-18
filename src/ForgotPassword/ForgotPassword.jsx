@@ -52,7 +52,6 @@ export default function ForgotPassword() {
     const lowerCaseEmail = email.toLowerCase();
     const OTP = otp;
     try {
-      console.log(email)
       const response = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/v1/verifyotp`, {
         email: lowerCaseEmail,
         otp: OTP,

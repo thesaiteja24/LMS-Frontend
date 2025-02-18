@@ -23,12 +23,10 @@ export const DailyProvider = ({ children }) => {
       const today = new Date().toISOString().split("T")[0];
 
       try {
-        console.log(`Fetching exam details for batch: ${batchNo}, student: ${studentId}, date: ${today}`);
         const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/v1/viewexam`, {
           params: { batchNo, studentId, Date: today },
         });
 
-        console.log("API Response:", response);
 
         if (response.data?.exams?.length > 0) {
           const todayExam = response.data.exams.find((exam) => exam.date === today);

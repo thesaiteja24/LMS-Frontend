@@ -4,7 +4,6 @@ import React from "react";
 const AtsResult = (analysis) => {
   // const location = useLocation();
    const analysisData = analysis.analysis ;
- console.log("hello--",analysisData);
   const score = analysisData.ats_score || "Score Not Available";
   const feedbackSections = analysisData.feedback_sections || {
     "Skills Feedback": "Null",

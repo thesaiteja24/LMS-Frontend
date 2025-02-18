@@ -52,7 +52,6 @@ const Course = () => {
             },
           }
         );
-        // console.log("Backend Response:", response.data);
         setSyllabus(response.data.curriculum);
       } catch (error) {
         console.error("Error fetching mentor syllabus:", error);

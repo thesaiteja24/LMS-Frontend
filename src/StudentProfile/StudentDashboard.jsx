@@ -5,7 +5,6 @@ import { useStudent } from '../contexts/StudentProfileContext';
 
 const StudentDashboard = () => {
   const { studentDetails } = useStudent();
-  console.log(studentDetails)
   return (
     <div className="min-h-screen bg-gradient-to-r from-blue-900 via-purple-800 to-blue-600 text-white">
     
