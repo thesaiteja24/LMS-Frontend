@@ -59,6 +59,7 @@ export default function StudentLogin({setIsAuthenticated }) {
         // localStorage.setItem("JwtToken", token);
        
         // Store user info in local storage
+        localStorage.setItem('profileStatus',response.data.user.Profile);
         localStorage.setItem('userType', response.data.user.usertype);
         localStorage.setItem('email',response.data.user.email)
         localStorage.setItem('student_id', response.data.id);

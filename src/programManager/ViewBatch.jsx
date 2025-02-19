@@ -8,7 +8,8 @@ import {
   FaInfoCircle,
   FaEdit,
   FaSave,
-  FaTimesCircle
+  FaTimesCircle,
+  FaVideo
 } from "react-icons/fa";
 import axios from "axios";
 
@@ -28,12 +29,10 @@ const ViewBatch = () => {
   }, [fetchBatches,localStorageLocation]);
 
   useEffect(() => {
-    // Apply location filter first, then update the status
     let filtered = locationFilter === "all" ? batches : batches.filter(
       (batch) => batch.location.toLowerCase() === locationFilter.toLowerCase()
     );
 
-    // Update batch status dynamically
     const updatedBatches = filtered.map((batch) => ({
       ...batch,
       Status: determineStatus(batch.StartDate, batch.EndDate),
@@ -100,7 +99,6 @@ const ViewBatch = () => {
         Duration: editedData.Duration,
       });
   
-      // **Update `filteredBatches` state immediately for a smooth UI refresh**
       setFilteredBatches((prevBatches) =>
         prevBatches.map((batch) =>
           batch.id === batchId
@@ -110,11 +108,11 @@ const ViewBatch = () => {
       );
   
       setEditingBatch(null);
-      fetchBatches(localStorageLocation); // Fetch latest data from backend after updating UI
+      fetchBatches(localStorageLocation); 
     } catch (error) {
       console.error("Error updating batch:", error);
     }finally {
-      setIsSaving(false); // Hide loading indicator after request
+      setIsSaving(false); 
     }
   };
   
@@ -225,8 +223,11 @@ const ViewBatch = () => {
               <FaClock className="mr-2 text-indigo-500" />
               Duration: {editingBatch === batch.id ? editedData.Duration : batch.Duration}
             </p>
+            <p className="text-md text-gray-500 flex items-center mb-2">
+              <FaVideo className="mr-2 text-indigo-500" />
+              Google Meet Link: {batch.ClassLink || 'N/A'}
+            </p>
 
-            {/* Status */}
             <p
               className={`text-md font-semibold flex items-center ${
                 batch.Status === "Active"

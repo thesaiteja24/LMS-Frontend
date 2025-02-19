@@ -69,7 +69,7 @@ const BatchForm = () => {
     e.preventDefault();
     setIsLoading(true);
 
-    if (!isValidGoogleMeetLink(formData.GoogleMeetLink)) {
+    if (!isValidGoogleMeetLink(formData.GoogleMeetLink.trim())) {
       Swal.fire({
         title: "Invalid Google Meet Link!",
         text: "Please enter a valid Google Meet link (e.g., https://meet.google.com/xyz-abc-def)",
@@ -79,6 +79,7 @@ const BatchForm = () => {
       setIsLoading(false);
       return;
     }
+    
 
     const payload = {
       BatchId: formData.BatchId.toUpperCase(),
@@ -102,6 +103,8 @@ const BatchForm = () => {
         icon: "success",
         confirmButtonText: "OK",
       });
+
+      await fetchBatches(location)
 
       setFormData({
         BatchId: "",

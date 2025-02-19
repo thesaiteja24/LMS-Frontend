@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from "react";
 import axios from "axios";
+import Swal from "sweetalert2";
 import {
   FaBars,
   FaChevronLeft,
@@ -19,7 +20,7 @@ import {
   FaChalkboardTeacher,
   FaBookOpen,
   FaTachometerAlt,
-  FaUserCircle,
+  // FaUserCircle,
 } from "react-icons/fa";
 import { IoMdCloudUpload } from "react-icons/io";
 import { TbReportAnalytics } from "react-icons/tb";
@@ -39,6 +40,32 @@ export const SidebarV = ({ setIsAuthenticated }) => {
   const [isLoggedOut, setIsLoggedOut] = useState(false);
 
   const userType = localStorage.getItem("userType") || "null";
+  const profileStatus = localStorage.getItem('profileStatus')
+
+  const handleNavigation = (path) => {
+    const restrictedPaths = [
+      "/jobslist",
+      "/courses",
+      "/exam-dashboard",
+      "/exam-repors",
+      "/mock-interviews",
+      "/leave-request-page",
+    ];
+  
+    if (profileStatus === "false" && restrictedPaths.includes(path)) {
+      Swal.fire({
+        title: "Profile Incomplete!",
+        text: "Please update your profile first to access this feature.",
+        icon: "warning",
+        confirmButtonText: "OK",
+      });
+      return; // Prevent navigation
+    }
+  
+    navigate(path);
+    setIsMobileMenuOpen(false);
+  };
+  
 
   const roleDisplayNames = {
     student_login_details: "STUDENT",
@@ -106,10 +133,10 @@ export const SidebarV = ({ setIsAuthenticated }) => {
     navigate("/", { replace: true });
   };
 
-  const handleNavigation = (path) => {
-    navigate(path);
-    setIsMobileMenuOpen(false);
-  };
+  // const handleNavigation = (path) => {
+  //   navigate(path);
+  //   setIsMobileMenuOpen(false);
+  // };
 
   const getMenuItems = (userType, handleLogout) => {
     switch (userType) {
@@ -119,7 +146,7 @@ export const SidebarV = ({ setIsAuthenticated }) => {
           { label: "Jobs List", path: "/jobslist", icon: FaBook },
           { label: "Course", path: "/courses", icon: FaClipboard },
           { label: "Exams", path: "/exam-dashboard", icon: FaFileAlt },
-          { label: "Reports", path: "/exam-repors", icon: PiExam },
+          // { label: "Reports", path: "/exam-repors", icon: PiExam },
           {
             label: "Mock Interviews",
             path: "/mock-interviews",
@@ -213,11 +240,11 @@ export const SidebarV = ({ setIsAuthenticated }) => {
             path: "/upload-questions",
             icon: IoMdCloudUpload,
           },
-          {
-            label: "Reports",
-            path: "/mentor-reports",
-            icon: TbReportAnalytics,
-          },
+          // {
+          //   label: "Reports",
+          //   path: "/mentor-reports",
+          //   icon: TbReportAnalytics,
+          // },
           { label: "Logout", action: handleLogout, icon: FaSignOutAlt },
         ];
       case "Manager":
