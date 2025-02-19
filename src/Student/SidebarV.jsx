@@ -20,7 +20,7 @@ import {
   FaChalkboardTeacher,
   FaBookOpen,
   FaTachometerAlt,
-  FaUserCircle,
+  // FaUserCircle,
 } from "react-icons/fa";
 import { IoMdCloudUpload } from "react-icons/io";
 import { TbReportAnalytics } from "react-icons/tb";
@@ -146,7 +146,7 @@ export const SidebarV = ({ setIsAuthenticated }) => {
           { label: "Jobs List", path: "/jobslist", icon: FaBook },
           { label: "Course", path: "/courses", icon: FaClipboard },
           { label: "Exams", path: "/exam-dashboard", icon: FaFileAlt },
-          { label: "Reports", path: "/exam-repors", icon: PiExam },
+          // { label: "Reports", path: "/exam-repors", icon: PiExam },
           {
             label: "Mock Interviews",
             path: "/mock-interviews",
@@ -240,11 +240,11 @@ export const SidebarV = ({ setIsAuthenticated }) => {
             path: "/upload-questions",
             icon: IoMdCloudUpload,
           },
-          {
-            label: "Reports",
-            path: "/mentor-reports",
-            icon: TbReportAnalytics,
-          },
+          // {
+          //   label: "Reports",
+          //   path: "/mentor-reports",
+          //   icon: TbReportAnalytics,
+          // },
           { label: "Logout", action: handleLogout, icon: FaSignOutAlt },
         ];
       case "Manager":
