@@ -61,6 +61,8 @@ import { Parent } from "./Student/Exams_module/students/ExamModule/Parent.jsx";
 import { useLocation } from "react-router-dom";
 import { ExamProvider } from "./Student/Exams_module/students/ExamModule/ExamContext.jsx";
 import { ToastContainer } from "react-toastify";
+import { Dashboard } from "./programManager/Performance/Dashboard.jsx";
+import DailyPerformance from "./programManager/Performance/DailyPerformance.jsx";
 
 const ProtectedRoute = ({ children, allowedRoles }) => {
   const userType = localStorage.getItem("userType");
@@ -632,7 +634,22 @@ export default function App() {
               </ProtectedRoute>
             }
           />
-
+          <Route
+            path="/students-performance"
+            element={
+              <ProtectedRoute allowedRoles={["Manager", "super", "superAdmin"]}>
+                <Dashboard />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/students-performance/daily"
+            element={
+              <ProtectedRoute allowedRoles={["Manager", "super", "superAdmin"]}>
+                <DailyPerformance />
+              </ProtectedRoute>
+            }
+          />
           <Route
             path="/viewbatch"
             element={

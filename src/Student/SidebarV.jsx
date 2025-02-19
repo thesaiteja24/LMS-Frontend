@@ -20,6 +20,7 @@ import {
   FaChalkboardTeacher,
   FaBookOpen,
   FaTachometerAlt,
+  FaChartLine,
   // FaUserCircle,
 } from "react-icons/fa";
 import { IoMdCloudUpload } from "react-icons/io";
@@ -40,7 +41,7 @@ export const SidebarV = ({ setIsAuthenticated }) => {
   const [isLoggedOut, setIsLoggedOut] = useState(false);
 
   const userType = localStorage.getItem("userType") || "null";
-  const profileStatus = localStorage.getItem('profileStatus')
+  const profileStatus = localStorage.getItem("profileStatus");
 
   const handleNavigation = (path) => {
     const restrictedPaths = [
@@ -51,7 +52,7 @@ export const SidebarV = ({ setIsAuthenticated }) => {
       "/mock-interviews",
       "/leave-request-page",
     ];
-  
+
     if (profileStatus === "false" && restrictedPaths.includes(path)) {
       Swal.fire({
         title: "Profile Incomplete!",
@@ -61,11 +62,10 @@ export const SidebarV = ({ setIsAuthenticated }) => {
       });
       return; // Prevent navigation
     }
-  
+
     navigate(path);
     setIsMobileMenuOpen(false);
   };
-  
 
   const roleDisplayNames = {
     student_login_details: "STUDENT",
@@ -278,6 +278,11 @@ export const SidebarV = ({ setIsAuthenticated }) => {
           { label: "Batch Schedule", path: "/batchschedule", icon: FaUsers },
           { label: "Create Batch", path: "/createbatch", icon: FaPlusSquare },
           { label: "Scheduling Exam", path: "/create-exam", icon: PiExam },
+          {
+            label: "Students Perfomance",
+            path: "/students-performance",
+            icon: FaChartLine,
+          },
           { label: "Logout", action: handleLogout, icon: FaSignOutAlt },
         ];
       default:
