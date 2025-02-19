@@ -24,6 +24,7 @@ const [showCPassword, setShowCPassword] = useState(false);
     const [newDepartment, setNewDepartment] = useState('');
     const [departments, setDepartments] = useState(departmentList);
     const [arrearsCount, setArrearsCount] = useState('');
+    console.log(studentDetails)
 
     const [formData, setFormData] = useState({
         name: studentDetails?.name || '',
@@ -32,12 +33,12 @@ const [showCPassword, setShowCPassword] = useState(false);
         gender: studentDetails?.gender || '',
         collegeUSNNumber: studentDetails?.collegeUSNNumber || '',
         githubLink: studentDetails?.githubLink || '',
-        arrears: studentDetails?.arrears || true, // Defaulting to false
+        arrears: studentDetails?.arrears || false, // Defaulting to false
         arrearsCount:studentDetails?.ArrearsCount,
         qualification: studentDetails?.qualification || '',
         department: studentDetails?.department || '',
-        password: studentDetails.password, // Should be empty for security reasons
-        cpassword:  studentDetails.password, // Should be empty for security reasons
+        password:'', // Should be empty for security reasons
+        cpassword:'', // Should be empty for security reasons
         state: studentDetails?.state || '',
         cityname: studentDetails?.city || '', 
         yearOfPassing: studentDetails?.yearOfPassing || '',
@@ -387,6 +388,7 @@ const [showCPassword, setShowCPassword] = useState(false);
                     twelfthPassoutYear: formData.twelfthPassoutYear,
                     highestGraduationPercentage: Number(formData.highestGraduationPercentage),
                     studentSkills: selectedSkills,
+                    profileStatus:true
                 },
                 {
                     headers: {
@@ -394,6 +396,8 @@ const [showCPassword, setShowCPassword] = useState(false);
                     },
                 }
             );
+
+            localStorage.setItem("profileStatus", "true");
 
             if (formData.resume) {
                 const resumeFormData = new FormData();
