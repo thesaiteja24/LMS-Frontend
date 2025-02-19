@@ -16,7 +16,6 @@ const ExamContent = () => {
     studentExamId,
     totalScore,
   } = useContext(ExamContext);
-  
 
   return (
     <div className="min-h-screen h-full parent bg-[#E1EFFF] flex flex-col justify-evenly">

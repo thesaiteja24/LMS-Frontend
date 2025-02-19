@@ -35,6 +35,7 @@ export const ManagerExamDashboard = () => {
 
   // Fetch exam details for the selected batch
   const handleDailyClick = async (batch) => {
+    const type = "Daily-Exam";
     try {
       // API call to fetch exam details for the batch
       const response = await axios.get(
@@ -47,7 +48,9 @@ export const ManagerExamDashboard = () => {
       const data = response.data;
 
       // Navigate to the exam creation page with the fetched data
-      navigate("/set-exam", { state: { examData: data, batch: batch } });
+      navigate("/set-exam", {
+        state: { examData: data, batch: batch, type },
+      });
     } catch (error) {
       console.error("Error fetching exam details:", error);
       toast.error(

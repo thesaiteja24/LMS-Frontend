@@ -12,7 +12,7 @@ export const SetExam = () => {
   const location = useLocation();
   const managerId = localStorage.getItem("Manager");
   const managerLocation = localStorage.getItem("location");
-  const { examData, batch } = location.state || {}; // Data from ManagerExamDashboard
+  const { examData, batch, type } = location.state || {}; // Data from ManagerExamDashboard
   const [creatingExam, setCreatingExam] = useState(false);
 
   // **🔹 New State Variables**
@@ -59,7 +59,9 @@ export const SetExam = () => {
     const fetchValidDayOrders = async () => {
       try {
         const response = await axios.get(
-          `${import.meta.env.VITE_BACKEND_URL}/api/v1/validate-daily-dayorder?batch=${batchValue}&managerId=${managerId}&managerLocation=${managerLocation}`
+          `${
+            import.meta.env.VITE_BACKEND_URL
+          }/api/v1/validate-daily-dayorder?batch=${batchValue}&managerId=${managerId}&managerLocation=${managerLocation}`
         );
 
         if (examData?.data) {
@@ -279,6 +281,7 @@ export const SetExam = () => {
       startTime,
       managerId,
       managerLocation,
+      type,
     };
 
     try {
