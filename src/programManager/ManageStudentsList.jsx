@@ -158,6 +158,7 @@ export default function StudentsList() {
                 <th className="px-4 py-2">Department</th>
                 <th className="px-4 py-2">Graduation Percentage</th>
                 <th className="px-4 py-2">Graduation Passout Year</th>
+                <th className="px-4 py-2">Skills</th>
                 <th className="px-4 py-2">Backlogs</th>
               </tr>
             </thead>
@@ -174,6 +175,9 @@ export default function StudentsList() {
                   <td className="px-4 py-2 text-center">{student.department || '__'}</td>
                   <td className="px-4 py-2 text-center">{student.highestGraduationpercentage ? `${student.highestGraduationpercentage}%` : '__'}</td>
                   <td className="px-4 py-2 text-center">{student.yearOfPassing || '__'}</td>
+                  <td className="px-4 py-2 text-center">
+                    {student.studentSkills?.length > 0 ? student.studentSkills.join(", ") : "No skills listed"}
+                  </td>
                   <td className="px-4 py-2 text-center">{student.ArrearsCount || '__'}</td>
                 </tr>
               ))}

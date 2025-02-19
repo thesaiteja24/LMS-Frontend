@@ -148,7 +148,7 @@ const [showCPassword, setShowCPassword] = useState(false);
     
 
     const validateCollegeUSNNumber = (usn) => {
-        return /^[a-zA-Z0-9]{1,12}$/.test(usn) ? '' : 'USN must be up to 12 alphanumeric characters.';
+        return /^[a-zA-Z0-9]{1,50}$/.test(usn) ? '' : 'USN must be  alphanumeric characters.';
     };
 
     const validateGithubLink = (link) => {
@@ -264,15 +264,15 @@ const [showCPassword, setShowCPassword] = useState(false);
                 return;
             }
 
-            if (file.size > maxSize) {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'File Too Large',
-                    text: fieldName === 'resume' ? 'Resume must be less than 100 KB.' : 'Profile picture must be less than 10 KB.',
-                });
-                e.target.value = '';
-                return;
-            }
+            // if (file.size > maxSize) {
+            //     Swal.fire({
+            //         icon: 'error',
+            //         title: 'File Too Large',
+            //         text: fieldName === 'resume' ? 'Resume must be less than 100 KB.' : 'Profile picture must be less than 10 KB.',
+            //     });
+            //     e.target.value = '';
+            //     return;
+            // }
 
             setFormData({
                 ...formData,
