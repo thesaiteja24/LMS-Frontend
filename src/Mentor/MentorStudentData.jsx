@@ -88,40 +88,40 @@ export default function MentorStudentData() {
         <p className="text-center text-red-500">Error loading students. Please try again.</p>
       ) : filteredStudents.length > 0 ? (
         <div className="overflow-x-auto w-full mb-4">
-          <table className="w-full border-collapse">
+           <table className="w-full border-collapse">
             <thead className="bg-blue-800 text-white">
               <tr>
                 <th className="px-4 py-2">StudentId</th>
+                <th className="px-4 py-2">Student Name</th>
                 <th className="px-4 py-2">BatchNO</th>
-                <th className="px-4 py-2">Name</th>
                 <th className="px-4 py-2">Email</th>
                 <th className="px-4 py-2">Phone</th>
-                <th className="px-4 py-2">Location</th>
                 <th className="px-4 py-2">College Name</th>
+                <th className="px-4 py-2">Highest Graduation</th>
                 <th className="px-4 py-2">Department</th>
                 <th className="px-4 py-2">Graduation Percentage</th>
+                <th className="px-4 py-2">Graduation Passout Year</th>
                 <th className="px-4 py-2">Skills</th>
-                <th className="px-4 py-2">Year of Passing</th>
+                <th className="px-4 py-2">Backlogs</th>
               </tr>
             </thead>
             <tbody>
-              {currentStudents.map((student) => (
-                <tr key={student.studentId} className="bg-white odd:bg-gray-100">
-                  <td className="px-4 py-2 text-center">{student.studentId || "__"}</td>
-                  <td className="px-4 py-2 text-center">{student.BatchNo || "__"}</td>
-                  <td className="px-4 py-2 text-center">{student.name || "__"}</td>
-                  <td className="px-4 py-2 text-center">{student.email || "__"}</td>
-                  <td className="px-4 py-2 text-center">{student.phone || "__"}</td>
-                  <td className="px-4 py-2 text-center">{student.location || "__"}</td>
-                  <td className="px-4 py-2 text-center">{student.collegeName || "__"}</td>
-                  <td className="px-4 py-2 text-center">{student.department || "__"}</td>
-                  <td className="px-4 py-2 text-center">
-                    {student.highestGraduationpercentage ? `${student.highestGraduationpercentage}%` : "__"}
-                  </td>
+              {currentStudents.map(student => (
+                <tr key={student.id} className="bg-white odd:bg-gray-100">
+                  <td className="px-4 py-2 text-center">{student.studentId || '__'}</td>
+                  <td className="px-4 py-2 text-center">{student.name || '__'}</td>
+                  <td className="px-4 py-2 text-center">{student.BatchNo || '__'}</td>
+                  <td className="px-4 py-2 text-center">{student.email || '__'}</td>
+                  <td className="px-4 py-2 text-center">{student.studentPhNumber || '__'}</td>
+                  <td className="px-4 py-2 text-center">{student.collegeName || '__'}</td>
+                  <td className="px-4 py-2 text-center">{student.qualification || '__'}</td>
+                  <td className="px-4 py-2 text-center">{student.department || '__'}</td>
+                  <td className="px-4 py-2 text-center">{student.highestGraduationpercentage ? `${student.highestGraduationpercentage}%` : '__'}</td>
+                  <td className="px-4 py-2 text-center">{student.yearOfPassing || '__'}</td>
                   <td className="px-4 py-2 text-center">
                     {student.studentSkills?.length > 0 ? student.studentSkills.join(", ") : "No skills listed"}
                   </td>
-                  <td className="px-4 py-2 text-center">{student.yearOfPassing || "__"}</td>
+                  <td className="px-4 py-2 text-center">{student.ArrearsCount || '__'}</td>
                 </tr>
               ))}
             </tbody>
