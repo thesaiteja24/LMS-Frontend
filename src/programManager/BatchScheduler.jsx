@@ -297,7 +297,7 @@ const BatchScheduler = () => {
     endDate,
     startTime: formatTo12Hour(startTime),
     endTime: formatTo12Hour(endTime),
-    roomNo: parseInt(roomNo, 10),
+    roomNo,
     techStack: selectedTechStack,
     subject: selectedSubject,
     location,
@@ -417,9 +417,10 @@ const BatchScheduler = () => {
    
     <InputField
       id="roomNumber"
+      type="text"
       label="Room Number"
       value={roomNo}
-      onChange={(e) => setRoomNo(e.target.value.replace(/\D/g, ""))}
+      onChange={(e) => setRoomNo(e.target.value)}
       placeholder="Enter Room Number"
     />
   </div>
