@@ -1,12 +1,28 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { QuestionBreakDown } from "./QuestionBreakDown";
 import DoughnutChart from "./DoughnutChart";
 import { Attempted } from "./Attempted";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
 export const ExamAnalysis = () => {
   const location = useLocation();
+  const navigate = useNavigate();
   const submissionResult = location.state?.submissionResult;
+
+  // Effect to override back navigation
+  useEffect(() => {
+    // Push a dummy state to history to override back button behavior
+    window.history.pushState(null, "", window.location.href);
+
+    const handlePopState = () => {
+      navigate("/exam-dashboard");
+    };
+
+    window.addEventListener("popstate", handlePopState);
+    return () => {
+      window.removeEventListener("popstate", handlePopState);
+    };
+  }, [navigate]);
 
   return (
     <div className="min-h-screen bg-gray-100 p-4">
