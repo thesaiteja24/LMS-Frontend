@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from "react";
 import axios from "axios";
+import Swal from "sweetalert2";
 import {
   FaBars,
   FaChevronLeft,
@@ -39,6 +40,32 @@ export const SidebarV = ({ setIsAuthenticated }) => {
   const [isLoggedOut, setIsLoggedOut] = useState(false);
 
   const userType = localStorage.getItem("userType") || "null";
+  const profileStatus = localStorage.getItem('profileStatus')
+
+  const handleNavigation = (path) => {
+    const restrictedPaths = [
+      "/jobslist",
+      "/courses",
+      "/exam-dashboard",
+      "/exam-repors",
+      "/mock-interviews",
+      "/leave-request-page",
+    ];
+  
+    if (profileStatus === "false" && restrictedPaths.includes(path)) {
+      Swal.fire({
+        title: "Profile Incomplete!",
+        text: "Please update your profile first to access this feature.",
+        icon: "warning",
+        confirmButtonText: "OK",
+      });
+      return; // Prevent navigation
+    }
+  
+    navigate(path);
+    setIsMobileMenuOpen(false);
+  };
+  
 
   const roleDisplayNames = {
     student_login_details: "STUDENT",
@@ -106,10 +133,10 @@ export const SidebarV = ({ setIsAuthenticated }) => {
     navigate("/", { replace: true });
   };
 
-  const handleNavigation = (path) => {
-    navigate(path);
-    setIsMobileMenuOpen(false);
-  };
+  // const handleNavigation = (path) => {
+  //   navigate(path);
+  //   setIsMobileMenuOpen(false);
+  // };
 
   const getMenuItems = (userType, handleLogout) => {
     switch (userType) {

@@ -87,7 +87,10 @@ const JobsList = () => {
         <div className='job-list-wrapper'>
             <h1 className='student-head'>Jobs Dashboard</h1>
             {loading && <p className='loading'>Loading Jobs...</p>}
-
+            {!loading && jobs.length === 0 && (
+                    <p className="no-jobs-message"> No Jobs Found at the moment. Please check back later!</p>
+                )}
+                
             <div className="job-list-container">
 
                 {error && <p className="error-message">{error}</p>}

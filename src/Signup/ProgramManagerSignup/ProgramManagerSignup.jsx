@@ -229,10 +229,15 @@ export default function ProgramManagerSignup() {
           batchNo: formData.batchNo.toUpperCase(),
           studentPhNumber: studentPhone,
           parentNumber: parentPhone,
-          location
+          location,
+          profileStatus:false
         });
       } else {
-        response = await axios.post(endpoint, { excelData });
+        const updatedExcelData = excelData.map((entry) => ({
+          ...entry,
+          profileStatus: false,  // ✅ Added default profile status
+        }));
+        response = await axios.post(endpoint, { excelData: updatedExcelData });
       }
   
       if (response.status === 200) {
@@ -241,11 +246,9 @@ export default function ProgramManagerSignup() {
           icon: "success",
         });
   
-        // ✅ Reset state
         setExcelData([]); 
         setUseExcel(false); 
   
-        // Safely reset the excel upload input value
         const excelUploadElement = document.getElementById("excelUpload");
         if (excelUploadElement) {
           excelUploadElement.value = ""; 
@@ -262,7 +265,6 @@ export default function ProgramManagerSignup() {
         await fetchStudentsData();
       }
     } catch (error) {
-      console.error("Error submitting student data:", error);
   
       if (error.response) {
         const status = error.response.status;
@@ -285,7 +287,6 @@ export default function ProgramManagerSignup() {
       }
     } finally {
       setLoading(false);
-      // Reset form data after submission
       setFormData({
         studentId: "",
         batchNo: "",

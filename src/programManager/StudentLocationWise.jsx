@@ -30,31 +30,46 @@ const StudentLocationWise = () => {
   
       // API call using GET method
       const response = await axios.get(apiUrl);
-  
       const data = response.data;
       if (!data.student_data || data.student_data.length === 0) {
-        setErrorMessage(data.message);
+        setErrorMessage(data.message || "No student found.");
         return;
       }
   
-      const studentDetails = data.student_data[0];
+      const studentDetails = data.student_data || {};
       setStudentData({
-        studentId: studentDetails.studentId,
-        name: studentDetails.name || "N/A",
-        email: studentDetails.email,
+        studentId: studentDetails.studentId || "N/A",
+        batchNo: studentDetails.BatchNo || "N/A",
+        email: studentDetails.email || "N/A",
+        phone: studentDetails.studentPhNumber || "N/A",
+        parentNumber: studentDetails.parentNumber || "N/A",
+        modeOfStudy: studentDetails.ModeofStudey || "N/A",
+        location: studentDetails.location || "N/A",
+        profileStatus: studentDetails.ProfileStatus ? "Completed" : "Incomplete",
+        arrearsCount: studentDetails.ArrearsCount || "0",
+        dob: studentDetails.DOB || "N/A",
+        age: studentDetails.age || "N/A",
+        gender: studentDetails.gender || "N/A",
+        githubLink: studentDetails.githubLink || "N/A",
         qualification: studentDetails.qualification || "N/A",
-        parentNumber: studentDetails.parentNumber,
-        batchNo: studentDetails.std_BatchNo,
-        skills: Array.isArray(studentDetails.studentSkills) && studentDetails.studentSkills.length > 0
-          ? studentDetails.studentSkills.join(", ")
-          : "N/A",
-        percentage: studentDetails.highestGraduationpercentage || "N/A",
+        department: studentDetails.department || "N/A",
+        state: studentDetails.state || "N/A",
+        city: studentDetails.city || "N/A",
+        collegeName: studentDetails.collegeName || "N/A",
+        collegeUSNNumber: studentDetails.collegeUSNNumber || "N/A",
+        tenthStandard: studentDetails.tenthStandard || "N/A",
+        tenthPassoutYear: studentDetails.TenthPassoutYear || "N/A",
+        twelfthStandard: studentDetails.twelfthStandard || "N/A",
+        twelfthPassoutYear: studentDetails.TwelfthPassoutYear || "N/A",
+        highestGraduationPercentage: studentDetails.highestGraduationpercentage || "N/A",
         yearOfPassing: studentDetails.yearOfPassing || "N/A",
+        skills: studentDetails.studentSkills ? studentDetails.studentSkills.join(", ") : "N/A",
       });
       setAppliedJobs(data.applied_jobs_details || []);
       setEligibleJobs(data.eligible_jobs_details || []);
       setAttendance(data.Attendance || []);
     } catch (err) {
+      console.log(err.response?.data?.error)
       setErrorMessage(err.response?.data?.error || "An error occurred.");
     } finally {
       setLoading(false); // Stop loading
