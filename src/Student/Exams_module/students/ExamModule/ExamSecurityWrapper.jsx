@@ -1,22 +1,13 @@
 import React, { useEffect, useContext } from "react";
-import { ToastContainer, toast } from "react-toastify";
+import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { ExamContext } from "./ExamContext";
 import { useNavigate } from "react-router-dom";
 
-/**
- * Basic deterrents:
- *  - Disable right-click
- *  - Disable copy, cut, paste
- *  - Block common DevTools shortcuts (F12, Ctrl+Shift+I, Ctrl+Shift+J)
- *  - Block page reload (F5, Ctrl+R)
- *  - Prevent back navigation
- *  - Warn on tab switch
- *  - (No pointer lock used here)
- */
 const ExamSecurityWrapper = ({ children }) => {
   const { handleSubmit } = useContext(ExamContext);
   const navigate = useNavigate();
+
   useEffect(() => {
     // 1) Disable Right-Click
     const handleContextMenu = (e) => {
@@ -42,9 +33,20 @@ const ExamSecurityWrapper = ({ children }) => {
     document.addEventListener("cut", handleCut);
     document.addEventListener("paste", handlePaste);
 
-    // 3) Block DevTools, Reload, Possibly PrintScreen
+    // 3) Block DevTools, Reload, and auto submit on Escape key
     const handleKeyDown = (e) => {
-      // 1) Block reload: F5 or Ctrl/Cmd + R
+      // Auto submit on Escape key press (or "Esc")
+      if (e.key === "Escape" || e.key.toLowerCase() === "esc") {
+        e.preventDefault();
+        toast.error(
+          "Full screen exited or Escape pressed. Exam will be submitted."
+        );
+        handleSubmit();
+        navigate("/exam-dashboard");
+        return;
+      }
+
+      // Block reload: F5 or Ctrl/Cmd + R
       if (
         e.key === "F5" ||
         ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "r")
@@ -52,12 +54,8 @@ const ExamSecurityWrapper = ({ children }) => {
         e.preventDefault();
         toast.error("Reload is disabled during the exam!");
       }
-      if (e.key === "esc") {
-        e.preventDefault();
-        toast.error("Reload is disabled during the exam!");
-      }
 
-      // 2) Block DevTools: F12, Ctrl+Shift+I, Ctrl+Shift+J, Cmd+Shift+I/J
+      // Block DevTools: F12, Ctrl+Shift+I, Ctrl+Shift+J, Cmd+Shift+I/J
       if (
         e.key === "F12" ||
         ((e.ctrlKey || e.metaKey) &&
@@ -68,37 +66,31 @@ const ExamSecurityWrapper = ({ children }) => {
         toast.error("Opening DevTools is not allowed!");
       }
 
-      // === NEW: Also block Cmd+Option+I or Ctrl+Alt+I ===
-      // e.altKey corresponds to the Option key on Mac
+      // Also block Cmd+Option+I or Ctrl+Alt+I
       if ((e.metaKey || e.ctrlKey) && e.altKey) {
         e.preventDefault();
         toast.error("Opening DevTools is not allowed!");
       }
 
-      // 3) Attempt to block screenshots
-      //    - Windows "PrintScreen" key
+      // Block screenshots (Windows PrintScreen and Mac shortcuts)
       if (e.key === "PrintScreen") {
         e.preventDefault();
         toast.error("Screenshots are not allowed!");
       }
-
-      //    - Mac "Cmd+Shift+3" or "Cmd+Shift+5" if recognized
       if (e.metaKey && e.shiftKey) {
         e.preventDefault();
         toast.error("Screenshots are not allowed!");
       }
     };
-
     window.addEventListener("keydown", handleKeyDown);
 
-    // 4) Warn on Tab Switch / Visibility
+    // 4) Warn on Tab Switch / Visibility change
     const handleVisibilityChange = () => {
       if (document.hidden) {
-          handleSubmit();
-          navigate("/exam-dashboard");
+        handleSubmit();
+        navigate("/exam-dashboard");
       }
     };
-
     document.addEventListener("visibilitychange", handleVisibilityChange);
 
     // 5) Prevent back navigation
@@ -116,6 +108,33 @@ const ExamSecurityWrapper = ({ children }) => {
     };
     window.addEventListener("beforeunload", handleBeforeUnload);
 
+    // 7) Auto submit when exiting fullscreen mode
+    const handleFullscreenChange = () => {
+      if (!document.fullscreenElement) {
+        toast.error("Full screen mode exited. Exam will be submitted.");
+        handleSubmit();
+        navigate("/exam-dashboard");
+      }
+    };
+    document.addEventListener("fullscreenchange", handleFullscreenChange);
+
+    // 8) Check if DevTools is already open using a polling method
+    let devtoolsOpen = false;
+    const threshold = 160; // pixels difference to detect DevTools
+    const checkDevTools = () => {
+      const widthThreshold = window.outerWidth - window.innerWidth > threshold;
+      const heightThreshold =
+        window.outerHeight - window.innerHeight > threshold;
+      const isOpen = widthThreshold || heightThreshold;
+      if (isOpen && !devtoolsOpen) {
+        devtoolsOpen = true;
+        toast.error("DevTools are open!");
+      } else if (!isOpen && devtoolsOpen) {
+        devtoolsOpen = false;
+      }
+    };
+    const intervalId = setInterval(checkDevTools, 500);
+
     return () => {
       document.removeEventListener("contextmenu", handleContextMenu);
 
@@ -128,15 +147,13 @@ const ExamSecurityWrapper = ({ children }) => {
 
       window.removeEventListener("popstate", handlePopState);
       window.removeEventListener("beforeunload", handleBeforeUnload);
-    };
-  }, []);
+      document.removeEventListener("fullscreenchange", handleFullscreenChange);
 
-  return (
-    <>
-      <ToastContainer />
-      {children}
-    </>
-  );
+      clearInterval(intervalId);
+    };
+  }, [handleSubmit, navigate]);
+
+  return <>{children}</>;
 };
 
 export default ExamSecurityWrapper;

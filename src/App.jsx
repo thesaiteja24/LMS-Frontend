@@ -60,6 +60,7 @@ import UploadQuestions from "./Mentor/ManageExams/UploadQuestions.jsx";
 import { Parent } from "./Student/Exams_module/students/ExamModule/Parent.jsx";
 import { useLocation } from "react-router-dom";
 import { ExamProvider } from "./Student/Exams_module/students/ExamModule/ExamContext.jsx";
+import { ToastContainer } from "react-toastify";
 
 const ProtectedRoute = ({ children, allowedRoles }) => {
   const userType = localStorage.getItem("userType");
@@ -107,7 +108,18 @@ export default function App() {
     <div style={{ overflow: "auto", height: "100vh" }}>
       <Location />
       <ScrollToTop />
-
+      <ToastContainer
+        position="top-right"
+        autoClose={3000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="colored"
+      />
       <div>
         <Routes>
           <Route
@@ -178,29 +190,6 @@ export default function App() {
               )
             }
           />
-
-          {/* <Route
-          path="/superadmin"
-          element={
-            localStorage.getItem('userType') ? (
-              <Navigate
-                to={
-                  {
-                    student_login_details: '/student-profile',
-                    Mentors: '/mentor-dashboard',
-                    BDE_data: '/jobs-dashboard',
-                    Manager: '/manager-dashboard',
-                    superAdmin: '/admin-dashboard',
-                    super: '/admin-dashboard',
-                  }[localStorage.getItem('userType')] || '/not-found'
-                }
-                replace
-              />
-            ) : (
-              <SuperAdmin />
-            )
-          }
-        /> */}
 
           <Route
             path="/admin"
@@ -507,7 +496,7 @@ export default function App() {
               <ProtectedRoute allowedRoles={["student_login_details"]}>
                 <ExamProvider>
                   <ExamSecurityWrapper>
-                  <Parent />
+                    <Parent />
                   </ExamSecurityWrapper>
                 </ExamProvider>
               </ProtectedRoute>
@@ -568,7 +557,7 @@ export default function App() {
           <Route
             path="/managestudentslist"
             element={
-              <ProtectedRoute allowedRoles={["Manager", "BDE_data",]}>
+              <ProtectedRoute allowedRoles={["Manager", "BDE_data"]}>
                 <ManageStudentsList />
               </ProtectedRoute>
             }
