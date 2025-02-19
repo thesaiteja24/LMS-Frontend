@@ -149,6 +149,7 @@ export default function StudentsList() {
             <thead className="bg-blue-800 text-white">
               <tr>
                 <th className="px-4 py-2">StudentId</th>
+                <th className="px-4 py-2">Student Name</th>
                 <th className="px-4 py-2">BatchNO</th>
                 <th className="px-4 py-2">Email</th>
                 <th className="px-4 py-2">Phone</th>
@@ -164,9 +165,10 @@ export default function StudentsList() {
               {currentStudents.map(student => (
                 <tr key={student.id} className="bg-white odd:bg-gray-100">
                   <td className="px-4 py-2 text-center">{student.studentId || '__'}</td>
+                  <td className="px-4 py-2 text-center">{student.name || '__'}</td>
                   <td className="px-4 py-2 text-center">{student.BatchNo || '__'}</td>
                   <td className="px-4 py-2 text-center">{student.email || '__'}</td>
-                  <td className="px-4 py-2 text-center">{student.phone || '__'}</td>
+                  <td className="px-4 py-2 text-center">{student.studentPhNumber || '__'}</td>
                   <td className="px-4 py-2 text-center">{student.collegeName || '__'}</td>
                   <td className="px-4 py-2 text-center">{student.qualification || '__'}</td>
                   <td className="px-4 py-2 text-center">{student.department || '__'}</td>
