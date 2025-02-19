@@ -4,7 +4,6 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { ToastContainer } from "react-toastify";
 
 export const ManagerExamDashboard = () => {
   const navigate = useNavigate();
@@ -36,6 +35,7 @@ export const ManagerExamDashboard = () => {
 
   // Fetch exam details for the selected batch
   const handleDailyClick = async (batch) => {
+    const type = "Daily-Exam";
     try {
       // API call to fetch exam details for the batch
       const response = await axios.get(
@@ -48,7 +48,9 @@ export const ManagerExamDashboard = () => {
       const data = response.data;
 
       // Navigate to the exam creation page with the fetched data
-      navigate("/set-exam", { state: { examData: data, batch: batch } });
+      navigate("/set-exam", {
+        state: { examData: data, batch: batch, type },
+      });
     } catch (error) {
       console.error("Error fetching exam details:", error);
       toast.error(
@@ -69,18 +71,6 @@ export const ManagerExamDashboard = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-purple-50 flex flex-col items-center p-6">
-      <ToastContainer
-        position="top-right"
-        autoClose={3000}
-        hideProgressBar={false}
-        newestOnTop={false}
-        closeOnClick
-        rtl={false}
-        pauseOnFocusLoss
-        draggable
-        pauseOnHover
-        theme="colored"
-      />
       <h1 className="text-4xl font-extrabold text-center text-gray-800 mb-8">
         <span className="bg-black bg-clip-text">Scheduling Exam</span>
       </h1>

@@ -9,6 +9,7 @@ export const ExamContext = createContext();
 export const ExamProvider = ({ children }) => {
   const navigate = useNavigate();
   const { studentDetails } = useStudent();
+
   const [examData, setExamData] = useState(null);
   const [existingData, setExistingData] = useState({});
   const [selectedMCQ, setSelectedMCQ] = useState(true);
@@ -17,10 +18,11 @@ export const ExamProvider = ({ children }) => {
   const [mcqQuestions, setMcqQuestions] = useState([]);
   const [codingQuestions, setCodingQuestions] = useState([]);
 
+  // Add a guard to prevent multiple submits
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
   const studentName = studentDetails?.name || "Student Name";
   const studentExamId = examData?.exam.studentExamId;
-  const startTime = examData?.exam.startTime;
-  const startDate = examData?.exam.startDate;
   const totalExamTime = examData?.exam.totalExamTime;
 
   // Calculate totalScore
@@ -49,7 +51,7 @@ export const ExamProvider = ({ children }) => {
     const extractedMCQs = [];
     const extractedCoding = [];
 
-    examData?.exam.subjects.forEach((subject) => {
+    examData.exam.subjects.forEach((subject) => {
       if (subject.MCQs?.length > 0) {
         extractedMCQs.push(
           ...subject.MCQs.map((q) => ({
@@ -101,26 +103,18 @@ export const ExamProvider = ({ children }) => {
   // Go to the previous question, possibly switching sections
   const handlePrevious = () => {
     if (selectedMCQ) {
-      // If we're in MCQs and not at the first MCQ, just go back one
       if (mcqIndex > 0) {
         setMcqIndex(mcqIndex - 1);
-      } else {
-        // If we're at the very first MCQ and there are coding questions, switch to coding
-        if (codingQuestions.length > 0) {
-          setSelectedMCQ(false);
-          setCodingIndex(codingQuestions.length - 1); // Move to last coding question
-        }
+      } else if (codingQuestions.length > 0) {
+        setSelectedMCQ(false);
+        setCodingIndex(codingQuestions.length - 1);
       }
     } else {
-      // If we're in coding and not at the first coding question, just go back one
       if (codingIndex > 0) {
         setCodingIndex(codingIndex - 1);
-      } else {
-        // If we're at the very first coding question, switch to last MCQ
-        if (mcqQuestions.length > 0) {
-          setSelectedMCQ(true);
-          setMcqIndex(mcqQuestions.length - 1);
-        }
+      } else if (mcqQuestions.length > 0) {
+        setSelectedMCQ(true);
+        setMcqIndex(mcqQuestions.length - 1);
       }
     }
   };
@@ -128,26 +122,18 @@ export const ExamProvider = ({ children }) => {
   // Go to the next question, possibly switching sections
   const handleNext = () => {
     if (selectedMCQ) {
-      // If we're in MCQs and not at the last MCQ, just go to the next one
       if (mcqIndex < mcqQuestions.length - 1) {
         setMcqIndex(mcqIndex + 1);
-      } else {
-        // If this was the last MCQ, switch to the first coding question (if any exist)
-        if (codingQuestions.length > 0) {
-          setSelectedMCQ(false);
-          setCodingIndex(0);
-        }
+      } else if (codingQuestions.length > 0) {
+        setSelectedMCQ(false);
+        setCodingIndex(0);
       }
     } else {
-      // If we're in coding and not at the last coding question, go to the next one
       if (codingIndex < codingQuestions.length - 1) {
         setCodingIndex(codingIndex + 1);
-      } else {
-        // If this was the last coding question, switch back to the first MCQ
-        if (mcqQuestions.length > 0) {
-          setSelectedMCQ(true);
-          setMcqIndex(0);
-        }
+      } else if (mcqQuestions.length > 0) {
+        setSelectedMCQ(true);
+        setMcqIndex(0);
       }
     }
   };
@@ -174,9 +160,18 @@ export const ExamProvider = ({ children }) => {
 
   // Submit exam data
   const handleSubmit = async () => {
+    // GUARD: If already submitting, do nothing
+    if (isSubmitting) {
+      return;
+    }
+    setIsSubmitting(true);
+
     if (!examData) {
       console.error("No exam data available");
       toast.error("No exam data available");
+      // Allow future submissions if no data was found,
+      // or keep locked if you want no more attempts
+      setIsSubmitting(false);
       return;
     }
 
@@ -218,8 +213,6 @@ export const ExamProvider = ({ children }) => {
 
       if (response.data.success) {
         toast.success("Exam submitted successfully!");
-        console.log(response);
-
         // Navigate to Exam Dashboard & pass response as state
         navigate("/exam-analysis", {
           state: { submissionResult: response.data },
@@ -234,10 +227,14 @@ export const ExamProvider = ({ children }) => {
       toast.error("Error during exam submission: " + error.message);
       console.error("Error during exam submission:", error);
 
-      // Navigate to Exam Dashboard with error details
+      // Optionally navigate to a result/error page
       navigate("/exam-analysis", { state: { error: error.message } });
 
       localStorage.setItem("warnCount", 0);
+    } finally {
+      // If you want to allow only one submission total, keep isSubmitting = true
+      // Otherwise, set it back to false if multiple attempts are permitted
+      // setIsSubmitting(false);
     }
   };
 

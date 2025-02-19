@@ -15,12 +15,10 @@ export const QuestionBreakDown = ({ details }) => {
         {details.map((question, index) => (
           <div key={index} className="border-b pb-2 mb-2 last:border-none">
             <div className="flex gap-2">
-              <span className="font-medium">Question ID :</span>
-              <span className="text-gray-500">{question.questionId}</span>
-            </div>
-            <div className="flex gap-2">
               <span className="font-medium">Question :</span>
               <span className="text-gray-500">{question.question}</span>
+              <span className="font-medium">Marks Awarded :</span>
+              <span className="text-gray-500">{question.scoreAwarded}</span>
             </div>
             <div className="flex gap-2">
               <span className="font-medium">Type :</span>
@@ -62,9 +60,15 @@ export const QuestionBreakDown = ({ details }) => {
                 </div>
               </div>
             ) : (
-              <div className="flex gap-2">
-                <span className="font-medium">Failed Cases :</span>
-                <span>{question.submitted.testCaseSummary.failed}</span>
+              <div>
+                <div className="flex gap-2">
+                  <span className="font-medium">Passed Cases :</span>
+                  <span>{question.submitted.testCaseSummary.passed}</span>
+                </div>
+                <div className="flex gap-2">
+                  <span className="font-medium">Failed Cases :</span>
+                  <span>{question.submitted.testCaseSummary.failed}</span>
+                </div>
               </div>
             )}
           </div>
