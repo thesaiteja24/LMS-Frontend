@@ -129,8 +129,8 @@ const ExamSecurityWrapper = ({ children }) => {
       if (isOpen && !devtoolsOpen) {
         devtoolsOpen = true;
         toast.error("DevTools are open! Exam will be submitted.");
-        handleSubmit();
-        navigate("/exam-dashboard");
+        // handleSubmit();
+        // navigate("/exam-dashboard");
       } else if (!isOpen && devtoolsOpen) {
         devtoolsOpen = false;
       }
