@@ -3,13 +3,21 @@ import React, { useState } from "react";
 const TestCaseTabs = ({ testCases }) => {
   const [activeTab, setActiveTab] = useState(0);
 
-  if (testCases.length === 0) {
+  if (!testCases.length) {
     return <div>No test cases to display.</div>;
   }
 
   const handleTabClick = (index) => {
     setActiveTab(index);
   };
+
+  // Parse ASCII-like output (replace \s with space and \n with newline)
+  const parseOutput = (text = "") =>
+    String(text).replace(/\\s/g, " ").replace(/\\n/g, "\n");
+
+  const currentTest = testCases[activeTab];
+  const parsedExpectedOutput = parseOutput(currentTest.expected_output);
+  const parsedActualOutput = parseOutput(currentTest.actual_output);
 
   return (
     <div className="rounded-md overflow-hidden">
@@ -38,25 +46,34 @@ const TestCaseTabs = ({ testCases }) => {
 
       {/* Active Tab Content */}
       <div className="bg-gray-700 p-4 text-white">
-        {testCases[activeTab].type === "hidden" ? (
+        {currentTest.type === "hidden" ? (
           <h4 className="mb-2 font-semibold">
-            Hidden Test Case {activeTab + 1}: {testCases[activeTab].status}
+            Hidden Test Case {activeTab + 1}: {currentTest.status}
           </h4>
         ) : (
-          <div className="flex flex-row gap-4">
+          <div className="flex flex-col gap-2">
             <h4 className="mb-2 font-semibold">
-              Test Case {activeTab + 1}: {testCases[activeTab].status}
+              Test Case {activeTab + 1}: {currentTest.status}
             </h4>
             <p className="mb-1">
-              <strong>Input:</strong> {testCases[activeTab].input}
+              <strong>Input:</strong> {currentTest.input}
             </p>
-            <p className="mb-1">
-              <strong>Expected Output:</strong>{" "}
-              {testCases[activeTab].expected_output}
-            </p>
-            <p className="mb-1">
-              <strong>Your Output:</strong> {testCases[activeTab].actual_output}
-            </p>
+
+            {/* Wrap parsed outputs in <pre> to preserve formatting */}
+            <div className="flex flex-row gap-5">
+              <p className="mb-1">
+                <strong>Expected Output:</strong>
+                <pre className="bg-gray-800 p-2 rounded">
+                  {parsedExpectedOutput}
+                </pre>
+              </p>
+              <p className="mb-1">
+                <strong>Your Output:</strong>
+                <pre className="bg-gray-800 p-2 rounded">
+                  {parsedActualOutput}
+                </pre>
+              </p>
+            </div>
           </div>
         )}
       </div>

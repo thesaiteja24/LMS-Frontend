@@ -7,7 +7,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 export const ExamAnalysis = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const submissionResult = location.state?.submissionResult;
+  const submissionResult = JSON.parse(localStorage.getItem("Analysis"));
 
   // Effect to override back navigation
   useEffect(() => {
@@ -25,17 +25,17 @@ export const ExamAnalysis = () => {
   }, [navigate]);
 
   return (
-    <div className="min-h-screen bg-gray-100 p-4">
+    <div className="min-h-screen bg-gray-100">
       {/* Title */}
-      <div className="text-[#132EE0] text-center font-semibold text-xl md:text-2xl m-2 p-2">
+      <div className="text-[#132EE0] text-center font-semibold text-2xl md:text-3xl">
         Exam Analysis
       </div>
 
-      <hr className="mb-4" />
+      <hr />
 
-      <div className="p-4 md:p-8">
+      <div className="p-2 md:p-4">
         {/* Top Section - Donut Chart & Attempted */}
-        <div className="flex flex-col md:flex-row gap-6 justify-center">
+        <div className="flex flex-col md:flex-row gap-x-6 justify-center">
           {/* Chart Section */}
           <DoughnutChart
             totalQuestions={submissionResult.analysis.totalQuestions}
@@ -55,7 +55,7 @@ export const ExamAnalysis = () => {
         </div>
 
         {/* Question Breakdown Section */}
-        <div className="mt-6">
+        <div>
           <QuestionBreakDown details={submissionResult.analysis.details} />
         </div>
       </div>

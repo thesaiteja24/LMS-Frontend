@@ -51,9 +51,7 @@ export const Dashboard = () => {
       navigate("/students-performance/daily", { state: data });
     } catch (error) {
       console.error("Error fetching exam details:", error);
-      toast.error(
-        "Failed to fetch exam details. Please try again or contact support if the issue persists"
-      );
+      toast.error("No Reports are available at this moment");
     }
   };
 

@@ -11,7 +11,7 @@ export const QuestionBreakDown = ({ details }) => {
       </div>
 
       {/* Scrollable Container */}
-      <div className="max-h-48 overflow-y-auto pr-2">
+      <div className="max-h-80 overflow-y-auto pr-2">
         {details.map((question, index) => (
           <div key={index} className="border-b pb-2 mb-2 last:border-none">
             <div className="flex gap-2">
@@ -28,13 +28,14 @@ export const QuestionBreakDown = ({ details }) => {
               <span className="font-medium">Status :</span>
               <span
                 className={`flex items-center ${
-                  question.status === "Correct"
+                  question.status === "Correct" || question.status === "Passed"
                     ? "text-green-600"
                     : "text-red-600"
                 }`}
               >
                 {question.status}
-                {question.status === "Correct" ? (
+                {question.status === "Correct" ||
+                question.status === "Passed" ? (
                   <FaCheckCircle className="ml-2" />
                 ) : (
                   <FaTimesCircle className="ml-2" />

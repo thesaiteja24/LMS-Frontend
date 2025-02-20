@@ -1,4 +1,4 @@
-import React, { useEffect, useContext } from "react";
+import React, { useEffect, useContext, useRef } from "react";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { ExamContext } from "./ExamContext";
@@ -7,6 +7,17 @@ import { useNavigate } from "react-router-dom";
 const ExamSecurityWrapper = ({ children }) => {
   const { handleSubmit } = useContext(ExamContext);
   const navigate = useNavigate();
+  // Use a ref to keep track if the exam is already submitted
+  const submitted = useRef(false);
+
+  // Helper function to safely submit only once
+  const safeSubmit = () => {
+    if (!submitted.current) {
+      submitted.current = true;
+      handleSubmit();
+      navigate("/exam-dashboard");
+    }
+  };
 
   useEffect(() => {
     // 1) Disable Right-Click
@@ -41,8 +52,7 @@ const ExamSecurityWrapper = ({ children }) => {
         toast.error(
           "Full screen exited or Escape pressed. Exam will be submitted."
         );
-        handleSubmit();
-        navigate("/exam-dashboard");
+        safeSubmit();
         return;
       }
 
@@ -87,8 +97,7 @@ const ExamSecurityWrapper = ({ children }) => {
     // 4) Warn on Tab Switch / Visibility change
     const handleVisibilityChange = () => {
       if (document.hidden) {
-        handleSubmit();
-        navigate("/exam-dashboard");
+        safeSubmit();
       }
     };
     document.addEventListener("visibilitychange", handleVisibilityChange);
@@ -112,8 +121,7 @@ const ExamSecurityWrapper = ({ children }) => {
     const handleFullscreenChange = () => {
       if (!document.fullscreenElement) {
         toast.error("Full screen mode exited. Exam will be submitted.");
-        handleSubmit();
-        navigate("/exam-dashboard");
+        safeSubmit();
       }
     };
     document.addEventListener("fullscreenchange", handleFullscreenChange);
@@ -129,8 +137,8 @@ const ExamSecurityWrapper = ({ children }) => {
       if (isOpen && !devtoolsOpen) {
         devtoolsOpen = true;
         toast.error("DevTools are open! Exam will be submitted.");
-        // handleSubmit();
-        // navigate("/exam-dashboard");
+        // Optionally, you can submit here by calling safeSubmit();
+        // safeSubmit();
       } else if (!isOpen && devtoolsOpen) {
         devtoolsOpen = false;
       }

@@ -145,7 +145,7 @@ const ExamDashboard = () => {
   }, [active, upcoming]);
 
   // 5. Handler to start the exam – requests fullscreen and calls your start exam API
-  const handleStartExam = async (examId, type) => {
+  const handleStartExam = async (examId, type, dayOrder) => {
     console.log(type);
     try {
       // Request fullscreen mode
@@ -156,7 +156,7 @@ const ExamDashboard = () => {
       // Call the start exam API
       const response = await axios.post(
         `${import.meta.env.VITE_BACKEND_URL}/api/v1/startexam`,
-        { examId, batch, studentId, location, type }
+        { examId, batch, studentId, location, type, dayOrder }
       );
 
       if (response.data.success) {
@@ -259,7 +259,9 @@ const ExamDashboard = () => {
                       </div>
                       <button
                         type="button"
-                        onClick={() => handleStartExam(exam.examId, exam.type)}
+                        onClick={() =>
+                          handleStartExam(exam.examId, exam.type, exam.dayOrder)
+                        }
                         disabled={completedExams.has(exam.examId)}
                         className={`focus:outline-none text-white font-semibold text-xl rounded-lg px-5 py-2.5 me-2 mb-2 ${
                           completedExams.has(exam.examId)
