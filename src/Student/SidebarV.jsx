@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
 import Swal from "sweetalert2";
 import {
@@ -21,7 +21,6 @@ import {
   FaBookOpen,
   FaTachometerAlt,
   FaChartLine,
-  // FaUserCircle,
 } from "react-icons/fa";
 import { IoMdCloudUpload } from "react-icons/io";
 import { TbReportAnalytics } from "react-icons/tb";
@@ -34,8 +33,10 @@ import { useStudent } from "../contexts/StudentProfileContext";
 export const SidebarV = ({ setIsAuthenticated }) => {
   const location = useLocation();
   const navigate = useNavigate();
-  const { studentDetails, loading } = useStudent();
-  const [profilePicture, setProfilePicture] = useState(null);
+
+  // --- 1) Use our context to get student info + pic
+  const { studentDetails, loading, profilePicture } = useStudent();
+
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [isLoggedOut, setIsLoggedOut] = useState(false);
@@ -43,6 +44,7 @@ export const SidebarV = ({ setIsAuthenticated }) => {
   const userType = localStorage.getItem("userType") || "null";
   const profileStatus = localStorage.getItem("profileStatus");
 
+  // 2) Navigation with check for "incomplete profile"
   const handleNavigation = (path) => {
     const restrictedPaths = [
       "/jobslist",
@@ -52,7 +54,6 @@ export const SidebarV = ({ setIsAuthenticated }) => {
       "/mock-interviews",
       "/leave-request-page",
     ];
-
     if (profileStatus === "false" && restrictedPaths.includes(path)) {
       Swal.fire({
         title: "Profile Incomplete!",
@@ -60,9 +61,8 @@ export const SidebarV = ({ setIsAuthenticated }) => {
         icon: "warning",
         confirmButtonText: "OK",
       });
-      return; // Prevent navigation
+      return;
     }
-
     navigate(path);
     setIsMobileMenuOpen(false);
   };
@@ -76,42 +76,10 @@ export const SidebarV = ({ setIsAuthenticated }) => {
     superAdmin: "ADMIN",
   };
 
-  const fetchProfilePicture = useCallback(async () => {
-    try {
-      if (!studentDetails || !studentDetails.studentId) {
-        console.error("❌ Student ID is missing in studentDetails.");
-        return;
-      }
-      const response = await axios.get(
-        `${import.meta.env.VITE_BACKEND_URL}/api/v1/pic`,
-        {
-          params: { student_id: studentDetails.studentId },
-          responseType: "blob",
-        }
-      );
-      const contentType = response.headers["content-type"];
-      if (
-        contentType.includes("image/png") ||
-        contentType.includes("image/jpeg")
-      ) {
-        const imageUrl = URL.createObjectURL(response.data);
-        setProfilePicture(imageUrl);
-      } else {
-        console.error("❌ Unsupported file type received:", contentType);
-      }
-    } catch (error) {
-      console.error("❌ Error fetching profile picture:", error);
-    }
-  }, [studentDetails]);
+  // 3) We no longer need local fetchProfilePicture or effect,
+  //    because the context handles that.
 
-  useEffect(() => {
-    if (!studentDetails || !studentDetails.studentId) {
-      console.warn("⚠️ Waiting for student details to load...");
-      return;
-    }
-    fetchProfilePicture();
-  }, [studentDetails, fetchProfilePicture]);
-
+  // We do create a local "userProfile" object for convenience
   const userProfile = {
     avatarUrl: profilePicture,
     name: studentDetails?.name,
@@ -132,11 +100,6 @@ export const SidebarV = ({ setIsAuthenticated }) => {
     setIsLoggedOut(true);
     navigate("/", { replace: true });
   };
-
-  // const handleNavigation = (path) => {
-  //   navigate(path);
-  //   setIsMobileMenuOpen(false);
-  // };
 
   const getMenuItems = (userType, handleLogout) => {
     switch (userType) {
@@ -296,6 +259,7 @@ export const SidebarV = ({ setIsAuthenticated }) => {
 
   const isLoggedIn = !!localStorage.getItem("userType") && !isLoggedOut;
   if (!isLoggedIn) {
+    // Not logged in => show top bar with login button
     return (
       <div>
         <div className="w-full h-16 bg-white flex items-center justify-between px-4">
@@ -318,9 +282,11 @@ export const SidebarV = ({ setIsAuthenticated }) => {
     );
   }
 
+  // Reusable sub-menu component
   const MenuItem = ({ icon: Icon, label, path, action, subItems }) => {
     const [isSubMenuOpen, setIsSubMenuOpen] = useState(false);
     const isActive = location.pathname === path;
+
     return (
       <>
         <button
@@ -344,7 +310,10 @@ export const SidebarV = ({ setIsAuthenticated }) => {
         >
           <Icon size={18} />
           <span
-            className={classNames({ hidden: isCollapsed, block: !isCollapsed })}
+            className={classNames({
+              hidden: isCollapsed,
+              block: !isCollapsed,
+            })}
           >
             {label}
           </span>
@@ -357,6 +326,8 @@ export const SidebarV = ({ setIsAuthenticated }) => {
             />
           )}
         </button>
+
+        {/* If there are sub-items, expand them */}
         {subItems && isSubMenuOpen && (
           <div className="ml-6 mt-1 space-y-1">
             {subItems.map((subItem, subIndex) => (
@@ -377,6 +348,7 @@ export const SidebarV = ({ setIsAuthenticated }) => {
 
   return (
     <>
+      {/* TOP BAR */}
       <div className="flex items-center px-4 bg-[#ffffff] text-black">
         <button
           className="p-2 rounded-md bg-black text-[#ffffff] mr-2"
@@ -392,6 +364,8 @@ export const SidebarV = ({ setIsAuthenticated }) => {
           className="max-w-[200px] max-h-[90px] object-contain"
         />
       </div>
+
+      {/* SIDEBAR CONTAINER */}
       <div
         className={classNames(
           "fixed inset-y-0 left-0 z-40 bg-[#0C1BAA] text-[#ffffff] font-bold transition-transform duration-300 flex flex-col",
@@ -402,6 +376,7 @@ export const SidebarV = ({ setIsAuthenticated }) => {
           }
         )}
       >
+        {/* COLLAPSE BUTTON */}
         <button
           className="mt-4 mb-2 flex items-center justify-center text-white focus:outline-none"
           onClick={() => setIsCollapsed((prev) => !prev)}
@@ -418,21 +393,30 @@ export const SidebarV = ({ setIsAuthenticated }) => {
             size={24}
           />
         </button>
+
+        {/* STUDENT-ONLY PROFILE SECTION */}
         {userType === "student_login_details" && (
           <div className="flex flex-col items-center justify-center w-full py-4 px-2 bg-[#0A158F]">
-            <img
-              src={userProfile.avatarUrl}
-              alt={userProfile.name}
-              className="w-16 h-16 rounded-full object-cover"
-            />
+            {userProfile.avatarUrl ? (
+              <img
+                src={userProfile.avatarUrl}
+                alt={userProfile.name}
+                className="w-16 h-16 rounded-full object-cover"
+              />
+            ) : (
+              <div className="w-16 h-16 bg-gray-300 rounded-full" />
+            )}
+
             {!isCollapsed && (
               <div className="mt-2 text-center">
                 <h2 className="font-semibold text-base">{userProfile.name}</h2>
-                <p className="text-sm opacity-90">ID : {userProfile.id}</p>
+                <p className="text-sm opacity-90">ID: {userProfile.id}</p>
               </div>
             )}
           </div>
         )}
+
+        {/* MENU LINKS */}
         <div className="flex-grow flex flex-col space-y-2 w-full mt-2 px-2">
           {menuItems.map((item, index) => (
             <MenuItem
@@ -445,6 +429,8 @@ export const SidebarV = ({ setIsAuthenticated }) => {
             />
           ))}
         </div>
+
+        {/* LOGOUT */}
         {logoutItem && (
           <div className="px-2 pb-4 mt-auto">
             <button
@@ -467,6 +453,8 @@ export const SidebarV = ({ setIsAuthenticated }) => {
           </div>
         )}
       </div>
+
+      {/* OVERLAY for MOBILE */}
       {isMobileMenuOpen && (
         <div
           className="fixed inset-0 bg-black opacity-50 z-30"

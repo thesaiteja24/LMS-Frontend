@@ -302,7 +302,7 @@ export default function App() {
           <Route
             path="/studentdata"
             element={
-              <ProtectedRoute allowedRoles={["Manager", "BDE_data", "Mentors"]}>
+              <ProtectedRoute allowedRoles={["Manager", "BDE_data", "Mentors",]}>
                 <StudentLocationWise />
               </ProtectedRoute>
             }

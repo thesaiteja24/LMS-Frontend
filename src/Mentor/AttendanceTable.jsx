@@ -440,7 +440,7 @@ const AttendanceTable = () => {
                             <React.Fragment key={dt}>
                               <td
                                 className={`p-2 border text-center font-semibold ${
-                                  isAbsent ? "text-red-600" : "text-black"
+                                  isAbsent ? "text-red-600" : "text-green-600"
                                 }`}
                               >
                                 {st}

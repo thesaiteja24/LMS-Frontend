@@ -824,7 +824,7 @@ const [showCPassword, setShowCPassword] = useState(false);
                 </div>
                 <div className="input-group">
                     <div className="form-group">
-                        <label>Profile Picture (10 KB) <span style={{ color: 'red' }}>*</span></label>
+                        <label>Profile Picture <span style={{ color: 'red' }}>*</span></label>
                         <input
                             type="file"
                             name="profilePic"

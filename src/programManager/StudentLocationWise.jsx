@@ -39,6 +39,7 @@ const StudentLocationWise = () => {
       const studentDetails = data.student_data || {};
       setStudentData({
         studentId: studentDetails.studentId || "N/A",
+        name: studentDetails.name || "N/A",
         batchNo: studentDetails.BatchNo || "N/A",
         email: studentDetails.email || "N/A",
         phone: studentDetails.studentPhNumber || "N/A",
@@ -63,7 +64,7 @@ const StudentLocationWise = () => {
         twelfthPassoutYear: studentDetails.TwelfthPassoutYear || "N/A",
         highestGraduationPercentage: studentDetails.highestGraduationpercentage || "N/A",
         yearOfPassing: studentDetails.yearOfPassing || "N/A",
-        skills: studentDetails.studentSkills ? studentDetails.studentSkills.join(", ") : "N/A",
+        studentSkills: studentDetails.studentSkills || "N/A",
       });
       setAppliedJobs(data.applied_jobs_details || []);
       setEligibleJobs(data.eligible_jobs_details || []);
@@ -133,36 +134,181 @@ const StudentLocationWise = () => {
            Student Details
          </h3>
          <div className="overflow-y-auto max-h-60 bg-white p-4 rounded-lg shadow-md">
-           <table className="w-full border-collapse">
-             <tbody>
-               {Object.entries(studentData).map(([key, value]) => (
-                 <tr
-                   key={key}
-                   className="even:bg-gray-50 odd:bg-white hover:bg-indigo-50 transition duration-200"
-                 >
-                   <th className="border-b border-gray-200 px-4 py-3 text-left capitalize font-semibold text-indigo-700">
-                     {key.replace(/([A-Z])/g, " $1")}
-                   </th>
-                   <td className="border-b border-gray-200 px-4 py-3 text-gray-800 font-medium">
-                     {Array.isArray(value) ? (
-                       value.map((item, index) => (
-                         <span
-                           key={index}
-                           className="inline-block px-2 py-1 bg-indigo-100 text-indigo-800 text-xs font-semibold rounded-full mr-2"
-                         >
-                           {item}
-                         </span>
-                       ))
-                     ) : value ? (
-                       value
-                     ) : (
-                       <span className="italic text-gray-500">N/A</span>
-                     )}
-                   </td>
-                 </tr>
-               ))}
-             </tbody>
-           </table>
+         <table className="w-full border-collapse border border-gray-300 rounded-lg overflow-hidden">
+        <tbody>
+          {/* Personal Details */}
+          <tr className="bg-gray-100">
+            <th className="border px-4 py-3 text-left font-semibold text-indigo-700">
+              Name
+            </th>
+            <td className="border px-4 py-3">{studentData.name || "N/A"}</td>
+          </tr>
+
+          <tr>
+            <th className="border px-4 py-3 text-left font-semibold text-indigo-700">
+              Student ID
+            </th>
+            <td className="border px-4 py-3">{studentData.studentId || "N/A"}</td>
+          </tr>
+
+          <tr className="bg-gray-100">
+            <th className="border px-4 py-3 text-left font-semibold text-indigo-700">
+              Email
+            </th>
+            <td className="border px-4 py-3">{studentData.email || "N/A"}</td>
+          </tr>
+
+          <tr>
+            <th className="border px-4 py-3 text-left font-semibold text-indigo-700">
+              Phone Number
+            </th>
+            <td className="border px-4 py-3">{studentData.phone || "N/A"}</td>
+          </tr>
+
+          <tr className="bg-gray-100">
+            <th className="border px-4 py-3 text-left font-semibold text-indigo-700">
+              Parent's Number
+            </th>
+            <td className="border px-4 py-3">{studentData.parentNumber || "N/A"}</td>
+          </tr>
+
+          <tr>
+            <th className="border px-4 py-3 text-left font-semibold text-indigo-700">
+              Gender
+            </th>
+            <td className="border px-4 py-3">{studentData.gender || "N/A"}</td>
+          </tr>
+
+          <tr className="bg-gray-100">
+            <th className="border px-4 py-3 text-left font-semibold text-indigo-700">
+              Date of Birth
+            </th>
+            <td className="border px-4 py-3">{studentData.dob || "N/A"}</td>
+          </tr>
+
+          {/* Academic Details */}
+          <tr>
+            <th className="border px-4 py-3 text-left font-semibold text-indigo-700">
+              Batch No
+            </th>
+            <td className="border px-4 py-3">{studentData.batchNo || "N/A"}</td>
+          </tr>
+
+          <tr className="bg-gray-100">
+            <th className="border px-4 py-3 text-left font-semibold text-indigo-700">
+              Mode of Study
+            </th>
+            <td className="border px-4 py-3">{studentData.modeOfStudy || "N/A"}</td>
+          </tr>
+
+          <tr>
+            <th className="border px-4 py-3 text-left font-semibold text-indigo-700">
+              Location
+            </th>
+            <td className="border px-4 py-3">{studentData.location || "N/A"}</td>
+          </tr>
+
+          <tr className="bg-gray-100">
+            <th className="border px-4 py-3 text-left font-semibold text-indigo-700">
+              College Name
+            </th>
+            <td className="border px-4 py-3">{studentData.collegeName || "N/A"}</td>
+          </tr>
+
+          <tr>
+            <th className="border px-4 py-3 text-left font-semibold text-indigo-700">
+              College USN Number
+            </th>
+            <td className="border px-4 py-3">{studentData.collegeUSNNumber || "N/A"}</td>
+          </tr>
+
+          <tr className="bg-gray-100">
+            <th className="border px-4 py-3 text-left font-semibold text-indigo-700">
+              Department
+            </th>
+            <td className="border px-4 py-3">{studentData.department || "N/A"}</td>
+          </tr>
+
+          <tr>
+            <th className="border px-4 py-3 text-left font-semibold text-indigo-700">
+              Qualification
+            </th>
+            <td className="border px-4 py-3">{studentData.qualification || "N/A"}</td>
+          </tr>
+
+          <tr className="bg-gray-100">
+            <th className="border px-4 py-3 text-left font-semibold text-indigo-700">
+              Year of Passing
+            </th>
+            <td className="border px-4 py-3">{studentData.yearOfPassing || "N/A"}</td>
+          </tr>
+
+          {/* Exam & Score Details */}
+          <tr>
+            <th className="border px-4 py-3 text-left font-semibold text-indigo-700">
+              10th Percentage
+            </th>
+            <td className="border px-4 py-3">{studentData.tenthStandard || "N/A"}%</td>
+          </tr>
+
+          <tr className="bg-gray-100">
+            <th className="border px-4 py-3 text-left font-semibold text-indigo-700">
+              12th Percentage
+            </th>
+            <td className="border px-4 py-3">{studentData.twelfthStandard || "N/A"}%</td>
+          </tr>
+
+          <tr>
+            <th className="border px-4 py-3 text-left font-semibold text-indigo-700">
+              Highest Graduation Percentage
+            </th>
+            <td className="border px-4 py-3">{studentData.highestGraduationPercentage || "N/A"}%</td>
+          </tr>
+
+          {/* Skills */}
+          <tr className="bg-gray-100">
+            <th className="border px-4 py-3 text-left font-semibold text-indigo-700">
+              Skills
+            </th>
+            <td className="border px-4 py-3">
+              {studentData.studentSkills && studentData.studentSkills.length > 0 ? (
+                studentData.studentSkills.map((skill, index) => (
+                  <span
+                    key={index}
+                    className="inline-block px-2 py-1 bg-indigo-100 text-indigo-800 text-xs font-semibold rounded-full mr-2"
+                  >
+                    {skill}
+                  </span>
+                ))
+              ) : (
+                "N/A"
+              )}
+            </td>
+          </tr>
+
+          {/* GitHub Link */}
+          <tr>
+            <th className="border px-4 py-3 text-left font-semibold text-indigo-700">
+              GitHub Profile
+            </th>
+            <td className="border px-4 py-3">
+              {studentData.githubLink ? (
+                <a
+                  href={studentData.githubLink}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-blue-600 hover:underline"
+                >
+                  {studentData.githubLink}
+                </a>
+              ) : (
+                "N/A"
+              )}
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
          </div>
        </div>
      

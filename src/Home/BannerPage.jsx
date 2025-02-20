@@ -1,24 +1,39 @@
-import React, {  Suspense, useState,useEffect} from "react";
-import { useDashboard } from "../contexts/DashboardContext"; 
+import React, { Suspense, useState, useEffect } from "react";
+import { useDashboard } from "../contexts/DashboardContext";
 import "./BannerPage.css";
 
 const StatsChart = React.lazy(() => import("./StatsChart"));
 
 const BannerPage = () => {
   const { dashboardData, loading } = useDashboard();
-  const [count,setCount] =useState(0)
-
+  const [count, setCount] = useState(0);
 
   useEffect(() => {
+    let timer;
     if (!loading && dashboardData) {
-      const totalPlaced = Object.values(dashboardData.yearOFPlacement || {}).reduce(
-        (acc, value) => acc + value,
-        0
-      );
-      setCount(totalPlaced===0?3500:totalPlaced); 
+      // Calculate the total number of placements from dashboardData
+      const totalPlaced = Object.values(
+        dashboardData.yearOFPlacement || {}
+      ).reduce((acc, value) => acc + value, 0);
+      // Fallback value if totalPlaced is zero
+      const finalCount = totalPlaced === 0 ? 3500 : totalPlaced;
+      let currentCount = 0;
+      const duration = 1000; // animation duration in milliseconds (2 seconds)
+      const intervalTime = 3; // update every 50ms
+      const steps = duration / intervalTime;
+      const increment = finalCount / steps;
+
+      timer = setInterval(() => {
+        currentCount += increment;
+        if (currentCount >= finalCount) {
+          currentCount = finalCount;
+          clearInterval(timer);
+        }
+        setCount(Math.floor(currentCount));
+      }, intervalTime);
     }
+    return () => clearInterval(timer);
   }, [dashboardData, loading]);
-  
 
   return (
     <div className="coverpage-container">
@@ -42,7 +57,9 @@ const BannerPage = () => {
               </h1>
               <p className="students-placed">Students Placed</p>
               <p className="counting">
-                <span className="blinking">&gt;&gt;&gt; Still Counting...!</span>
+                <span className="blinking">
+                  &gt;&gt;&gt; Still Counting...!
+                </span>
               </p>
             </div>
           )}
@@ -55,41 +72,23 @@ const BannerPage = () => {
             </Suspense>
           )}
 
-          {/* <div className="video-wrapper" style={{ width: "400px", height: "225px" }}>
-            {!isPlayerVisible ? (
-              <img
-                src="https://res.cloudinary.com/db2bpf0xw/image/upload/v1735540724/youtube-video_f2flg8.webp"
-                alt="YouTube Thumbnail"
-                className="youtube-thumbnail"
-                width="1280" 
-                height="720"
-                style={{ width: "100%", height: "100%", cursor: "pointer" }}
-                onClick={handleVideoLoad}
+          <div
+            className="video-wrapper"
+            style={{ width: "400px", height: "225px" }}
+          >
+            <video
+              width="100%"
+              height="100%"
+              controls
+              poster="https://res.cloudinary.com/db2bpf0xw/image/upload/v1735634876/codegnan-thumbnail_gsscbz.webp"
+              style={{ backgroundColor: "#000" }}
+            >
+              <source
+                src="https://res.cloudinary.com/db2bpf0xw/video/upload/v1735634495/Placement_tt4kwi.mp4"
+                type="video/mp4"
               />
-            ) : (
-              <iframe
-                width="380"
-                height="225"
-                src={`https://www.youtube.com/embed/${videoId}`}
-                title="YouTube video"
-                frameBorder="0"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                allowFullScreen
-              ></iframe>
-            )}
-          </div> */}
-
-<div className="video-wrapper" style={{ width: "400px", height: "225px" }}>
-      <video
-        width="100%"
-        height="100%"
-        controls
-        poster="https://res.cloudinary.com/db2bpf0xw/image/upload/v1735634876/codegnan-thumbnail_gsscbz.webp" 
-        style={{ backgroundColor: "#000" }}
-      >
-        <source src="https://res.cloudinary.com/db2bpf0xw/video/upload/v1735634495/Placement_tt4kwi.mp4" type="video/mp4" />
-      </video>
-    </div>
+            </video>
+          </div>
         </div>
       </div>
 
@@ -99,16 +98,16 @@ const BannerPage = () => {
           alt="Banner Girl"
           className="banner-girl"
           loading="lazy"
-           width="400" 
-           height="300"
+          width="400"
+          height="300"
         />
       </div>
 
       {!dashboardData && !loading && (
-        <p className="error-message">Placement data is currently unavailable.</p>
+        <p className="error-message">
+          Placement data is currently unavailable.
+        </p>
       )}
-
-
     </div>
   );
 };
