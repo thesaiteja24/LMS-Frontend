@@ -9,7 +9,7 @@ import { useEdit } from '../contexts/EditContext';
 import { useStudent } from '../contexts/StudentProfileContext';
 
 const departmentList = ['CSE-AI & ML','ECE','EEE','IT','MECH','CIVIL','CSE-Blockchain','CSE-Cyber Security','CSE-Data Analytics',
-    'CSE-Software Engineering','ECE-Embedded Systems','ECE-VLSI','MECH-Robotics','CSBS','BSC-CSE','BSC-AI','BSC-CSCS','BSC-Data Science','BSC-Data Analytics','BSC-Physics','BSC-Chemistry','BSC-Mathematics','BSC-Statistics',
+    'CSE','ECE-Embedded Systems','ECE-VLSI','MECH-Robotics','CSBS','BSC-CSE','BSC-AI','BSC-CSCS','BSC-Data Science','BSC-Data Analytics','BSC-Physics','BSC-Chemistry','BSC-Mathematics','BSC-Statistics',
     'BSC-Zoology','BSC-Botany','BCA','B.COM-Economics','B.COM-General','B.COM-Computer Application','B.COM-Finance','B.COM-Banking','B.COM-Business Process','B.COM-Management','MCA','MSC','BBA'
 ]
 
