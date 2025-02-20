@@ -213,10 +213,9 @@ export const ExamProvider = ({ children }) => {
 
       if (response.data.success) {
         toast.success("Exam submitted successfully!");
+        localStorage.setItem("Analysis", JSON.stringify(response.data));
         // Navigate to Exam Dashboard & pass response as state
-        navigate("/exam-analysis", {
-          state: { submissionResult: response.data },
-        });
+        navigate("/exam-analysis");
 
         localStorage.setItem("warnCount", 0);
         localStorage.setItem("examData", "");
@@ -271,6 +270,7 @@ export const ExamProvider = ({ children }) => {
         setCodingIndex,
         selectedMCQ,
         setSelectedMCQ,
+        isSubmitting,
 
         // Derived
         studentName,

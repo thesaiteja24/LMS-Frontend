@@ -15,6 +15,7 @@ const ExamContent = () => {
     studentName,
     studentExamId,
     totalScore,
+    isSubmitting,
   } = useContext(ExamContext);
 
   return (
@@ -43,9 +44,14 @@ const ExamContent = () => {
               <button
                 type="button"
                 onClick={handleSubmit}
-                className="text-white bg-[#ED1334] w-48 h-12 rounded-lg font-normal text-xl"
+                disabled={isSubmitting} // disable button when submitting
+                className={`text-white w-48 h-12 rounded-lg font-normal text-xl ${
+                  isSubmitting
+                    ? "bg-gray-500 cursor-not-allowed" // styling when disabled
+                    : "bg-[#ED1334]"
+                }`}
               >
-                Submit Test
+                {isSubmitting ? "Submitting..." : "Submit Test"}
               </button>
             </div>
           </div>

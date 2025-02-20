@@ -11,7 +11,7 @@ export const QuestionBreakDown = ({ details }) => {
       </div>
 
       {/* Scrollable Container */}
-      <div className="max-h-48 overflow-y-auto pr-2">
+      <div className="max-h-80 overflow-y-auto pr-2">
         {details.map((question, index) => (
           <div key={index} className="border-b pb-2 mb-2 last:border-none">
             <div className="flex gap-2">
