@@ -14,6 +14,8 @@ export default function StudentsList() {
 
   // **Filters**
   const [searchStudentId, setSearchStudentId] = useState('');
+  const [searchStudentName, setSearchStudentName] = useState('');
+
   const [searchBatchNo, setSearchBatchNo] = useState('');
   const [searchDepartment, setSearchDepartment] = useState('');
   const [searchHighestGraduation, setSearchHighestGraduation] = useState('');
@@ -57,6 +59,7 @@ export default function StudentsList() {
 
     return (
       (searchStudentId === '' || (student?.studentId || '').toLowerCase().includes(searchStudentId.toLowerCase())) &&
+      (searchStudentName === '' || (student?.name || '').toLowerCase().includes(searchStudentName.toLowerCase())) &&
       (searchBatchNo === '' || (student?.BatchNo || '').toLowerCase().includes(searchBatchNo.toLowerCase())) &&
       departmentMatch && // **Updated department filtering**
       (searchHighestGraduation === '' || (student?.qualification || '').toLowerCase().includes(searchHighestGraduation.toLowerCase())) &&
@@ -75,7 +78,7 @@ export default function StudentsList() {
   return (
     <div className="bg-blue-100 min-h-screen flex flex-col mx-auto p-6">
       <h2 className="text-blue-800 text-2xl font-bold text-center mb-4">
-        Students List ({studentsList.length})
+        Students List ({filteredStudents.length})
       </h2>
       <div className="flex flex-col items-center space-y-4 mb-4">
         <button
@@ -87,14 +90,22 @@ export default function StudentsList() {
       </div>
 
       {/* Filters */}
-      <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-4 mb-4 p-4 bg-white shadow-md rounded-md">
+      <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-4 mb-4 p-4 bg-white shadow-md rounded-md">
         <input
           type="text"
           value={searchStudentId}
           onChange={(e) => setSearchStudentId(e.target.value)}
           placeholder="Filter by Student ID"
-          className="border border-gray-300 rounded p-2 focus:outline-none focus:ring focus:ring-blue-400"
+          className="border border-gray-300 rounded p-2 focus:outline-none focus:ring focus:ring-blue-400 "
         />
+        <input
+        type="text"
+        value={searchStudentName}
+        onChange={(e) => setSearchStudentName(e.target.value)}
+        placeholder="Filter by Student Name"
+        className="border border-gray-300 rounded p-2 focus:outline-none focus:ring focus:ring-blue-400"
+      />
+
         <input
           type="text"
           value={searchBatchNo}
