@@ -1,5 +1,11 @@
 import React from "react";
-import { FaUser, FaIdBadge, FaPhone, FaStar } from "react-icons/fa";
+import {
+  FaUser,
+  FaIdBadge,
+  FaPhone,
+  FaStar,
+  FaClipboardCheck,
+} from "react-icons/fa";
 
 const StudentCard = ({ student }) => {
   return (
@@ -16,6 +22,11 @@ const StudentCard = ({ student }) => {
       <p className="text-gray-700 mb-2 flex items-center">
         <FaPhone className="mr-2 text-indigo-500" />
         <span className="font-semibold">Phone:</span> {student.phone}
+      </p>
+      <p className="text-gray-700 mb-2 flex items-center">
+        <FaClipboardCheck className="mr-2 text-indigo-500" />
+        <span className="font-semibold">Attempted Exam:</span>{" "}
+        {student.attempted ? "Attempted Exam" : "Did Not Attempt"}
       </p>
       {student.totalScore !== undefined && (
         <p className="text-gray-700 flex items-center">

@@ -28,13 +28,14 @@ export const QuestionBreakDown = ({ details }) => {
               <span className="font-medium">Status :</span>
               <span
                 className={`flex items-center ${
-                  question.status === "Correct"
+                  question.status === "Correct" || question.status === "Passed"
                     ? "text-green-600"
                     : "text-red-600"
                 }`}
               >
                 {question.status}
-                {question.status === "Correct" ? (
+                {question.status === "Correct" ||
+                question.status === "Passed" ? (
                   <FaCheckCircle className="ml-2" />
                 ) : (
                   <FaTimesCircle className="ml-2" />
