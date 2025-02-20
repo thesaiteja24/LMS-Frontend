@@ -24,7 +24,6 @@ const [showCPassword, setShowCPassword] = useState(false);
     const [newDepartment, setNewDepartment] = useState('');
     const [departments, setDepartments] = useState(departmentList);
     const [arrearsCount, setArrearsCount] = useState('');
-    console.log(studentDetails)
 
     const [formData, setFormData] = useState({
         name: studentDetails?.name || '',
@@ -89,14 +88,16 @@ const [showCPassword, setShowCPassword] = useState(false);
 
     const handleArrearsChange = (e) => {
         const value = e.target.value === 'yes' ? true : false;
-        setFormData({
-            ...formData,
-            arrears: value,
-        });
+        setFormData((prevState) => ({
+          ...prevState,
+          arrears: value,
+          arrearsCount: value ? prevState.arrearsCount : 0,
+        }));
         if (!value) {
-            setArrearsCount(''); // Reset arrears count if 'No' is selected
+          setArrearsCount(0);
         }
-    };
+      };
+      
 
     const handleArrearsCountChange = (e) => {
         const value = e.target.value;
@@ -397,6 +398,8 @@ const [showCPassword, setShowCPassword] = useState(false);
                 }
             );
 
+
+
             localStorage.setItem("profileStatus", "true");
 
             if (formData.resume) {
@@ -442,6 +445,7 @@ const [showCPassword, setShowCPassword] = useState(false);
     };
     useEffect(() => {
         if (!studentDetails) return; // ⛔ Prevent errors when studentDetails is null
+       
     
         setFormData({
             name: studentDetails.name || '',
@@ -797,18 +801,7 @@ const [showCPassword, setShowCPassword] = useState(false);
 </div>
 
                 <div className="input-group">
-                    <div className="form-group">
-                        <label>Graduated College Name(PG/UG) <span style={{ color: 'red' }}>*</span></label>
-                        <input
-                            type="text"
-                            name="collegeName"
-                            placeholder='Ex: Codegnan'
-                            value={formData.collegeName}
-                            onChange={handleChange}
-                            required
-                        />
-                        {errors.collegeName && <p className="error-message">{errors.collegeName}</p>}
-                    </div>
+                  
                     <div className="form-group">
                         <label>Percentage(Highest Graduation) <span style={{ color: 'red' }}>*</span></label>
                         <input

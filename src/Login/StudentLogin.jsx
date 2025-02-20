@@ -19,53 +19,38 @@ export default function StudentLogin({setIsAuthenticated }) {
   const [loading, setLoading] = useState(false);
   
   const navigate = useNavigate();
-
+  
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true); 
-
+  
     try {
       // Determine if the username is an email or studentId
       const isEmail = username.includes('@');
       const payload = isEmail
         ? { email: username.toLowerCase(), password }
         : { studentId: username, password };
+  
       // Make API call with the appropriate payload
       const response = await axios.post(
         `${import.meta.env.VITE_BACKEND_URL}/api/v1/login`,
         payload
       );
-
-
+  
       // Success case
       if (response.status === 200) {
-        // window.location.reload()
-        // await fetchBatches()
-        // window.location.reload();
-
-         // ✅ Update authentication state
-  setIsAuthenticated(true);  // ✅ This will update App.js state
-
-        const id = response.data.id 
-        // const token = response.data.jwtaccess;
-        //   // Store JWT in HttpOnly cookies (secure and safer than localStorage)
-        //   Cookies.set('jwt_token', token, {
-        //     expires: 7,  
-        //     secure: true, 
-        //     sameSite: 'Strict', 
-        // });
-
+        // Update authentication state
+        setIsAuthenticated(true); 
+        const id = response.data.id;
         localStorage.setItem("id", id);
-        // localStorage.setItem("JwtToken", token);
-       
-        // Store user info in local storage
-        localStorage.setItem('profileStatus',response.data.user.Profile);
+        localStorage.setItem('profileStatus', response.data.user.Profile);
         localStorage.setItem('userType', response.data.user.usertype);
-        localStorage.setItem('email',response.data.user.email)
+        localStorage.setItem('email', response.data.user.email);
         localStorage.setItem('student_id', response.data.id);
-        localStorage.setItem('location',response.data.Location)
-        localStorage.setItem(`${response.data.user.usertype}`, response.data.id)
-        // Redirect to profile page
+        localStorage.setItem('location', response.data.Location);
+        localStorage.setItem(`${response.data.user.usertype}`, response.data.id);
+  
+        // Redirect based on userType
         const userType = localStorage.getItem('userType');
         const userRoutes = {
           student_login_details: '/student-profile',
@@ -75,11 +60,9 @@ export default function StudentLogin({setIsAuthenticated }) {
           super: '/admin-dashboard', 
           superAdmin: '/reports',
         };
-
-        // Redirect based on userType
         const redirectTo = userRoutes[userType] || '/not-found';
         navigate(redirectTo);
-
+  
         Swal.fire({
           title: 'Login Successful',
           icon: 'success',
@@ -87,8 +70,14 @@ export default function StudentLogin({setIsAuthenticated }) {
       }
     } catch (error) {
       console.error('Login failed:', error);
-
-      if (error.response?.status === 404) {
+  
+      if (error.code === 'ERR_NETWORK' || error.message === 'Network Error') {
+        Swal.fire({
+          icon: 'error',
+          title: 'Network Error',
+          text: 'Please check your internet connection and try again.',
+        });
+      } else if (error.response?.status === 404) {
         Swal.fire({
           icon: 'error',
           title: 'User not found. Please check your details.',
@@ -104,11 +93,11 @@ export default function StudentLogin({setIsAuthenticated }) {
           title: 'An unexpected error occurred. Please try later.',
         });
       }
-    }finally {
-      setLoading(false); // ✅ Reset loading to false
+    } finally {
+      setLoading(false); // Reset loading to false
     }
-
   };
+  
 
   return (
     <>

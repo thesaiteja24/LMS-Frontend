@@ -30,6 +30,7 @@ export default function StudentProfileUpdateVV() {
   const { studentDetails, loading, profilePicture } = useStudent();
   const { edit, setEdit } = useEdit();
   const navigate = useNavigate();
+  console.log(studentDetails)
 
   // ---- Resume states ----
   const [file, setFile] = useState(null);
@@ -296,14 +297,14 @@ export default function StudentProfileUpdateVV() {
                 {studentDetails?.githubLink || "N/A"}
               </a>
             </p>
+            {studentDetails?.arrears === "true" && (
             <p className="text-gray-700">
-              <strong>Arrears:</strong>{" "}
-              {studentDetails?.arrears ? "Yes" : "No"}
-            </p>
-            {studentDetails?.arrears && (
+              <strong>Arrears:</strong>Yes
+            </p>)}
+            {studentDetails?.arrears === 'true' && (
               <p className="text-gray-700">
                 <strong>Arrears Count:</strong>{" "}
-                {studentDetails?.ArrearsCount || "N/A"}
+                {studentDetails?.arrears && studentDetails?.ArrearsCount || "N/A"}
               </p>
             )}
           </div>

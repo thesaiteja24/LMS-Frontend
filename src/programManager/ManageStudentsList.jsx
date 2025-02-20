@@ -183,6 +183,17 @@ export default function StudentsList() {
               ))}
             </tbody>
           </table>
+          <div className="flex justify-center mt-4">
+              <Stack spacing={2}>
+                <Pagination
+                  count={totalPages}
+                  page={page}
+                  onChange={handleChange}
+                  variant="outlined"
+                  shape="rounded"
+                />
+              </Stack>
+            </div>
         </div>
       ) : (
         <p className="text-center text-gray-600">No students found.</p>
