@@ -18,7 +18,7 @@ import {
   FaPhone,
   FaUsers,
   FaCalendarAlt,
-  // FaMapMarkerAlt,
+   FaWhatsapp ,
   FaDownload,
   FaBookOpen,
 } from "react-icons/fa"; 
@@ -417,10 +417,10 @@ export default function ProgramManagerSignup() {
 
       <div className="mb-4">
             <label className="block text-black font-semibold mb-2">
-              Student Phone Number
+              Student Whatsapp Number
             </label>
             <div className="flex items-center border border-gray-300 rounded-md p-2">
-            <FaPhone className="text-black mr-2" />
+            <FaWhatsapp  className="text-green-600 mr-2 text-2xl" />
 
               <Select
                 options={countryCodes}
@@ -468,28 +468,6 @@ export default function ProgramManagerSignup() {
             </div>
           </div>
 
-      {/* Location */}
-      {/* <div className="mb-4">
-        <label htmlFor="location" className="block text-black font-semibold mb-2">
-          Location
-        </label>
-        <div className="flex items-center border border-gray-300 rounded-md p-2">
-          <FaMapMarkerAlt className="text-black mr-2" />
-          <select
-            id="location"
-            name="location"
-            value={formData.location}
-            onChange={handleChange}
-            className="w-full px-3 py-2 text-gray-800 font-medium"
-            required
-          >
-            <option value="" disabled>
-              Select Location
-            </option>
-            <option value={location}>{location}</option>
-          </select>
-        </div>
-      </div> */}
 
       <div className="mb-4">
             <label className="block text-black font-semibold mb-2">Mode of Study</label>
