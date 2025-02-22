@@ -45,7 +45,7 @@ export const McqPanel = () => {
                     onChange={(e) => updateMcqAnswer(mcqIndex, e.target.value)}
                     className="mr-2"
                   />
-                  {optionKey}: {optionValue}
+                  {String(optionKey)}: {optionValue}
                 </label>
               );
             }
