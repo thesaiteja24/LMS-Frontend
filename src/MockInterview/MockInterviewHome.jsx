@@ -5,7 +5,7 @@ function MockInterviewHome() {
 
 
   return (
-    <div className="bg-[#f4f4f4] flex items-center justify-center min-h-screen p-6">
+    <div className="bg-[#f4f4f4] flex items-center justify-center  p-6">
       {/* Bigger White Box (Rectangle 249) */}
       <div className="relative w-full max-w-6xl min-h-[80vh] bg-white shadow-lg rounded-lg p-12 flex flex-col items-center text-center">
         

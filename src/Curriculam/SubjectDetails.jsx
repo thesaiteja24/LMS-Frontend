@@ -178,39 +178,39 @@ const SubjectDetails = () => {
   return (
     <div className="flex min-h-screen bg-gray-100 relative transition-all duration-500 ease-in-out">
       {/* Sidebar Toggle Button */}
-
-      {!sidebarOpen&&      <button
-        className="absolute top-2 left-2 mr-10 text-white bg-gray-900 p-3 rounded-md text-2xl focus:outline-none hover:bg-gray-800 transition-all duration-500 ease-in-out z-50"
-        onClick={() => setSidebarOpen(!sidebarOpen)}
-      >
-  {!sidebarOpen && <img src="/icon.svg" alt="Menu Icon" />}
-  {/* Use SVG as a component */}      
-</button>}
-
-
+      {!sidebarOpen && (
+        <button
+          className="absolute top-2 left-2 mr-10 text-white bg-gray-900 p-3 rounded-md text-2xl focus:outline-none hover:bg-gray-800 transition-all duration-500 ease-in-out z-50"
+          onClick={() => setSidebarOpen(!sidebarOpen)}
+        >
+          <img src="/icon.svg" alt="Menu Icon" />
+        </button>
+      )}
+  
       {/* Sidebar */}
       <div
         ref={sidebarRef}
-        className={`scrollable-sidebar  bg-gray-900 text-white h-screen flex flex-col transition-all duration-500 ease-in-out shadow-lg rounded-r-2xl ${sidebarOpen ? "w-80 overflow-y-auto p-4" : "w-0 opacity-0 overflow-hidden"}`}
-        style={{ position: sidebarOpen && window.innerWidth <= 768 ? 'fixed'  : 'relative' }} // Adjust position based on screen size
+        className={`scrollable-sidebar fixed lg:relative bg-gray-900 text-white h-screen flex flex-col transition-all duration-500 ease-in-out shadow-lg rounded-r-2xl 
+          ${sidebarOpen ? "w-80 overflow-y-auto p-4" : "w-0 opacity-0 overflow-hidden"}`}
       >
-        <div className="flex items-center justify-between mb-4 ">
-        <div className="flex justify-end mb-1 ">
-        <button
-        onClick={() => navigate('/courses')}
-        className="flex items-center  gap-2 px-2 py-2 mr-2 text-white bg-indigo-700 rounded-md shadow-md hover:bg-indigo-600 transition-transform transform hover:scale-105"
-      >
-        <FaArrowLeft className="text-lg" />
-      </button>
-        </div>
+        <div className="flex items-center justify-between mb-4">
+          <button
+            onClick={() => navigate('/courses')}
+            className="flex items-center gap-2 px-2 py-2 mr-2 text-white bg-indigo-700 rounded-md shadow-md hover:bg-indigo-600 transition-transform transform hover:scale-105"
+          >
+            <FaArrowLeft className="text-lg" />
+          </button>
           <h2 className="text-2xl font-bold border-b pb-3 flex-grow text-center">
             {state?.subject?.name} Curriculum
           </h2>
-          <button className="text-white text-2xl hover:text-gray-400 focus:outline-none ml-2" onClick={() => setSidebarOpen(false)}>
+          <button
+            className="text-white text-2xl hover:text-gray-400 focus:outline-none ml-2"
+            onClick={() => setSidebarOpen(false)}
+          >
             <FaTimes />
           </button>
         </div>
-
+  
         <ul className="space-y-3">
           {filteredCurriculum.map((item, index) => (
             <li
@@ -221,14 +221,9 @@ const SubjectDetails = () => {
               aria-disabled={item.locked}
               className={`flex items-center gap-3 p-3 rounded-lg transition shadow-md 
                 ${item.locked ? "bg-gray-700 cursor-not-allowed opacity-50" : ""}
-                ${selectedTopic?.Topics === item.Topics ? "bg-indigo-700" : "bg-gray-800 hover:bg-gray-700 cursor-pointer"}
-              `}
+                ${selectedTopic?.Topics === item.Topics ? "bg-indigo-700" : "bg-gray-800 hover:bg-gray-700 cursor-pointer"}`}
             >
-              {item.locked ? (
-                <FaLock className="text-red-400" />
-              ) : (
-                <FaCheckCircle className="text-green-400" />
-              )}
+              {item.locked ? <FaLock className="text-red-400" /> : <FaCheckCircle className="text-green-400" />}
               {item.type === "video" && <FaBookOpen className="text-blue-400" />}
               {item.type === "practice" && <FaEdit className="text-yellow-400" />}
               <div>
@@ -239,111 +234,78 @@ const SubjectDetails = () => {
           ))}
         </ul>
       </div>
-
-      {/* Right Content Section */}
-      <div className={`flex-1 h-screen overflow-y-auto p-4 lg:p-12 ${sidebarOpen && window.innerWidth > 768 ? "ml-10" : ""}`}>
-        {/* Header */}
-     
-
-        {/* Topic Title */}
-        <h1 className="text-2xl lg:text-4xl ml-10  font-bold text-indigo-800 mb-6 text-center md:text-left">
+  
+      {/* Right Content Section (Fix Sidebar Spacing Issue) */}
+      <div
+        className={`flex-1 h-screen overflow-y-auto p-10 transition-all duration-500 
+          ${sidebarOpen ? "lg:ml-[50px]" : "lg:ml-0"}`} // Reduced the gap when sidebar is open
+      >
+             <h1 className="text-2xl lg:text-4xl   font-bold text-indigo-800 mb-6 text-center md:text-left">
           {selectedTopic?.Topics || "Select a Topic"}
         </h1>
-
-        {/* Video Section */}
-        <div >
-          {selectedTopic?.VideoUrl ? (
-            <div className="w-full  rounded-lg overflow-hidden shadow-lg">
-              <iframe
-                src={getEmbedUrl(selectedTopic.VideoUrl)}
-                className="w-full h-auto aspect-video rounded-lg"
-                allowFullScreen
-                loading="lazy"
-                sandbox="allow-same-origin allow-scripts allow-forms"
-              ></iframe>
-            </div>
-          ) :  (
-            <div className="w-full max-w-3xl flex flex-col items-center justify-center bg-white/20  shadow-xl rounded-lg p-8 animate-fadeIn border border-gray-200">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="w-16 h-16 text-indigo-500 animate-pulse"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M12 8v4l3 3m9-9a9 9 0 11-18 0 9 9 0 0118 0z"
-              />
-            </svg>
-            <h2 className="text-2xl font-bold text-indigo-600 mt-4">Coming Soon!</h2>
-            <p className="text-gray-600 mt-2 text-center max-w-md">
-              We're working hard to bring you this content. Stay tuned!
-            </p>
-          </div>
-          
-          )}
-        </div>
-
-        {/* Subtopics Section */}
-        {selectedTopic?.SubTopics?.length > 0 || selectedTopic?.PreviousSubTopics?.length > 0 ? (
-          <div className="mt-10 bg-white rounded-2xl shadow-md p-6  w-full">
-            <h2 className="text-xl font-semibold text-indigo-700 mb-4">SubTopics Covered:</h2>
-            <ul className="list-disc pl-6 space-y-2 text-gray-700">
-              {selectedTopic?.SubTopics?.map((sub, index) => (
-                <li key={index} className="text-lg">{sub.subTopic}</li>
-              ))}
-              {selectedTopic?.PreviousSubTopics?.map((prev, index) => (
-                <li key={`prev-${index}`} className="text-lg text-gray-500">
-                  {prev.subTopic} (Previous)
-                </li>
-              ))}
-            </ul>
-          </div>
-        ) : null}
-
-        {/* Rating Modal */}
-        {isRatingModalOpen && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center p-4">
-            <div className="bg-white rounded-3xl shadow-2xl p-8 w-full max-w-md relative">
-              <button
-                onClick={() => setIsRatingModalOpen(false)}
-                className="absolute top-4 right-4 text-gray-500 hover:text-gray-800 text-2xl"
-              >
-                ✕
-              </button>
-              <h2 className="text-2xl font-bold text-gray-800 mb-6 text-center">Rate your session</h2>
-              <div className="flex justify-center items-center mb-8 space-x-3">
-                {[1, 2, 3, 4, 5].map((star) => (
-                  <button
-                    key={star}
-                    className="text-4xl focus:outline-none transform transition-transform hover:scale-125"
-                    onMouseEnter={() => setHoverRating(star)}
-                    onMouseLeave={() => setHoverRating(0)}
-                    onClick={() => setRating(star)}
+        {/* Main Content Section */}
+        <div className="bg-[#F5F5F5] ">
+          {/* Responsive Layout - Tablet Breakpoint Fix */}
+          <div className="flex w-[90%] gap-6 md:gap-10 lg:gap-6 flex-col md:flex-col lg:flex-row">
+            {/* Left Container - Adapts to Video */}
+            <div className="w-full md:w-full lg:w-[70%] bg-white shadow-lg rounded-md overflow-hidden">
+              {selectedTopic?.VideoUrl ? (
+                <iframe
+                  className="w-full aspect-video rounded-md"
+                  src={getEmbedUrl(selectedTopic.VideoUrl)}
+                  title="YouTube Video"
+                  frameBorder="0"
+                  allowFullScreen
+                ></iframe>
+              ) : (
+                <div className="w-full flex flex-col items-center justify-center bg-white/20 shadow-xl rounded-lg animate-fadeIn border border-gray-200 py-10">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="w-16 h-16 text-indigo-500 animate-pulse"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
                   >
-                    {star <= (hoverRating || rating) ? (
-                      <FaStar className="text-yellow-500" />
-                    ) : (
-                      <FaRegStar className="text-gray-400" />
-                    )}
-                  </button>
-                ))}
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M12 8v4l3 3m9-9a9 9 0 11-18 0 9 9 0 0118 0z"
+                    />
+                  </svg>
+                  <h2 className="text-2xl font-bold text-indigo-600 mt-4">Coming Soon!</h2>
+                  <p className="text-gray-600 mt-2 text-center max-w-md">
+                    We're working hard to bring you this content. Stay tuned!
+                  </p>
+                </div>
+              )}
+            </div>
+  
+            {/* Right Container - Subtopics (Moves Below Left Container on Tablets) */}
+            <div className="w-full md:w-full lg:w-[30%] bg-white shadow-lg rounded-md flex flex-col">
+              <div className="bg-[#0C1BAA] text-white text-center font-bold py-4 rounded-t-md text-lg">
+                Subtopics Covered
               </div>
-              <button
-                onClick={submitRating}
-                className="w-full px-4 py-3 bg-indigo-700 text-white font-semibold rounded-xl hover:bg-indigo-600 transition-transform transform hover:scale-105"
-              >
-                Submit Rating
-              </button>
+              <div className="p-5 flex-1">
+                <ul className="space-y-3 text-black font-inter text-[16px] leading-[19px]">
+                  {selectedTopic?.SubTopics?.map((sub, index) => (
+                    <li key={index} className="flex items-start ">
+                      <span className="text-blue-700 text-lg mr-2 flex justify-center items-center font-bold">•</span> {sub.subTopic}
+                    </li>
+                  ))}
+                </ul>
+              </div>
             </div>
           </div>
-        )}
+        </div>
       </div>
     </div>
   );
+  
+  
+  
+  
+  
 };
 
 export default SubjectDetails;
