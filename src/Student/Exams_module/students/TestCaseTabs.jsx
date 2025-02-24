@@ -3,7 +3,7 @@ import React, { useState } from "react";
 const TestCaseTabs = ({ testCases }) => {
   const [activeTab, setActiveTab] = useState(0);
 
-  if (!testCases.length) {
+  if (!testCases || !testCases.length) {
     return <div>No test cases to display.</div>;
   }
 
@@ -16,13 +16,13 @@ const TestCaseTabs = ({ testCases }) => {
     String(text).replace(/\\s/g, " ").replace(/\\n/g, "\n");
 
   const currentTest = testCases[activeTab];
-  const parsedExpectedOutput = parseOutput(currentTest.expected_output);
-  const parsedActualOutput = parseOutput(currentTest.actual_output);
+  const parsedExpectedOutput = parseOutput(currentTest?.expected_output);
+  const parsedActualOutput = parseOutput(currentTest?.actual_output);
 
   return (
     <div className="rounded-md overflow-hidden">
       {/* Tab Bar */}
-      <div className="flex items-center bg-gray-800 px-4 py-2">
+      <div className="flex items-center bg-gray-800 px-4 py-2 overflow-x-auto">
         {testCases.map((_, index) => (
           <button
             key={index}
@@ -38,7 +38,7 @@ const TestCaseTabs = ({ testCases }) => {
             Case {index + 1}
           </button>
         ))}
-        {/* If you want the "+" button exactly like the screenshot */}
+        {/* Extra "+" button if you want the exact style shown in your screenshot */}
         <button className="bg-gray-900 text-gray-300 text-sm px-4 py-1 rounded-t">
           +
         </button>
@@ -46,33 +46,46 @@ const TestCaseTabs = ({ testCases }) => {
 
       {/* Active Tab Content */}
       <div className="bg-gray-700 p-4 text-white">
-        {currentTest.type === "hidden" ? (
-          <h4 className="mb-2 font-semibold">
-            Hidden Test Case {activeTab + 1}: {currentTest.status}
-          </h4>
+        {/* If this test is custom, it won't have an expected_output */}
+        {currentTest.type === "custom" ? (
+          <div className="flex flex-col gap-2">
+            <h4 className="mb-2 font-semibold">
+              Custom Input: {currentTest.input}
+            </h4>
+            <p className="mb-1">
+              <strong>Your Output:</strong>
+            </p>
+            <pre className="bg-gray-800 p-2 rounded">{parsedActualOutput}</pre>
+          </div>
         ) : (
           <div className="flex flex-col gap-2">
             <h4 className="mb-2 font-semibold">
-              Test Case {activeTab + 1}: {currentTest.status}
+              {currentTest.type === "hidden"
+                ? `Hidden Test Case ${activeTab + 1}`
+                : `Test Case ${activeTab + 1}`}
+              : {currentTest.status}
             </h4>
-            <p className="mb-1">
-              <strong>Input:</strong> {currentTest.input}
-            </p>
 
-            {/* Wrap parsed outputs in <pre> to preserve formatting */}
-            <div className="flex flex-row gap-5">
+            {/* Show Input only if it's not hidden */}
+            {currentTest.type !== "hidden" && (
               <p className="mb-1">
+                <strong>Input:</strong> {currentTest.input}
+              </p>
+            )}
+
+            <div className="flex flex-col sm:flex-row gap-5">
+              <div>
                 <strong>Expected Output:</strong>
-                <pre className="bg-gray-800 p-2 rounded">
+                <pre className="bg-gray-800 p-2 rounded mt-1">
                   {parsedExpectedOutput}
                 </pre>
-              </p>
-              <p className="mb-1">
+              </div>
+              <div>
                 <strong>Your Output:</strong>
-                <pre className="bg-gray-800 p-2 rounded">
+                <pre className="bg-gray-800 p-2 rounded mt-1">
                   {parsedActualOutput}
                 </pre>
-              </p>
+              </div>
             </div>
           </div>
         )}

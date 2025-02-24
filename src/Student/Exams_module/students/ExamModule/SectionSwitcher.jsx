@@ -28,7 +28,7 @@ const SectionSwitcher = () => {
   }
 
   return (
-    <div className="section-switching rounded-xl flex flex-row justify-evenly items-center bg-white text-center p-4">
+    <div className="section-switching rounded-xl flex flex-row justify-evenly items-center bg-white text-center ptsrc/Student/Exams_module/students/ExamModule/SectionSwitcher.jsx-2">
       <button
         onClick={() => setSelectedMCQ(true)}
         className={`${

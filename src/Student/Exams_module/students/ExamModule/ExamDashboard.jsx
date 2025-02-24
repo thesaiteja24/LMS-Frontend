@@ -7,25 +7,30 @@ import { useStudent } from "../../../../contexts/StudentProfileContext";
 import { useNavigate } from "react-router-dom";
 import { ExamContext } from "./ExamContext";
 import ExamCountdownTimer from "./ExamCountDownTimer";
+import InstructionsModal from "./InstructionsModal"; // <-- Import Modal
 
 const ExamDashboard = () => {
   const { setExamData } = useContext(ExamContext);
   const { studentDetails, loading: studentLoading } = useStudent();
 
   const [exams, setExams] = useState([]);
-  // Use a Set to track exam IDs that are already completed
+  // Keep track of completed exam IDs (use a Set for quick lookup)
   const [completedExams, setCompletedExams] = useState(new Set());
   const [loading, setLoading] = useState(true);
   const [statusLoading, setStatusLoading] = useState(true);
   const [error, setError] = useState("");
 
-  // Assume these values are stored in localStorage or provided via context
+  // When user clicks "Start Exam," we need to store the exam data and show the modal
+  const [selectedExam, setSelectedExam] = useState(null);
+  const [showInstructions, setShowInstructions] = useState(false);
+
+  // These values might come from localStorage or your context
   const location = localStorage.getItem("location");
   const studentId = localStorage.getItem("student_id");
   const batch = studentDetails?.BatchNo;
   const navigate = useNavigate();
 
-  // 1. Fetch available exams from the backend
+  // 1. Fetch all available exams for the given batch/location
   useEffect(() => {
     const fetchExams = async () => {
       try {
@@ -52,7 +57,7 @@ const ExamDashboard = () => {
     }
   }, [batch, location]);
 
-  // 2. Fetch exam status (completed exam IDs) from the backend
+  // 2. Fetch the user’s exam status to mark which exam(s) have been completed
   useEffect(() => {
     const fetchExamStatus = async () => {
       try {
@@ -66,7 +71,7 @@ const ExamDashboard = () => {
           setCompletedExams(new Set(response.data.completedExamIds));
         }
       } catch (err) {
-        console.error("Error fetching exam status", err);
+        console.error("Error fetching exam status:", err);
       } finally {
         setStatusLoading(false);
       }
@@ -77,7 +82,7 @@ const ExamDashboard = () => {
     }
   }, [studentId, batch, location]);
 
-  // 3. Categorize exams based on current time
+  // 3. Categorize exams as active, upcoming, or finished
   const categorizeExams = () => {
     const now = new Date();
     const active = [];
@@ -85,7 +90,7 @@ const ExamDashboard = () => {
     const finished = [];
 
     exams.forEach((exam) => {
-      // Assume exam.startDate is in "YYYY-MM-DD" format and exam.startTime is in "HH:MM"
+      // Convert the exam date/time to a JS Date object
       const examStart = new Date(`${exam.startDate}T${exam.startTime}`);
       const examEnd = new Date(
         examStart.getTime() + exam.totalExamTime * 60000
@@ -105,72 +110,45 @@ const ExamDashboard = () => {
 
   const { active, upcoming, finished } = categorizeExams();
 
-  // 4. Tracking effect to reload the page if an exam's time window changes
-  useEffect(() => {
-    const interval = setInterval(() => {
-      const now = new Date();
-      let shouldReload = false;
+  // 4. Show the instructions modal before starting the exam
+  const handleShowInstructions = (exam) => {
+    setSelectedExam(exam);
+    setShowInstructions(true);
+  };
 
-      // Check if any upcoming exam has started
-      for (const exam of upcoming) {
-        const examStart = new Date(`${exam.startDate}T${exam.startTime}`);
-        if (now >= examStart) {
-          shouldReload = true;
-          break;
-        }
-      }
+  // 5. After agreeing to the instructions, start the exam
+  const handleStartExam = async () => {
+    if (!selectedExam) return;
+    const { examId, type, dayOrder } = selectedExam;
 
-      // Check if any active exam has ended
-      if (!shouldReload) {
-        for (const exam of active) {
-          const examStart = new Date(`${exam.startDate}T${exam.startTime}`);
-          const examEnd = new Date(
-            examStart.getTime() + exam.totalExamTime * 60000
-          );
-          if (now >= examEnd) {
-            shouldReload = true;
-            break;
-          }
-        }
-      }
-
-      if (shouldReload) {
-        clearInterval(interval);
-        // This will reload the entire /exam-dashboard page
-        window.location.reload();
-      }
-    }, 1000);
-
-    return () => clearInterval(interval);
-  }, [active, upcoming]);
-
-  // 5. Handler to start the exam – requests fullscreen and calls your start exam API
-  const handleStartExam = async (examId, type, dayOrder) => {
-    console.log(type);
     try {
-      // Request fullscreen mode
+      // Request fullscreen mode for the exam
       if (document.documentElement.requestFullscreen) {
         await document.documentElement.requestFullscreen();
       }
 
-      // Call the start exam API
+      // Hit your "start exam" endpoint
       const response = await axios.post(
         `${import.meta.env.VITE_BACKEND_URL}/api/v1/startexam`,
         { examId, batch, studentId, location, type, dayOrder }
       );
 
       if (response.data.success) {
+        // Save exam data to local storage/context
         localStorage.setItem("examData", JSON.stringify(response.data));
         setExamData(response.data);
+
+        // Navigate user to the exam page
         navigate("/conduct-exam");
       } else {
-        console.error("Failed to start exam.");
+        console.error("Failed to start exam:", response.data.message);
       }
     } catch (error) {
       console.error("Error starting exam:", error);
     }
   };
 
+  // Loading states
   if (loading || studentLoading || statusLoading) {
     return (
       <div className="flex items-center justify-center">
@@ -179,6 +157,7 @@ const ExamDashboard = () => {
     );
   }
 
+  // Error state
   if (error) {
     return (
       <div className="text-3xl text-center">
@@ -187,246 +166,149 @@ const ExamDashboard = () => {
     );
   }
 
-  window.addEventListener("popstate", () => {
-    window.location.reload();
-  });
-
   return (
     <div className="flex flex-col m-4">
-      <div className="h-full">
-        {/* Active Exams Section */}
-        {active.length > 0 && (
-          <div className="mb-6">
-            <h3 className="font-semibold text-[#132EE0] mb-3 flex flex-row items-center gap-2 text-xl border-b">
-              <img className="w-8" src="ExamModule/Exam-blue.png" alt="" />
-              Active Exams
-            </h3>
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-              {active.map((exam) => (
-                <Card
-                  key={exam.examId}
-                  className="cursor-pointer hover:shadow-lg"
-                >
-                  <CardHeader>
-                    <CardTitle>Batch: {exam.batch}</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="flex flex-col space-y-3 p-4 bg-white shadow-md rounded-lg">
-                      <div className="flex flex-row justify-evenly">
-                        <div>
-                          <div className="flex items-center gap-2">
-                            <img
-                              src="ExamModule/Date.png"
-                              alt="Date"
-                              className="w-5 h-5"
-                            />
-                            <strong className="text-gray-700">
-                              Start Date
-                            </strong>
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <img
-                              src="ExamModule/Watch.png"
-                              alt="Clock"
-                              className="w-5 h-5"
-                            />
-                            <strong className="text-gray-700">
-                              Start Time
-                            </strong>
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <img
-                              src="ExamModule/Sand-clock.png"
-                              alt="Duration"
-                              className="w-5 h-5"
-                            />
-                            <strong className="text-gray-700">
-                              Total Duration
-                            </strong>
-                          </div>
-                        </div>
-                        <div className="flex flex-col">
-                          <span className="text-gray-600">
-                            : {exam.startDate}
-                          </span>
-                          <span className="text-gray-600">
-                            : {exam.startTime}
-                          </span>
-                          <span className="text-gray-600">
-                            : {exam.totalExamTime} mins
-                          </span>
-                        </div>
-                      </div>
-                      <button
-                        type="button"
-                        onClick={() =>
-                          handleStartExam(exam.examId, exam.type, exam.dayOrder)
-                        }
-                        disabled={completedExams.has(exam.examId)}
-                        className={`focus:outline-none text-white font-semibold text-xl rounded-lg px-5 py-2.5 me-2 mb-2 ${
+      {/* ==================== ACTIVE EXAMS ==================== */}
+      {active.length > 0 && (
+        <div className="mb-6">
+          <h3 className="font-semibold text-[#132EE0] mb-3 flex flex-row items-center gap-2 text-xl border-b">
+            <img className="w-8" src="ExamModule/Exam-blue.png" alt="" />
+            Active Exams
+          </h3>
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+            {active.map((exam) => (
+              <Card
+                key={exam.examId}
+                className="cursor-pointer hover:shadow-lg"
+              >
+                <CardHeader>
+                  <CardTitle>Batch: {exam.batch}</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="flex flex-col space-y-3 p-4 bg-white shadow-md rounded-lg">
+                    <div className="flex flex-row justify-between">
+                      <strong>Start Date:</strong>
+                      <span>{exam.startDate}</span>
+                    </div>
+                    <div className="flex flex-row justify-between">
+                      <strong>Start Time:</strong>
+                      <span>{exam.startTime}</span>
+                    </div>
+                    <div className="flex flex-row justify-between">
+                      <strong>Duration:</strong>
+                      <span>{exam.totalExamTime} mins</span>
+                    </div>
+
+                    <button
+                      type="button"
+                      onClick={() => handleShowInstructions(exam)}
+                      disabled={completedExams.has(exam.examId)}
+                      className={`focus:outline-none text-white font-semibold text-xl rounded-lg px-5 py-2.5
+                        ${
                           completedExams.has(exam.examId)
                             ? "bg-gray-400 cursor-not-allowed"
-                            : "bg-[#132EE0]"
-                        }`}
-                      >
-                        {completedExams.has(exam.examId)
-                          ? "Already Attempted"
-                          : "Start Exam"}
-                      </button>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
+                            : "bg-[#132EE0] hover:bg-[#0f22b4]"
+                        }
+                      `}
+                    >
+                      {completedExams.has(exam.examId)
+                        ? "Already Attempted"
+                        : "Start Exam"}
+                    </button>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
           </div>
-        )}
-      </div>
-      <div className="h-full">
-        {/* Upcoming Exams Section */}
-        {upcoming.length > 0 && (
-          <div className="mb-6">
-            <h3 className="font-semibold text-[#132EE0] mb-3 flex flex-row items-center gap-2 text-xl border-b">
-              <img className="w-8" src="ExamModule/Exam-blue.png" alt="" />
-              Upcoming Exams
-            </h3>
-            <div className="grid grid-cols-1 lg:grid-cols-4 gap-4">
-              {upcoming.map((exam) => (
-                <Card key={exam.examId}>
-                  <CardHeader>
-                    <CardTitle>Batch: {exam.batch}</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="flex flex-col space-y-3 p-4 bg-white shadow-md rounded-lg">
-                      <div className="flex flex-row justify-evenly">
-                        <div>
-                          <div className="flex items-center gap-2">
-                            <img
-                              src="ExamModule/Date.png"
-                              alt="Date"
-                              className="w-5 h-5"
-                            />
-                            <strong className="text-gray-700">
-                              Start Date
-                            </strong>
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <img
-                              src="ExamModule/Watch.png"
-                              alt="Clock"
-                              className="w-5 h-5"
-                            />
-                            <strong className="text-gray-700">
-                              Start Time
-                            </strong>
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <img
-                              src="ExamModule/Sand-clock.png"
-                              alt="Duration"
-                              className="w-5 h-5"
-                            />
-                            <strong className="text-gray-700">
-                              Total Duration
-                            </strong>
-                          </div>
-                        </div>
-                        <div className="flex flex-col">
-                          <span className="text-gray-600">
-                            : {exam.startDate}
-                          </span>
-                          <span className="text-gray-600">
-                            : {exam.startTime}
-                          </span>
-                          <span className="text-gray-600">
-                            : {exam.totalExamTime} mins
-                          </span>
-                        </div>
-                      </div>
-                      <ExamCountdownTimer
-                        startDate={exam.startDate}
-                        startTime={exam.startTime}
-                        totalExamTime={exam.totalExamTime}
-                      />
+        </div>
+      )}
+
+      {/* ==================== UPCOMING EXAMS ==================== */}
+      {upcoming.length > 0 && (
+        <div className="mb-6">
+          <h3 className="font-semibold text-[#132EE0] mb-3 flex flex-row items-center gap-2 text-xl border-b">
+            <img className="w-8" src="ExamModule/Exam-blue.png" alt="" />
+            Upcoming Exams
+          </h3>
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+            {upcoming.map((exam) => (
+              <Card key={exam.examId}>
+                <CardHeader>
+                  <CardTitle>Batch: {exam.batch}</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="flex flex-col space-y-3 p-4 bg-white shadow-md rounded-lg">
+                    <div className="flex flex-row justify-between">
+                      <strong>Start Date:</strong>
+                      <span>{exam.startDate}</span>
                     </div>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          </div>
-        )}
-      </div>
-      <div className="h-full">
-        {/* Finished Exams Section */}
-        {finished.length > 0 && (
-          <div className="mb-6">
-            <h3 className="font-semibold text-[#132EE0] mb-3 flex flex-row items-center gap-2 text-xl border-b">
-              <img className="w-8" src="ExamModule/Exam-blue.png" alt="" />
-              Finished Exams
-            </h3>
-            <div className="grid grid-cols-1 lg:grid-cols-4 gap-4">
-              {finished.map((exam) => (
-                <Card key={exam.examId}>
-                  <CardHeader>
-                    <CardTitle>Batch: {exam.batch}</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="flex flex-col space-y-3 p-4 bg-white shadow-md rounded-lg">
-                      <div className="flex flex-row justify-evenly">
-                        <div>
-                          <div className="flex items-center gap-2">
-                            <img
-                              src="ExamModule/Date.png"
-                              alt="Date"
-                              className="w-5 h-5"
-                            />
-                            <strong className="text-gray-700">
-                              Start Date
-                            </strong>
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <img
-                              src="ExamModule/Watch.png"
-                              alt="Clock"
-                              className="w-5 h-5"
-                            />
-                            <strong className="text-gray-700">
-                              Start Time
-                            </strong>
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <img
-                              src="ExamModule/Sand-clock.png"
-                              alt="Duration"
-                              className="w-5 h-5"
-                            />
-                            <strong className="text-gray-700">
-                              Total Duration
-                            </strong>
-                          </div>
-                        </div>
-                        <div className="flex flex-col">
-                          <span className="text-gray-600">
-                            : {exam.startDate}
-                          </span>
-                          <span className="text-gray-600">
-                            : {exam.startTime}
-                          </span>
-                          <span className="text-gray-600">
-                            : {exam.totalExamTime} mins
-                          </span>
-                        </div>
-                      </div>
-                      <p className="text-red-600 font-semibold text-center mt-2 text-xl">
-                        Exam Completed
-                      </p>
+                    <div className="flex flex-row justify-between">
+                      <strong>Start Time:</strong>
+                      <span>{exam.startTime}</span>
                     </div>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
+                    <div className="flex flex-row justify-between">
+                      <strong>Duration:</strong>
+                      <span>{exam.totalExamTime} mins</span>
+                    </div>
+                    {/* Countdown for upcoming exam */}
+                    <ExamCountdownTimer
+                      startDate={exam.startDate}
+                      startTime={exam.startTime}
+                      totalExamTime={exam.totalExamTime}
+                    />
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
           </div>
-        )}
-      </div>
+        </div>
+      )}
+
+      {/* ==================== FINISHED EXAMS ==================== */}
+      {finished.length > 0 && (
+        <div className="mb-6">
+          <h3 className="font-semibold text-[#132EE0] mb-3 flex flex-row items-center gap-2 text-xl border-b">
+            <img className="w-8" src="ExamModule/Exam-blue.png" alt="" />
+            Finished Exams
+          </h3>
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+            {finished.map((exam) => (
+              <Card key={exam.examId}>
+                <CardHeader>
+                  <CardTitle>Batch: {exam.batch}</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="flex flex-col space-y-3 p-4 bg-white shadow-md rounded-lg">
+                    <div className="flex flex-row justify-between">
+                      <strong>Start Date:</strong>
+                      <span>{exam.startDate}</span>
+                    </div>
+                    <div className="flex flex-row justify-between">
+                      <strong>Start Time:</strong>
+                      <span>{exam.startTime}</span>
+                    </div>
+                    <div className="flex flex-row justify-between">
+                      <strong>Duration:</strong>
+                      <span>{exam.totalExamTime} mins</span>
+                    </div>
+                    <p className="text-red-600 font-semibold text-center mt-2 text-xl">
+                      Exam Completed
+                    </p>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* ==================== INSTRUCTIONS MODAL ==================== */}
+      {showInstructions && (
+        <InstructionsModal
+          onClose={() => setShowInstructions(false)}
+          onAgree={handleStartExam}
+        />
+      )}
     </div>
   );
 };
