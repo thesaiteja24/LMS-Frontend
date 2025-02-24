@@ -16,7 +16,7 @@ const BannerPage = () => {
         dashboardData.yearOFPlacement || {}
       ).reduce((acc, value) => acc + value, 0);
       // Fallback value if totalPlaced is zero
-      const finalCount = totalPlaced === 0 ? 3500 : totalPlaced;
+      const finalCount = totalPlaced === 0 ? 0 : totalPlaced;
       let currentCount = 0;
       const duration = 1000; // animation duration in milliseconds (2 seconds)
       const intervalTime = 3; // update every 50ms

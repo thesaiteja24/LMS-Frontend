@@ -468,31 +468,35 @@ export default function StudentProfileUpdateVV() {
       </div>
     </div>
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 max-w-7xl w-full mx-auto mt-6">
-  <div className="lg:col-span-1 bg-white  shadow-md p-5 flex flex-col">
-    <div className="flex items-center gap-2 mb-4">
-      <FaFileUpload className="text-[#0C1BAA] text-xl" />
-      <h3 className="text-lg font-semibold text-[#0C1BAA]">Upload Resume</h3>
-    </div>
-
-    <form onSubmit={updateResume} className="flex">
-      <input
-        type="file"
-        className="flex-1 text-sm text-gray-700 border border-gray-300 bg-gray-50 p-2 cursor-pointer"
-        onChange={(e) => setFile(e.target.files[0])}
-      />
-
-      <button
-        type="submit"
-        disabled={updatingResume}
-        className={`flex items-center justify-center gap-2 bg-[#0C1BAA] text-white px-4 py-2  shadow-md hover:shadow-lg transition-transform hover:scale-105 ${
-          updatingResume ? "opacity-50 cursor-not-allowed" : ""
-        }`}
-      >
-        <FaFileUpload />
-        {updatingResume ? "Updating..." : "Upload"}
-      </button>
-    </form>
+    <div className="bg-white shadow-md p-5 flex flex-col w-full">
+  {/* Heading with icon */}
+  <div className="flex items-center gap-2 mb-4">
+    <FaFileUpload className="text-[#0C1BAA] text-xl" />
+    <h3 className="text-lg font-semibold text-[#0C1BAA]">Upload Resume</h3>
   </div>
+
+  {/* Form with file input and upload button */}
+  <form onSubmit={updateResume} className="flex flex-col sm:flex-row gap-2">
+    {/* File Input */}
+    <input
+      type="file"
+      className="flex-1 text-sm text-gray-700 border border-gray-300 bg-gray-50 p-2 cursor-pointer"
+      onChange={(e) => setFile(e.target.files[0])}
+    />
+
+    {/* Upload Button */}
+    <button
+      type="submit"
+      disabled={updatingResume}
+      className={`flex items-center justify-center gap-2 bg-[#0C1BAA] text-white px-4 py-2 rounded-md shadow-md hover:shadow-lg transition-transform hover:scale-105 ${
+        updatingResume ? "opacity-50 cursor-not-allowed" : ""
+      }`}
+    >
+      <FaFileUpload />
+      {updatingResume ? "Updating..." : "Upload"}
+    </button>
+  </form>
+</div>
 
   <div className="lg:col-span-2 flex flex-col md:flex-row gap-0">
     {/* Card 2: Your Resume */}
@@ -528,8 +532,8 @@ export default function StudentProfileUpdateVV() {
 
     {/* Card 3: ATS Resume Score */}
     <div className="bg-[#0C1BAA] text-white  shadow-md p-5 flex flex-col items-center justify-center w-full md:w-1/3 md:rounded-l-none md:rounded-r-md">
-      <span className="font-semibold text-sm">ATS Resume Score</span>
-      <span className="text-3xl font-bold">
+      <span className="font-semibold text-2xl">ATS Resume Score</span>
+      <span className="text-xl font-bold">
         {resumeScore !== null ? `${resumeScore}/100` : "Check Your resume Score"}
       </span>
     </div>
