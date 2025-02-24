@@ -232,7 +232,7 @@ const OnlineCompiler = () => {
         </label>
         {customInputEnabled && (
           <textarea
-            rows={1src/Student/Exams_module/students/ExamModule/OnlineCompiler.jsx}
+            rows={1}
             className="w-full p-2 border rounded"
             placeholder="Enter custom input"
             value={customInput}
