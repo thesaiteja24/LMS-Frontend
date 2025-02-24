@@ -14,7 +14,7 @@ const QNavigation = () => {
   } = useContext(ExamContext);
 
   return (
-    <div className="flex flex-row justify-between legend w-full rounded-2xl bg-white m-4 px-2  shadow-[0px_4px_12px_0px_rgba(3,104,255,0.15)]">
+    <div className="flex flex-row justify-between legend w-full rounded-2xl bg-white m-2 px-2  shadow-[0px_4px_12px_0px_rgba(3,104,255,0.15)]">
       <div className="flex flex-row gap-4 justify-evenly items-center current">
         <button
           type="button"

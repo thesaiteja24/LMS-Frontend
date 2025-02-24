@@ -3,7 +3,7 @@ import { NumberedNavigation } from "./NumberedNavigation";
 
 export const NavigationCoding = () => {
   return (
-    <div className="m-4 rounded-xl h-full">
+    <div className="rounded-xl flex flex-col mr-2">
       <CountdownTimer />
       <NumberedNavigation />
     </div>

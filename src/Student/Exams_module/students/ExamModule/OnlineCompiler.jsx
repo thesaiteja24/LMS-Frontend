@@ -209,7 +209,26 @@ const OnlineCompiler = () => {
           onChange={handleCodeChange}
         />
       </div>
-
+      {/* Custom Input */}
+      <div className="mb-4">
+        <label className="flex items-center space-x-2">
+          <input
+            type="checkbox"
+            checked={customInputEnabled}
+            onChange={() => setCustomInputEnabled((prev) => !prev)}
+          />
+          <span className="font-semibold">Enable Custom Input</span>
+        </label>
+        {customInputEnabled && (
+          <textarea
+            rows={4}
+            className="w-full mt-2 p-2 border rounded"
+            placeholder="Enter custom input"
+            value={customInput}
+            onChange={(e) => setCustomInput(e.target.value)}
+          />
+        )}
+      </div>
       {/* Test Summary and Results */}
       <div className="p-2 border rounded bg-white overflow-auto">
         <p className="font-semibold mb-2">

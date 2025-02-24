@@ -31,7 +31,7 @@ export const McqPanel = () => {
               return (
                 <label
                   key={optionKey}
-                  className={`flex items-center p-2 rounded cursor-pointer w-full sm:w-1/2 md:w-1/3 ${
+                  className={`flex items-center p-2 rounded cursor-pointer w-2/3 ${
                     isSelected
                       ? "bg-white shadow-[0px_4px_17px_0px_#0368FF26]"
                       : "bg-[#E1EFFF]"
@@ -45,7 +45,7 @@ export const McqPanel = () => {
                     onChange={(e) => updateMcqAnswer(mcqIndex, e.target.value)}
                     className="mr-2"
                   />
-                  {String(optionKey)}: {optionValue}
+                  {String(optionKey)}: {String(optionValue)}
                 </label>
               );
             }

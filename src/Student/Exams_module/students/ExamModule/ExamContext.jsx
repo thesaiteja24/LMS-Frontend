@@ -8,8 +8,8 @@ export const ExamContext = createContext();
 
 export const ExamProvider = ({ children }) => {
   const navigate = useNavigate();
+  const [examType, setExamType] = useState(null);
   const { studentDetails } = useStudent();
-
   const [examData, setExamData] = useState(null);
   const [existingData, setExistingData] = useState({});
   const [selectedMCQ, setSelectedMCQ] = useState(true);
@@ -50,7 +50,6 @@ export const ExamProvider = ({ children }) => {
 
     const extractedMCQs = [];
     const extractedCoding = [];
-
     examData.exam.subjects.forEach((subject) => {
       if (subject.MCQs?.length > 0) {
         extractedMCQs.push(
@@ -73,7 +72,7 @@ export const ExamProvider = ({ children }) => {
         );
       }
     });
-
+    setExamType(examData.exam.type);
     setMcqQuestions(extractedMCQs);
     setCodingQuestions(extractedCoding);
   }, [examData]);
@@ -271,7 +270,7 @@ export const ExamProvider = ({ children }) => {
         selectedMCQ,
         setSelectedMCQ,
         isSubmitting,
-
+        examType,
         // Derived
         studentName,
         studentExamId,

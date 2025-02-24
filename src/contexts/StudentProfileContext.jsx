@@ -165,7 +165,7 @@ export const StudentProvider = ({ children }) => {
         fetchStudentDetails,
 
         // NEW: Export our new picture states & actions
-        profilePicture,
+      profilePicture,
         fetchProfilePicture,
         updateProfilePicture,
       }}
