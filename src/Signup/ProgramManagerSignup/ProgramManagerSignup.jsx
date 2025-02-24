@@ -107,7 +107,7 @@ export default function ProgramManagerSignup() {
                       return {
                           studentId: row[headers.indexOf("studentid")]?.toString().toUpperCase() || "",
                           batchNo: batchNo,
-                          email: row[headers.indexOf("email")]?.toString() || "",
+                          email: row[headers.indexOf("email")]?.toString()?.toLowerCase() || "",
                           studentPhNumber: 
                               studentPh.startsWith("+91") 
                                   ? studentPh 
@@ -407,7 +407,7 @@ export default function ProgramManagerSignup() {
             name="email"
             type="email"
             placeholder="Enter Email"
-            value={formData.email}
+            value={formData.email.toLowerCase()}
             onChange={handleChange}
             className="flex-1 px-2 py-1 text-gray-800 outline-none font-medium"
             required

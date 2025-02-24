@@ -265,15 +265,7 @@ const [showCPassword, setShowCPassword] = useState(false);
                 return;
             }
 
-            // if (file.size > maxSize) {
-            //     Swal.fire({
-            //         icon: 'error',
-            //         title: 'File Too Large',
-            //         text: fieldName === 'resume' ? 'Resume must be less than 100 KB.' : 'Profile picture must be less than 10 KB.',
-            //     });
-            //     e.target.value = '';
-            //     return;
-            // }
+           
 
             setFormData({
                 ...formData,
