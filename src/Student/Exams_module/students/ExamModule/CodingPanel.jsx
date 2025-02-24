@@ -16,8 +16,8 @@ export const CodingPanel = () => {
     .replace(/\\n/g, "\n"); // Replace all \n with a newline
 
   return (
-    <div className="w-[45%] bg-white rounded-2xl my-4 mx-2 p-4 flex flex-col gap-4">
-      <div className="text-2xl p-4">
+    <div className="w-1/2 bg-white rounded-2xl flex flex-col gap-4">
+      <div className="text-xl md:text-2xl p-4">
         <p>{currentQuestion.Question}</p>
         <hr />
         <br />

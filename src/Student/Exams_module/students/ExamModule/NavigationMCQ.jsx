@@ -3,7 +3,7 @@ import { NumberedNavigation } from "./NumberedNavigation";
 
 export const NavigationMCq = () => {
   return (
-    <div className="m-4 rounded-xl">
+    <div className="rounded-xl flex flex-col mr-2">
       <CountdownTimer />
       <NumberedNavigation />
     </div>

@@ -18,6 +18,7 @@ const OnlineCompiler = () => {
   const question = onlineCompilerQuestion || { question_id: null };
   const questionId = question.question_id;
 
+  // Track language, code, custom input states
   const [language, setLanguage] = useState(
     existingData[questionId]?.language || "JavaScript"
   );
@@ -29,11 +30,15 @@ const OnlineCompiler = () => {
     existingData[questionId]?.customInput || ""
   );
 
-  // Instead of holding HTML, we store the array of test-case results
+  // For normal test results (sample/hidden), we track pass/fail
   const [testCases, setTestCases] = useState([]);
   const [testCaseSummary, setTestCaseSummary] = useState(
     existingData[questionId]?.testCaseSummary || { passed: 0, failed: 0 }
   );
+
+  // For custom input results
+  const [customTestCases, setCustomTestCases] = useState([]);
+
   const [loading, setLoading] = useState(false);
 
   const languageExtensions = {
@@ -55,8 +60,9 @@ const OnlineCompiler = () => {
         existingData[questionId]?.testCaseSummary || { passed: 0, failed: 0 }
       );
 
-      // If you’ve saved testCases in existingData, you could restore them here:
+      // If you saved them previously, you could restore testCases/customTestCases here
       // setTestCases(existingData[questionId]?.testCases || []);
+      // setCustomTestCases(existingData[questionId]?.customTestCases || []);
     }
   }, [questionId, existingData]);
 
@@ -119,13 +125,19 @@ const OnlineCompiler = () => {
 
       const { results } = await response.json();
 
-      // Compute pass/fail
-      const computedResults = results.map((res) => {
-        const passed = res.actual_output.trim() === res.expected_output.trim();
+      // Separate results into normal vs. custom
+      const normalResults = results.filter((r) => r.type !== "custom");
+      const customResults = results.filter((r) => r.type === "custom");
+
+      // Compute pass/fail only for normal results
+      const computedResults = normalResults.map((res) => {
+        // If there's no expected output (like hidden tests sometimes),
+        // you might handle that differently, but here is a basic check:
+        const passed =
+          res.expected_output?.trim() === res.actual_output?.trim();
         return { ...res, status: passed ? "Passed" : "Failed" };
       });
 
-      // Summarize
       const summary = computedResults.reduce(
         (acc, cur) => {
           if (cur.status === "Passed") acc.passed++;
@@ -137,6 +149,7 @@ const OnlineCompiler = () => {
 
       setTestCaseSummary(summary);
       setTestCases(computedResults);
+      setCustomTestCases(customResults);
 
       // Save in context
       setExistingData((prev) => ({
@@ -147,7 +160,8 @@ const OnlineCompiler = () => {
           customInputEnabled,
           customInput,
           testCaseSummary: summary,
-          testCases: computedResults, // store array of test cases
+          testCases: computedResults,
+          customTestCases: customResults,
           answered: true,
         },
       }));
@@ -159,48 +173,44 @@ const OnlineCompiler = () => {
         language,
         testCaseSummary: summary,
         answered: true,
-        // You can store the testCases array here if needed
+        // If you need them: testCases: computedResults, customTestCases: customResults
       });
     } catch (error) {
       console.error("Error:", error);
-      // If you want to display an error test case or something else:
       setTestCases([]);
+      setCustomTestCases([]);
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="w-[55%] h-full bg-white rounded-2xl my-4 mx-2 p-6 flex flex-col gap-2">
+    <div className="w-full md:w-2/3 xl:w-1/2 mx-auto m-2 bg-white rounded-2xl flex flex-col gap-4 p-4">
       {/* Language Selector + Run Button */}
-      <div className="flex flex-row items-center gap-4 justify-between">
-        <div className="flex flex-row items-center">
-          <div>
-            <label className="block font-semibold mx-4">Select Language:</label>
-          </div>
-          <div>
-            <select
-              value={language}
-              onChange={(e) => handleLanguageChange(e.target.value)}
-              className=" border rounded w-full"
-            >
-              <option value="JavaScript">JavaScript</option>
-              <option value="Python">Python</option>
-              <option value="Java">Java</option>
-            </select>
-          </div>
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2">
+          <label className="block font-semibold">Select Language:</label>
+          <select
+            value={language}
+            onChange={(e) => handleLanguageChange(e.target.value)}
+            className="border rounded px-2 py-1"
+          >
+            <option value="JavaScript">JavaScript</option>
+            <option value="Python">Python</option>
+            <option value="Java">Java</option>
+          </select>
         </div>
         <button
           onClick={handleRun}
           disabled={loading}
-          className="px-2 text-white text-xl bg-blue-600 rounded hover:bg-blue-700"
+          className="px-4 py-2 text-white text-lg bg-blue-600 rounded hover:bg-blue-700 self-end sm:self-auto"
         >
           {loading ? "Running..." : "Run"}
         </button>
       </div>
 
       {/* Code Editor */}
-      <div className="mb-4">
+      <div className="border rounded overflow-hidden">
         <CodeMirror
           value={code}
           height="300px"
@@ -210,14 +220,50 @@ const OnlineCompiler = () => {
         />
       </div>
 
-      {/* Test Summary and Results */}
-      <div className="p-2 border rounded bg-white overflow-auto">
-        <p className="font-semibold mb-2">
-          Test Summary: {testCaseSummary.passed} Passed /{" "}
-          {testCaseSummary.failed} Failed
-        </p>
-        <TestCaseTabs testCases={testCases} />
+      {/* Custom Input */}
+      <div className="flex flex-col gap-2">
+        <label className="flex items-center space-x-2 font-semibold">
+          <input
+            type="checkbox"
+            checked={customInputEnabled}
+            onChange={() => setCustomInputEnabled((prev) => !prev)}
+          />
+          <span>Enable Custom Input</span>
+        </label>
+        {customInputEnabled && (
+          <textarea
+            rows={1}
+            className="w-full p-2 border rounded"
+            placeholder="Enter custom input"
+            value={customInput}
+            onChange={(e) => setCustomInput(e.target.value)}
+          />
+        )}
       </div>
+
+      {/* Normal Test Summary & Results */}
+      {customInputEnabled ? (
+        <div className="p-2 border rounded bg-white">
+          <p className="font-semibold mb-2">Custom Input Results</p>
+          {customTestCases.length === 0 ? (
+            <p className="text-sm">No custom input results yet.</p>
+          ) : (
+            <TestCaseTabs testCases={customTestCases} />
+          )}
+        </div>
+      ) : (
+        <div className="p-2 border rounded bg-white">
+          <p className="font-semibold mb-2">
+            Normal Test Summary: {testCaseSummary.passed} Passed /{" "}
+            {testCaseSummary.failed} Failed
+          </p>
+          {testCases.length === 0 ? (
+            <p className="text-sm">No normal test cases to display.</p>
+          ) : (
+            <TestCaseTabs testCases={testCases} />
+          )}
+        </div>
+      )}
     </div>
   );
 };
