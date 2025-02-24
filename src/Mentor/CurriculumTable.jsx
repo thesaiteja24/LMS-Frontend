@@ -269,10 +269,17 @@ const CurriculumTable = ({
       });
     } catch (error) {
       console.error("Error submitting curriculum:", error);
+
+      // If the server sends an "error" field in JSON,
+      // dynamically display it. Fallback to a generic message.
+      const errorMessage =
+        error.response?.data?.error ||
+        "Failed to submit curriculum. Please try again.";
+
       Swal.fire({
-        title: "Error",
-        text: "Failed to submit curriculum. Please try again.",
-        icon: "error",
+        title: "Warning",
+        text: errorMessage,
+        icon: "warning",
         confirmButtonText: "Retry",
       });
     } finally {
