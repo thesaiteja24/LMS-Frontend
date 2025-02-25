@@ -64,97 +64,90 @@ const Course = () => {
   }, [selectedSubject, selectedBatch, location]);
 
   return (
-    <div className="h-full bg-blue-100 py-10 px-5">
-      <div className="max-w-7xl mx-auto bg-white shadow-lg rounded-lg p-6">
-        <h1 className="text-3xl font-bold text-black text-center mb-6">
-          Mentor Curriculum
-        </h1>
-        <div className="space-y-4">
-          <div className="flex flex-wrap gap-4 bg-sky-200 p-4 rounded-lg shadow-md">
-            <div className="flex-1 min-w-[200px]">
-              <div className="flex flex-col items-center bg-sky-200 space-y-4 md:space-y-6 px-6 py-6 rounded-lg shadow-lg max-w-md mx-auto">
-                <label className="text-lg font-semibold text-black md:text-xl">
-                  Select a Subject:
-                </label>
-                <select
-                  className="w-full px-4 py-2 text-sm md:text-base bg-white text-gray-700 rounded-md border border-gray-300 focus:outline-none focus:ring-4 focus:ring-purple-600 focus:border-transparent shadow-md hover:shadow-lg transition duration-300"
-                  onChange={(e) => setSelectedSubject(e.target.value)}
-                  value={selectedSubject}
-                >
-                  <option value="" className="text-gray-400">
-                    --Select Subject--
-                  </option>
-                  {availableSubjects.map((subject, index) => (
-                    <option key={index} value={subject}>
-                      {subject}
-                    </option>
-                  ))}
-                </select>
-              </div>
-            </div>
-            {/* {selectedSubject && (
-              <div className="flex-1 min-w-[200px]">
-                <div className="flex flex-col items-center bg-sky-200 space-y-4 md:space-y-6 px-6 py-6 rounded-lg shadow-lg max-w-md mx-auto">
-                  <label
-                    htmlFor="batch-selector"
-                    className="text-xl font-semibold text-black text-center"
-                  >
-                    Available Batches:
-                  </label>
-                  <p className="text-lg text-gray-700">
-                    {filteredBatches.length > 0
-                      ? filteredBatches.join(", ")
-                      : "No batches available for this subject."}
-                  </p>
-                </div>
-              </div>
-            )} */}
-            {selectedSubject && (
-              <div className="flex-1 min-w-[200px]">
-                <div className="flex flex-col items-center bg-sky-200 space-y-4 md:space-y-6 px-6 py-6 rounded-lg shadow-lg max-w-md mx-auto">
-                  <label
-                    htmlFor="batch-selector"
-                    className="text-xl font-semibold text-black text-center"
-                  >
-                    Select a Batch:
-                  </label>
+    <div className="bg-[#F5F5F5] flex flex-col justify-start items-center">
+      {/* Heading - Mentor Curriculum */}
+      <h1 className="text-[#19216f] font-poppins font-semibold text-[32px] leading-[48px] text-center">
+        Mentor Curriculum
+      </h1>
 
-                  {filteredBatches.length > 0 ? (
-                    <select
-                      id="batch-selector"
-                      className="w-full px-4 py-2 text-lg text-gray-700 bg-white border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                      value={selectedBatch} // Bind selected value
-                      onChange={(e) => setSelectedBatch(e.target.value)} // Update selected batch
-                    >
-                      <option value="" disabled>
-                        Choose a batch
-                      </option>
-                      {filteredBatches.map((batch, index) => (
-                        <option key={index} value={batch}>
-                          {batch}
-                        </option>
-                      ))}
-                    </select>
-                  ) : (
-                    <p className="text-lg text-gray-700">
-                      No batches available for this subject.
-                    </p>
-                  )}
-                </div>
-              </div>
-            )}
+      {/* Top Divider */}
+      <div className="w-full max-w-[1200px] border-t border-[#D1D1D1] mt-4"></div>
+
+      {/* Main White Container */}
+      <div className="bg-white w-full max-w-[1200px] h-auto shadow-md rounded-md mt-6 p-6 flex flex-col justify-center">
+        {/* Subject & Batch Selection */}
+        <div className="w-full flex justify-between items-center px-8">
+          {/* Select Subject */}
+          <div className="flex items-center w-1/2">
+            <label className="text-[#19216f] font-poppins font-semibold text-[24px] leading-[36px] w-[200px]">
+              Select a Subject
+            </label>
+            <select
+              className="w-[263px] h-[46px] bg-white border border-gray-300 rounded-[2px] px-3 shadow-md focus:ring-2 focus:ring-blue-500"
+              onChange={(e) => setSelectedSubject(e.target.value)}
+              value={selectedSubject}
+            >
+              <option value="" className="text-gray-400">
+                --Select Subject--
+              </option>
+              {availableSubjects.map((subject, index) => (
+                <option key={index} value={subject}>
+                  {subject}
+                </option>
+              ))}
+            </select>
           </div>
-          {syllabus.length > 0 && selectedBatch && (
-            <div className="bg-sky-200 p-4 rounded-lg shadow-md">
-              <CurriculumTable
-                classes={classes}
-                fetchMentorStudents={fetchMentorStudents}
-                syllabus={syllabus}
-                mentorData={mentorData}
-                subject={selectedSubject}
-                batches={selectedBatch} // ✅ Pass only the selected batch
-              />
-            </div>
+
+          {/* Select Batch - Always Visible */}
+          <div className="flex items-center w-1/2">
+            <label className="text-[#19216f] font-poppins font-semibold text-[24px] leading-[36px] w-[200px]">
+              Select a Batch
+            </label>
+            <select
+              className={`w-[263px] h-[46px] border rounded-[2px] px-3 shadow-md focus:ring-2 focus:ring-blue-500
+                ${
+                  selectedSubject
+                    ? "bg-white border-gray-300 text-black"
+                    : "bg-gray-200 border-gray-400 text-gray-500 cursor-not-allowed"
+                }`}
+              value={selectedBatch}
+              onChange={(e) => setSelectedBatch(e.target.value)}
+              disabled={!selectedSubject} // Disabled if no subject is selected
+            >
+              <option value="" disabled>
+                Choose a batch
+              </option>
+              {filteredBatches.length > 0 ? (
+                filteredBatches.map((batch, index) => (
+                  <option key={index} value={batch}>
+                    {batch}
+                  </option>
+                ))
+              ) : (
+                <option value="" disabled>
+                  No batches available
+                </option>
+              )}
+            </select>
+          </div>
+        </div>
+
+        {/* Divider Inside the White Container */}
+        <div className="w-full max-w-[1528px] border-t border-[#303C60] mt-6 mx-auto"></div>
+
+        {/* Curriculum Table Section */}
+        <div className="bg-white rounded-md mt-6 min-h-[500px] flex items-center justify-center">
+          {syllabus.length > 0 && selectedBatch ? (
+            <CurriculumTable
+              classes={classes}
+              fetchMentorStudents={fetchMentorStudents}
+              syllabus={syllabus}
+              mentorData={mentorData}
+              subject={selectedSubject}
+              batches={selectedBatch}
+            />
+          ) : (
+            <p className="text-gray-500">No syllabus available</p>
           )}
         </div>
       </div>
