@@ -42,17 +42,17 @@ const StudentCurriculum = () => {
   };
 
   return (
-    <div className="bg-[#f4f4f4] flex flex-col items-center   p-4">
+    <div className="bg-[#f4f4f4] flex flex-col items-center p-1 ">
       <div>
         <h1 className="text-5xl font-bold text-center">Student Curriculum</h1>
-        <p className="mt-2 text-2xl text-center">Explore your learning modules and resources</p>
+        <p className="text-2xl text-center">Explore your learning modules and resources</p>
       </div>
-      <div className="bg-[#0c1baa] rounded-lg p-3 lg:p-20 md:p-15 .env py-20 w-full max-w-[100%]  mt-10 pt-20">
+      <div className="bg-[#19216f] rounded-lg p-3 lg:p-20 lg:pb-10 md:p-10 .env py-20 w-full max-w-[100%]  mt-4 pt-15">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4  md:grid-cols-3 gap-y-20 gap-10"> {/* Increased gap from 6 to 8 */}
           {filteredSubjects.map((subject, index) => (
             <div
               key={index}
-              className="bg-white min-h-[232px] rounded-lg shadow-lg p-6 relative space-y-6 cursor-pointer transition-transform transform hover:scale-105"
+              className="bg-white rounded-lg shadow-lg p-6 relative space-y-6 cursor-pointer transition-transform transform hover:scale-105"
               onClick={() => handleSubjectClick(subject)}
             >
               <div className="absolute -top-12 left-1/2 transform -translate-x-1/2 ">
@@ -69,7 +69,7 @@ const StudentCurriculum = () => {
                   ))}
                 </div>
                 <h2 className="text-xl font-bold text-gray-800">{subject.name}</h2>
-                <button className="mt-4  bg-blue-800 text-white py-2 px-4 rounded-md shadow-md hover:bg-blue-700 w-full">
+                <button className="mt-4  bg-[#19216f] text-white py-2 px-4 rounded-md shadow-md hover:bg-blue-700 w-full">
                   Know More....
                 </button>
               </div>

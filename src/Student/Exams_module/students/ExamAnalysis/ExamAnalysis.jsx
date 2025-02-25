@@ -27,7 +27,7 @@ export const ExamAnalysis = () => {
   return (
     <div className="min-h-screen bg-gray-100">
       {/* Title */}
-      <div className="text-[#132EE0] text-center font-semibold text-2xl md:text-3xl">
+      <div className="text-[#19216F] text-center font-semibold text-2xl md:text-3xl">
         Exam Analysis
       </div>
 

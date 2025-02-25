@@ -5,15 +5,15 @@ function MockInterviewHome() {
 
 
   return (
-    <div className="bg-[#f4f4f4] flex items-center justify-center  p-6">
+    <div className="bg-[#f4f4f4] flex items-center justify-center">
       {/* Bigger White Box (Rectangle 249) */}
-      <div className="relative w-full max-w-6xl min-h-[80vh] bg-white shadow-lg rounded-lg p-12 flex flex-col items-center text-center">
+      <div className="m-2 relative w-full max-w-6xl bg-white shadow-lg rounded-lg p-12 flex flex-col items-center text-center">
         
         {/* Title */}
         <h1 className="text-4xl font-bold">
-          <span className="text-[#2e34e8]">Advanced</span> 
+          <span className="text-[#19216f]">Advanced</span> 
           <span className="text-red-600"> AI MockInterview </span> 
-          <span className="text-[#2e34e8]">Platform</span>
+          <span className="text-[#19216f]">Platform</span>
         </h1>
 
         {/* Subtitle */}
@@ -33,7 +33,7 @@ function MockInterviewHome() {
 
             {/* Call to Action Button */}
             <button
-              className="mt-8 bg-[#2e34e8] text-white text-lg font-medium px-8 py-2 rounded-md shadow-md hover:bg-blue-700 transition"
+              className="mt-8 bg-[#19216f] text-white text-lg font-medium px-8 py-2 rounded-md shadow-md hover:bg-blue-700 transition"
               onClick={() => setShowInterview(true)}
             >
               Start Your Mock Interview
@@ -41,7 +41,7 @@ function MockInterviewHome() {
           </>
         ) : (
           <div className="w-full max-w-6xl mt-8 shadow-2xl border border-gray-200 rounded-lg overflow-hidden">
-            <div className="bg-[#2e34e8] text-white text-lg font-semibold p-3 flex justify-between items-center">
+            <div className="bg-[#19216f] text-white text-lg font-semibold p-3 flex justify-between items-center">
               <span>Mock Interview in Progress</span>
               <button
                 className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-md"

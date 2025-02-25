@@ -41,14 +41,14 @@ const QNavigation = () => {
         <button
           type="button"
           onClick={handlePrevious}
-          className="text-white bg-[#132EE0] w-36 px-2 py-1 rounded-lg font-normal text-xl flex flex-row items-center justify-center"
+          className="text-white bg-[#19216F] w-36 px-2 py-1 rounded-lg font-normal text-xl flex flex-row items-center justify-center"
         >
           <span> &lt; &nbsp;</span> Previous
         </button>
         <button
           type="button"
           onClick={handleNext}
-          className="text-white bg-[#132EE0] w-36 px-2 py-1 rounded-lg font-normal text-xl flex flex-row items-center justify-center"
+          className="text-white bg-[#19216F] w-36 px-2 py-1 rounded-lg font-normal text-xl flex flex-row items-center justify-center"
         >
           Next <span>&nbsp; &gt;</span>
         </button>

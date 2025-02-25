@@ -35,7 +35,7 @@ const ExamCountdownTimer = ({ startDate, startTime, totalExamTime }) => {
   const pad = (num) => num.toString().padStart(2, "0");
 
   return (
-    <div className="bg-[#132EE0] text-white font-semibold text-xl rounded-lg px-5 py-2.5 text-center">
+    <div className="bg-[#19216F] text-white font-semibold text-xl rounded-lg px-5 py-2.5 text-center">
       {hours}:{pad(minutes)}:{pad(seconds)}
     </div>
   );

@@ -34,7 +34,7 @@ const ExamContent = () => {
                 <img src="ExamModule/Exam.png" alt="" /> <span>{examType}</span>
               </span>
               <span>
-                <span className="text-[#132EE0] font-semibold">Marks:</span>
+                <span className="text-[#19216F] font-semibold">Marks:</span>
                 <span>{totalScore}</span>
               </span>
             </div>

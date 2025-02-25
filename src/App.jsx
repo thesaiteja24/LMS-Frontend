@@ -63,6 +63,7 @@ import { ExamProvider } from "./Student/Exams_module/students/ExamModule/ExamCon
 import { ToastContainer } from "react-toastify";
 import { Dashboard } from "./programManager/Performance/Dashboard.jsx";
 import DailyPerformance from "./programManager/Performance/DailyPerformance.jsx";
+import { classNames } from "@react-pdf-viewer/core";
 
 const ProtectedRoute = ({ children, allowedRoles }) => {
   const userType = localStorage.getItem("userType");
@@ -107,7 +108,7 @@ export default function App() {
   };
 
   return (
-    <div style={{ overflow: "auto", height: "100vh" }}>
+    <div style={{ overflow: "auto", height: "100vh", backgroundColor: "#f4f4f4"}} className="no-scrollbar">
       <Location />
       <ScrollToTop />
       <ToastContainer
@@ -498,7 +499,7 @@ export default function App() {
               <ProtectedRoute allowedRoles={["student_login_details"]}>
                 <ExamProvider>
                   <ExamSecurityWrapper>
-                  <Parent />
+                    <Parent />
                   </ExamSecurityWrapper>
                 </ExamProvider>
               </ProtectedRoute>

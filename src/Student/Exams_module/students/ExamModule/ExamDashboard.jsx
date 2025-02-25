@@ -171,7 +171,7 @@ const ExamDashboard = () => {
       {/* ==================== ACTIVE EXAMS ==================== */}
       {active.length > 0 && (
         <div className="mb-6">
-          <h3 className="font-semibold text-[#132EE0] mb-3 flex flex-row items-center gap-2 text-xl border-b">
+          <h3 className="font-semibold text-[#19216F] mb-3 flex flex-row items-center gap-2 text-xl ">
             <img className="w-8" src="ExamModule/Exam-blue.png" alt="" />
             Active Exams
           </h3>
@@ -235,7 +235,7 @@ const ExamDashboard = () => {
                         ${
                           completedExams.has(exam.examId)
                             ? "bg-gray-400 cursor-not-allowed"
-                            : "bg-[#132EE0] hover:bg-[#0f22b4]"
+                            : "bg-[#19216F] hover:bg-[#0f22b4]"
                         }
                       `}
                     >
@@ -254,7 +254,7 @@ const ExamDashboard = () => {
       {/* ==================== UPCOMING EXAMS ==================== */}
       {upcoming.length > 0 && (
         <div className="mb-6">
-          <h3 className="font-semibold text-[#132EE0] mb-3 flex flex-row items-center gap-2 text-xl border-b">
+          <h3 className="font-semibold text-[#19216F] mb-3 flex flex-row items-center gap-2 text-xl ">
             <img className="w-8" src="ExamModule/Exam-blue.png" alt="" />
             Upcoming Exams
           </h3>
@@ -323,7 +323,7 @@ const ExamDashboard = () => {
       {/* ==================== FINISHED EXAMS ==================== */}
       {finished.length > 0 && (
         <div className="mb-6">
-          <h3 className="font-semibold text-[#132EE0] mb-3 flex flex-row items-center gap-2 text-xl border-b">
+          <h3 className="font-semibold text-[#19216F] mb-3 flex flex-row items-center gap-2 text-xl ">
             <img className="w-8" src="ExamModule/Exam-blue.png" alt="" />
             Finished Exams
           </h3>
