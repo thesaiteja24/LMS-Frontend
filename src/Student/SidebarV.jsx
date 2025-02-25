@@ -111,6 +111,11 @@ export const SidebarV = ({ setIsAuthenticated }) => {
           { label: "Exams", path: "/exam-dashboard", icon: FaFileAlt },
           // { label: "Reports", path: "/exam-repors", icon: PiExam },
           {
+            label: "Exam Reports",
+            path: "/exam-reports-dashboard",
+            icon: FaChartLine,
+          },
+          {
             label: "Mock Interviews",
             path: "/mock-interviews",
             icon: FaMicrophoneAlt,
