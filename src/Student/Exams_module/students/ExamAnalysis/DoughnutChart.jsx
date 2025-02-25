@@ -41,7 +41,7 @@ const DoughnutChart = ({
   };
 
   return (
-    <div className="flex flex-col md:flex-row justify-center items-center bg-white border border-blue-300 rounded-lg shadow-md w-full">
+    <div className="flex flex-col md:flex-row justify-center items-center bg-white border border-[#19216f] rounded-lg shadow-md w-full">
       {/* Chart */}
       <div className="relative w-48 h-48">
         <Doughnut data={data} options={options} />

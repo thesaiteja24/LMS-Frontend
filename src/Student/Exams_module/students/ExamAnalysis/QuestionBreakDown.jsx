@@ -3,9 +3,9 @@ import { FaCheckCircle, FaTimesCircle } from "react-icons/fa"; // Import icons f
 
 export const QuestionBreakDown = ({ details }) => {
   return (
-    <div className="bg-white border border-blue-300 rounded-lg shadow-md p-8 mt-4">
+    <div className="bg-white border border-[#19216f] rounded-lg shadow-md p-8 mt-4">
       {/* Header */}
-      <div className="text-blue-600 font-semibold text-lg mb-2">
+      <div className="text-[#19216f] font-semibold text-lg mb-2">
         Question Breakdown
         <hr />
       </div>

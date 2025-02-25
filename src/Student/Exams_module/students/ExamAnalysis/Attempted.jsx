@@ -4,9 +4,9 @@ export const Attempted = ({ attemptedMCQ, attemptedCode }) => {
   const totalAttempted = attemptedMCQ + attemptedCode;
 
   return (
-    <div className="bg-white border border-blue-300 rounded-lg shadow-md w-full">
+    <div className="bg-white border border-[#19216f] rounded-lg shadow-md w-full">
       {/* Header */}
-      <div className="bg-blue-600 text-white text-center font-semibold text-xl py-2 rounded-t-lg">
+      <div className="bg-[#19216f] text-white text-center font-semibold text-xl py-2 rounded-t-lg">
         Attempted
       </div>
 

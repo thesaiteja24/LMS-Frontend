@@ -21,7 +21,12 @@ export const ExamReportsDashboard = () => {
         );
         const { success, results } = response.data;
         if (success && Array.isArray(results)) {
-          setExams(results);
+          // Transform each result so that analysis is nested under submissionResult
+          const transformedResults = results.map((result) => ({
+            ...result,
+            submissionResult: { analysis: result.analysis },
+          }));
+          setExams(transformedResults);
         } else {
           setError("No exam results found.");
         }
@@ -122,22 +127,34 @@ export const ExamReportsDashboard = () => {
                 return (
                   <div
                     key={exam._id}
-                    className=" bg-white rounded-xl shadow-lg p-2 gap-5 flex flex-row items-center transform hover:scale-105 transition"
+                    className=" bg-white rounded-xl shadow-lg p-2 flex flex-col items-center transform hover:scale-105 transition"
                   >
-                    {/* Display the arc chart */}
-                    <HalfDoughnutChart
-                      totalScore={totalScore}
-                      maximumScore={maxScore}
-                    />
-                    {/* Exam details */}
-                    <div className="flex flex-col justify-start  mt-4">
-                      <p className="text-green-600 font-medium">
-                        Correct Answers: {correctCount}
-                      </p>
-                      <p className="text-red-600 font-medium">
-                        Incorrect Answers: {incorrectCount}
-                      </p>
+                    <div className="flex flex-row justify-start items-center">
+                      {/* Display the arc chart */}
+                      <HalfDoughnutChart
+                        totalScore={totalScore}
+                        maximumScore={maxScore}
+                      />
+                      {/* Exam details */}
+                      <div className="flex flex-col justify-start">
+                        <p className="text-green-600 font-medium">
+                          Correct Answers: {correctCount}
+                        </p>
+                        <p className="text-red-600 font-medium">
+                          Incorrect Answers: {incorrectCount}
+                        </p>
+                      </div>
                     </div>
+                    <button
+                      onClick={() => {
+                        localStorage.setItem("Analysis", JSON.stringify(exam));
+                        navigate("/exam-analysis");
+                      }}
+                      type="button"
+                      class="text-white bg-[#19216f] font-medium rounded-lg text-lg px-5 py-2.5 mb-2 "
+                    >
+                      View Detailed Analysis
+                    </button>
                   </div>
                 );
               })}
