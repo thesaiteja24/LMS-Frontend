@@ -9,7 +9,7 @@ export const Card = ({ children, className }) => {
 };
 
 export const CardHeader = ({ children }) => (
-  <div className="bg-[#132EE0] text-white font-semibold text-xl p-1 rounded-t-lg">
+  <div className="bg-[#19216F] text-white font-semibold text-xl p-1 rounded-t-lg">
     {children}
   </div>
 );

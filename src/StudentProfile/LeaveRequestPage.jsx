@@ -114,7 +114,7 @@ const LeaveRequestPage = () => {
         
         <div className="flex flex-col lg:flex-row items-start gap-10">
           <div className="w-full lg:w-[60%]">
-            <div className="relative w-[253px] h-[47px] bg-[#0C1BAA] flex items-center px-5 rounded-md shadow-md">
+            <div className="relative w-[253px] h-[47px] bg-[#19216F] flex items-center px-5 rounded-md shadow-md">
               <div className="absolute left-0 top-0 h-full w-2 bg-red-500 rounded-l-md"></div>
               <img src="/leave/leaverequesticon.svg" alt="Leave Request Icon" className="w-6 h-6 mr-2" />
               <span className="text-white text-lg font-semibold">Leave Request</span>
@@ -168,7 +168,7 @@ const LeaveRequestPage = () => {
               <button 
               form="leaveForm"
                 type="submit"
-                className="w-full md:w-[25%] h-[60px] bg-[#0C1BAA] text-white font-semibold rounded-md shadow-md hover:bg-blue-800 transition flex items-center justify-center"
+                className="w-full md:w-[25%] h-[60px] bg-[#19216F] text-white font-semibold rounded-md shadow-md hover:bg-blue-800 transition flex items-center justify-center"
               >
                 {loading ? "Submitting..." : "Submit Request"}
               </button>
@@ -186,7 +186,7 @@ const LeaveRequestPage = () => {
           <div className="overflow-x-auto mt-6">
             <table className="w-full border-collapse text-center">
               <thead>
-                <tr className="bg-[#0C1BAA] text-white ">
+                <tr className="bg-[#19216F] text-white ">
                   <th className="p-3">Start Date</th>
                   <th className="p-3">End Date</th>
                   <th className="p-3">Description</th>

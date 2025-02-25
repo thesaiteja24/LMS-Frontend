@@ -62,8 +62,8 @@ const CountdownTimer = () => {
   const seconds = timeLeft % 60;
 
   return (
-    <div className="text-2xl w-full bg-white rounded-lg shadow-[0px_4px_12px_0px_rgba(3,104,255,0.15)]">
-      <div className="text-center bg-[#132EE0] text-white font-bold py-2 rounded-t-lg">
+    <div className="text-2xl w-full19216f bg-white rounded-lg shadow-[0px_4px_12px_0px_rgba(3,104,255,0.15)]">
+      <div className="text-center bg-[#19216F] text-white font-bold py-2 rounded-t-lg">
         Time Left
       </div>
       <div className="p-4">

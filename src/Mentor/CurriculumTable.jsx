@@ -268,17 +268,10 @@ const CurriculumTable = ({
         confirmButtonText: "OK",
       });
     } catch (error) {
-      console.error("Error submitting curriculum:", error);
-
-      // If the server sends an "error" field in JSON,
-      // dynamically display it. Fallback to a generic message.
-      const errorMessage =
-        error.response?.data?.error ||
-        "Failed to submit curriculum. Please try again.";
-
+      console.error("Error submitting curriculum:", error.response);
       Swal.fire({
         title: "Warning",
-        text: errorMessage,
+        text: error.response.data.error,
         icon: "warning",
         confirmButtonText: "Retry",
       });
@@ -297,47 +290,38 @@ const CurriculumTable = ({
   };
 
   return (
-    <div className="bg-sky-200 text-black p-6 rounded-lg shadow-lg">
+    <div className="bg-white w-full max-w-[1200px] h-auto  p-6 pt-0 flex flex-col justify-center">
+      {/* Table Section with Drop Shadow on Wrapper */}
       {curriculumData.length > 0 ? (
-        <div className="overflow-x-auto">
-          <div className="max-h-96 overflow-y-auto border rounded-lg">
-            <table className="table-auto w-full text-left border-collapse">
-              <thead className="bg-sky-300">
+        <div className="mt-8 overflow-x-auto shadow-md bg-white">
+          {/* Scrollable Table with Custom Scrollbar */}
+          <div className="max-h-[500px] overflow-y-auto scrollbar-thin scrollbar-thumb-[#0C1BAA] scrollbar-track-[#F5F5F5]">
+            <table className="w-full border-collapse">
+              <thead className="sticky top-0 bg-[#0C1BAA] text-white text-left text-[16px] font-medium">
                 <tr>
-                  <th className="px-4 py-3 border-b-2 border-sky-400">
-                    Day Order
-                  </th>
-                  <th className="px-4 py-3 border-b-2 border-sky-400">Topic</th>
-                  <th className="px-4 py-3 border-b-2 border-sky-400">
-                    Topics to Cover
-                  </th>
-                  <th className="px-4 py-3 border-b-2 border-sky-400">
-                    Video URL
-                  </th>
+                  <th className="px-6 py-4">Day Order</th>
+                  <th className="px-6 py-4">Topic</th>
+                  <th className="px-6 py-4">Topics to Cover</th>
+                  <th className="px-6 py-4">Video URL</th>
                 </tr>
               </thead>
               <tbody>
                 {curriculumData.map((item, index) => (
                   <tr
                     key={index}
-                    className="odd:bg-sky-100 even:bg-sky-50 hover:bg-sky-200 transition-colors"
+                    className={`${
+                      index % 2 === 0 ? "bg-[#F5F5F5]" : "bg-white"
+                    } text-black`}
                   >
-                    <td className="px-4 py-2 border-b border-sky-400">
-                      {item.DayOrder}
-                    </td>
-                    <td className="px-4 py-2 border-b border-sky-400">
-                      {item.Topics}
-                    </td>
-                    <td className="px-4 py-2 border-b border-sky-400">
-                      <ul className="pl-0">
+                    <td className="px-6 py-4">{item.DayOrder}</td>
+                    <td className="px-6 py-4">{item.Topics}</td>
+                    <td className="px-6 py-4">
+                      <ul className="list-none space-y-1">
                         {item.SubTopics.map((subTopic, subIndex) => (
-                          <li
-                            key={subIndex}
-                            className="list-disc flex items-center gap-2 text-gray-700"
-                          >
+                          <li key={subIndex} className="flex items-center">
                             <input
                               type="checkbox"
-                              className="w-4 h-4"
+                              className="mr-2"
                               checked={
                                 item.subTopicsStatus[subTopic] ||
                                 checkedSubTopics[item.DayOrder]?.[subTopic] ||
@@ -348,12 +332,12 @@ const CurriculumTable = ({
                               }
                               disabled={item.subTopicsStatus[subTopic]}
                             />
-                            <span>{subTopic}</span>
+                            {subTopic}
                           </li>
                         ))}
                       </ul>
                     </td>
-                    <td className="px-4 py-2 border-b border-sky-400">
+                    <td className="px-6 py-4">
                       {item.locked ? (
                         <a
                           href={item.videoUrl}
@@ -367,8 +351,8 @@ const CurriculumTable = ({
                         <input
                           type="text"
                           value={item.videoUrl}
-                          className="w-full px-3 py-2 bg-white text-black border border-sky-400 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-                          placeholder="Enter video URL"
+                          className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500"
+                          placeholder="Enter URL..."
                           onChange={(e) =>
                             handleUpdate(index, "videoUrl", e.target.value)
                           }
@@ -380,22 +364,28 @@ const CurriculumTable = ({
               </tbody>
             </table>
           </div>
-          <div className="flex justify-end mt-4">
-            <button
-              className={`px-6 py-2 rounded-lg shadow text-white ${
-                loading
-                  ? "bg-gray-400 cursor-not-allowed"
-                  : "bg-blue-500 hover:bg-blue-600"
-              }`}
-              onClick={handleSubmit}
-              disabled={loading}
-            >
-              {loading ? "Submitting..." : "Submit"}
-            </button>
-          </div>
         </div>
       ) : (
-        <p className="text-center text-lg">No syllabus data available.</p>
+        <p className="text-center text-lg text-gray-500 mt-6">
+          No syllabus data available.
+        </p>
+      )}
+
+      {/* Submit Button Section */}
+      {curriculumData.length > 0 && (
+        <div className="flex justify-end mt-8">
+          <button
+            className={`w-[196px] h-[40px] text-white text-lg font-semibold rounded-md transition ${
+              loading
+                ? "bg-gray-400 cursor-not-allowed"
+                : "bg-[#0C1BAA] hover:bg-blue-900"
+            }`}
+            onClick={handleSubmit}
+            disabled={loading}
+          >
+            {loading ? "Submitting..." : "Submit"}
+          </button>
+        </div>
       )}
     </div>
   );

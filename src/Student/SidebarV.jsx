@@ -111,6 +111,11 @@ export const SidebarV = ({ setIsAuthenticated }) => {
           { label: "Exams", path: "/exam-dashboard", icon: FaFileAlt },
           // { label: "Reports", path: "/exam-repors", icon: PiExam },
           {
+            label: "Exam Reports",
+            path: "/exam-reports-dashboard",
+            icon: FaChartLine,
+          },
+          {
             label: "Mock Interviews",
             path: "/mock-interviews",
             icon: FaMicrophoneAlt,
@@ -293,8 +298,8 @@ export const SidebarV = ({ setIsAuthenticated }) => {
           className={classNames(
             "flex items-center gap-3 px-4 py-2 text-sm font-medium rounded-md transition-colors w-full",
             {
-              "bg-[#ffffff] text-[#0C1BAA] font-semibold rounded-md": isActive,
-              "text-[#ffffff] hover:bg-[#ffffff] hover:text-[#0C1BAA] font-semibold":
+              "bg-[#ffffff] text-[#19216F] font-semibold rounded-md": isActive,
+              "text-[#ffffff] hover:bg-[#ffffff] hover:text-[#19216F] font-semibold":
                 !isActive,
             }
           )}
@@ -349,7 +354,7 @@ export const SidebarV = ({ setIsAuthenticated }) => {
   return (
     <>
       {/* TOP BAR */}
-      <div className="flex items-center px-4 bg-[#ffffff] text-black">
+      <nav className="flex items-center px-4 bg-[#ffffff] text-black">
         <button
           className="p-2 rounded-md bg-black text-[#ffffff] mr-2"
           onClick={() => setIsMobileMenuOpen((prev) => !prev)}
@@ -363,12 +368,12 @@ export const SidebarV = ({ setIsAuthenticated }) => {
           alt="Codegnan Logo"
           className="max-w-[200px] max-h-[90px] object-contain"
         />
-      </div>
+      </nav>
 
       {/* SIDEBAR CONTAINER */}
       <div
         className={classNames(
-          "fixed inset-y-0 left-0 z-40 bg-[#0C1BAA] text-[#ffffff] font-bold transition-transform duration-300 flex flex-col",
+          "fixed inset-y-0 left-0 z-40 bg-[#19216F] text-[#ffffff] font-bold transition-transform duration-300 flex flex-col",
           isCollapsed ? "w-16" : "w-64",
           {
             "translate-x-0": isMobileMenuOpen,
@@ -396,7 +401,7 @@ export const SidebarV = ({ setIsAuthenticated }) => {
 
         {/* STUDENT-ONLY PROFILE SECTION */}
         {userType === "student_login_details" && (
-          <div className="flex flex-col items-center justify-center w-full py-4 px-2 bg-[#0A158F]">
+          <div className="flex flex-col items-center justify-center w-full py-4 px-2 bg-[#19216F]">
             {userProfile.avatarUrl ? (
               <img
                 src={userProfile.avatarUrl}
@@ -436,7 +441,7 @@ export const SidebarV = ({ setIsAuthenticated }) => {
             <button
               className={classNames(
                 "flex items-center gap-3 px-4 py-2 text-sm font-semibold rounded-md transition-colors w-full",
-                "bg-[#0C1BAA] text-[#ffffff] hover:bg-[#ffffff] hover:text-[#0C1BAA]"
+                "bg-[#19216F] text-[#ffffff] hover:bg-[#ffffff] hover:text-[#0C1BAA]"
               )}
               onClick={logoutItem.action}
             >

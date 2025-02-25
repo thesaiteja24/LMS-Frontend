@@ -187,7 +187,7 @@ export default function StudentProfileUpdateVV() {
        
         <button
           onClick={() => setEdit(true)}
-          className="bg-[#0C1BAA] text-white py-2 px-6 rounded-md shadow-md hover:shadow-lg transition-transform hover:scale-105"
+          className="bg-[#19216f] text-white py-2 px-6 rounded-md shadow-md hover:shadow-lg transition-transform hover:scale-105"
         >
           <FaEdit className="inline mr-2" /> Edit
         </button>
@@ -203,7 +203,7 @@ export default function StudentProfileUpdateVV() {
               rounded-full 
               object-cover 
               border-2 
-              border-[#0C1BAA] 
+              border-[#19216f] 
               mb-3
               w-32 h-32        /* Base size for small devices */
               sm:w-40 sm:h-40  /* Increase size on small+ screens */
@@ -234,8 +234,8 @@ export default function StudentProfileUpdateVV() {
         {/* Center: Personal Information */}
         <div className="space-y-4">
       {/* Heading with icon */}
-      <div className="text-2xl font-bold text-[#0C1BAA] flex items-center gap-2">
-        <FaUserAlt className="text-[#0C1BAA]" />
+      <div className="text-2xl font-bold text-[#19216f] flex items-center gap-2">
+        <FaUserAlt className="text-[#19216f]" />
         <span>Personal Information</span>
       </div>
 
@@ -365,8 +365,8 @@ export default function StudentProfileUpdateVV() {
         {/* Right: Academic Information */}
         <div className="space-y-4 text-gray-700">
       {/* Heading with icon */}
-      <div className="text-2xl font-bold text-[#0C1BAA] flex items-center gap-2">
-        <FaGraduationCap className="text-[#0C1BAA]" />
+      <div className="text-2xl font-bold text-[#19216f] flex items-center gap-2">
+        <FaGraduationCap className="text-[#19216f]" />
         <span>Academic Information</span>
       </div>
 
@@ -471,8 +471,8 @@ export default function StudentProfileUpdateVV() {
     <div className="bg-white shadow-md p-5 flex flex-col w-full">
   {/* Heading with icon */}
   <div className="flex items-center gap-2 mb-4">
-    <FaFileUpload className="text-[#0C1BAA] text-xl" />
-    <h3 className="text-lg font-semibold text-[#0C1BAA]">Upload Resume</h3>
+    <FaFileUpload className="text-[#19216f] text-xl" />
+    <h3 className="text-lg font-semibold text-[#19216f]">Upload Resume</h3>
   </div>
 
   {/* Form with file input and upload button */}
@@ -488,7 +488,7 @@ export default function StudentProfileUpdateVV() {
     <button
       type="submit"
       disabled={updatingResume}
-      className={`flex items-center justify-center gap-2 bg-[#0C1BAA] text-white px-4 py-2 rounded-md shadow-md hover:shadow-lg transition-transform hover:scale-105 ${
+      className={`flex items-center justify-center gap-2 bg-[#19216f] text-white px-4 py-2 rounded-md shadow-md hover:shadow-lg transition-transform hover:scale-105 ${
         updatingResume ? "opacity-50 cursor-not-allowed" : ""
       }`}
     >
@@ -503,7 +503,7 @@ export default function StudentProfileUpdateVV() {
     <div className="bg-white  shadow-md p-5 flex flex-col md:flex-row items-start md:items-center w-full md:w-2/3">
       {/* Icon + Title */}
       <div className="flex items-center gap-2">
-        <FaFileAlt className="text-[#0C1BAA] text-2xl" />
+        <FaFileAlt className="text-[#19216f] text-2xl" />
         <h3 className="text-lg font-semibold text-black">Your Resume</h3>
       </div>
 
@@ -512,8 +512,8 @@ export default function StudentProfileUpdateVV() {
         <button
           onClick={() => setModalIsOpen(true)}
           disabled={!resumeUrl}
-          className={`border border-[#0C1BAA] text-[#0C1BAA] font-semibold px-4 py-2 rounded-md 
-            hover:bg-[#0C1BAA] hover:text-white transition-transform hover:scale-105 
+          className={`border border-[#19216f] text-[#19216f] font-semibold px-4 py-2 rounded-md 
+            hover:bg-[#19216f] hover:text-white transition-transform hover:scale-105 
             ${resumeUrl ? "" : "opacity-50 cursor-not-allowed"}`}
         >
           View Resume
@@ -521,8 +521,8 @@ export default function StudentProfileUpdateVV() {
 
         <button
           onClick={fetchResumeScore}
-          className={`border border-[#0C1BAA] text-[#0C1BAA] font-semibold px-4 py-2 rounded-md 
-            hover:bg-[#0C1BAA] hover:text-white transition-transform hover:scale-105 
+          className={`border border-[#19216f] text-[#19216f] font-semibold px-4 py-2 rounded-md 
+            hover:bg-[#19216f] hover:text-white transition-transform hover:scale-105 
             ${scoreLoading ? "opacity-50 cursor-not-allowed" : ""}`}
         >
           {scoreLoading ? "Fetching..." : "View Resume Score"}
@@ -531,7 +531,7 @@ export default function StudentProfileUpdateVV() {
     </div>
 
     {/* Card 3: ATS Resume Score */}
-    <div className="bg-[#0C1BAA] text-white  shadow-md p-5 flex flex-col items-center justify-center w-full md:w-1/3 md:rounded-l-none md:rounded-r-md">
+    <div className="bg-[#19216f] text-white  shadow-md p-5 flex flex-col items-center justify-center w-full md:w-1/3 md:rounded-l-none md:rounded-r-md">
       <span className="font-semibold text-2xl">ATS Resume Score</span>
       <span className="text-xl font-bold">
         {resumeScore !== null ? `${resumeScore}/100` : "Check Your resume Score"}
