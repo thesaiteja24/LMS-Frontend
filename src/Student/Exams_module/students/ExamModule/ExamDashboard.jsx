@@ -186,19 +186,47 @@ const ExamDashboard = () => {
                 </CardHeader>
                 <CardContent>
                   <div className="flex flex-col space-y-3 p-4 bg-white shadow-md rounded-lg">
-                    <div className="flex flex-row justify-between">
-                      <strong>Start Date:</strong>
-                      <span>{exam.startDate}</span>
+                    <div className="flex flex-row justify-evenly">
+                      <div>
+                        <div className="flex items-center gap-2">
+                          <img
+                            src="ExamModule/Date.png"
+                            alt="Date"
+                            className="w-5 h-5"
+                          />
+                          <strong className="text-gray-700">Start Date</strong>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <img
+                            src="ExamModule/Watch.png"
+                            alt="Clock"
+                            className="w-5 h-5"
+                          />
+                          <strong className="text-gray-700">Start Time</strong>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <img
+                            src="ExamModule/Sand-clock.png"
+                            alt="Duration"
+                            className="w-5 h-5"
+                          />
+                          <strong className="text-gray-700">
+                            Total Duration
+                          </strong>
+                        </div>
+                      </div>
+                      <div className="flex flex-col">
+                        <span className="text-gray-600">
+                          : {exam.startDate}
+                        </span>
+                        <span className="text-gray-600">
+                          : {exam.startTime}
+                        </span>
+                        <span className="text-gray-600">
+                          : {exam.totalExamTime} mins
+                        </span>
+                      </div>
                     </div>
-                    <div className="flex flex-row justify-between">
-                      <strong>Start Time:</strong>
-                      <span>{exam.startTime}</span>
-                    </div>
-                    <div className="flex flex-row justify-between">
-                      <strong>Duration:</strong>
-                      <span>{exam.totalExamTime} mins</span>
-                    </div>
-
                     <button
                       type="button"
                       onClick={() => handleShowInstructions(exam)}
@@ -238,19 +266,47 @@ const ExamDashboard = () => {
                 </CardHeader>
                 <CardContent>
                   <div className="flex flex-col space-y-3 p-4 bg-white shadow-md rounded-lg">
-                    <div className="flex flex-row justify-between">
-                      <strong>Start Date:</strong>
-                      <span>{exam.startDate}</span>
+                    <div className="flex flex-row justify-evenly">
+                      <div>
+                        <div className="flex items-center gap-2">
+                          <img
+                            src="ExamModule/Date.png"
+                            alt="Date"
+                            className="w-5 h-5"
+                          />
+                          <strong className="text-gray-700">Start Date</strong>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <img
+                            src="ExamModule/Watch.png"
+                            alt="Clock"
+                            className="w-5 h-5"
+                          />
+                          <strong className="text-gray-700">Start Time</strong>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <img
+                            src="ExamModule/Sand-clock.png"
+                            alt="Duration"
+                            className="w-5 h-5"
+                          />
+                          <strong className="text-gray-700">
+                            Total Duration
+                          </strong>
+                        </div>
+                      </div>
+                      <div className="flex flex-col">
+                        <span className="text-gray-600">
+                          : {exam.startDate}
+                        </span>
+                        <span className="text-gray-600">
+                          : {exam.startTime}
+                        </span>
+                        <span className="text-gray-600">
+                          : {exam.totalExamTime} mins
+                        </span>
+                      </div>
                     </div>
-                    <div className="flex flex-row justify-between">
-                      <strong>Start Time:</strong>
-                      <span>{exam.startTime}</span>
-                    </div>
-                    <div className="flex flex-row justify-between">
-                      <strong>Duration:</strong>
-                      <span>{exam.totalExamTime} mins</span>
-                    </div>
-                    {/* Countdown for upcoming exam */}
                     <ExamCountdownTimer
                       startDate={exam.startDate}
                       startTime={exam.startTime}
@@ -279,17 +335,46 @@ const ExamDashboard = () => {
                 </CardHeader>
                 <CardContent>
                   <div className="flex flex-col space-y-3 p-4 bg-white shadow-md rounded-lg">
-                    <div className="flex flex-row justify-between">
-                      <strong>Start Date:</strong>
-                      <span>{exam.startDate}</span>
-                    </div>
-                    <div className="flex flex-row justify-between">
-                      <strong>Start Time:</strong>
-                      <span>{exam.startTime}</span>
-                    </div>
-                    <div className="flex flex-row justify-between">
-                      <strong>Duration:</strong>
-                      <span>{exam.totalExamTime} mins</span>
+                    <div className="flex flex-row justify-evenly">
+                      <div>
+                        <div className="flex items-center gap-2">
+                          <img
+                            src="ExamModule/Date.png"
+                            alt="Date"
+                            className="w-5 h-5"
+                          />
+                          <strong className="text-gray-700">Start Date</strong>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <img
+                            src="ExamModule/Watch.png"
+                            alt="Clock"
+                            className="w-5 h-5"
+                          />
+                          <strong className="text-gray-700">Start Time</strong>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <img
+                            src="ExamModule/Sand-clock.png"
+                            alt="Duration"
+                            className="w-5 h-5"
+                          />
+                          <strong className="text-gray-700">
+                            Total Duration
+                          </strong>
+                        </div>
+                      </div>
+                      <div className="flex flex-col">
+                        <span className="text-gray-600">
+                          : {exam.startDate}
+                        </span>
+                        <span className="text-gray-600">
+                          : {exam.startTime}
+                        </span>
+                        <span className="text-gray-600">
+                          : {exam.totalExamTime} mins
+                        </span>
+                      </div>
                     </div>
                     <p className="text-red-600 font-semibold text-center mt-2 text-xl">
                       Exam Completed
