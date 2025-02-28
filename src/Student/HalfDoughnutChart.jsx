@@ -34,7 +34,7 @@ const HalfDoughnutChart = ({ totalScore, maximumScore }) => {
   };
 
   return (
-    <div className="relative h-55 flex justify-center items-center">
+    <div className="relative w-48 flex justify-center items-center">
       <Doughnut data={data} options={options} />
       {/* Inner Text Display */}
       <div className="absolute mt-4 top-1/2 transform -translate-y-1/2 text-center">

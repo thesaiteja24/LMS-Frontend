@@ -382,7 +382,7 @@ const ExamDashboard = () => {
                         <img
                           src="ExamModule/Exam-Completed.png"
                           alt="Date"
-                          className="w-5 h-5"
+                          className="w-10 h-8 ml-2"
                         />
                       </div>
                     </div>

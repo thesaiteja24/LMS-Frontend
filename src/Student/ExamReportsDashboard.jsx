@@ -129,20 +129,23 @@ export const ExamReportsDashboard = () => {
                 return (
                   <div
                     key={exam._id}
-                    className=" bg-white rounded-xl shadow-lg p-2 flex flex-col items-center transform hover:scale-105 transition"
+                    className=" bg-white rounded-xl shadow-lg p-2 flex flex-col items-center transform transition"
                   >
-                    <div className="flex flex-row justify-start items-center">
+                    <div className="flex flex-col justify-start items-center">
                       {/* Display the arc chart */}
+                      <p className="text-2xl font-bold">
+                        View {exam.dayOrder.toUpperCase()} Exam Reports
+                      </p>
                       <HalfDoughnutChart
                         totalScore={totalScore}
                         maximumScore={maxScore}
                       />
                       {/* Exam details */}
-                      <div className="flex flex-col justify-start">
-                        <p className="text-green-600 font-medium">
+                      <div className="flex flex-row gap-4 justify-start mb-3">
+                        <p className="text-green-600 font-lg text-xl">
                           Correct Answers: {correctCount}
                         </p>
-                        <p className="text-red-600 font-medium">
+                        <p className="text-red-600 font-lg text-xl">
                           Incorrect Answers: {incorrectCount}
                         </p>
                       </div>
