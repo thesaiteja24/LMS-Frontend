@@ -211,7 +211,7 @@ const OnlineCompiler = () => {
         <CodeMirror
           value={code}
           height="300px"
-          width="600px"
+          width="900px"
           theme={oneDark}
           extensions={[languageExtensions[language]]}
           onChange={handleCodeChange}
