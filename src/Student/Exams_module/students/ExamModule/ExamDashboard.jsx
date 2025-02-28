@@ -167,7 +167,7 @@ const ExamDashboard = () => {
   }
 
   return (
-    <div className="flex flex-col m-4">
+    <div className="flex flex-col p-[49px]">
       {/* ==================== ACTIVE EXAMS ==================== */}
       {active.length > 0 && (
         <div className="mb-6">

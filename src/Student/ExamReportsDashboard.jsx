@@ -129,13 +129,13 @@ export const ExamReportsDashboard = () => {
                 return (
                   <div
                     key={exam._id}
-                    className=" bg-white rounded-xl shadow-lg p-2 flex flex-col items-center transform transition"
+                    className=" bg-white rounded-xl shadow-lg flex flex-col items-center transform transition"
                   >
-                    <div className="flex flex-col justify-start items-center">
+                    <div className="w-full rounded-t-lg px-4 py-2 text-2xl text-white font-bold bg-[#19216f]">
+                      View {exam.dayOrder.toUpperCase()} Exam Reports
+                    </div>
+                    <div className="flex flex-col px-4 justify-start items-center">
                       {/* Display the arc chart */}
-                      <p className="text-2xl font-bold">
-                        View {exam.dayOrder.toUpperCase()} Exam Reports
-                      </p>
                       <HalfDoughnutChart
                         totalScore={totalScore}
                         maximumScore={maxScore}
@@ -182,7 +182,7 @@ export const ExamReportsDashboard = () => {
   };
 
   return (
-    <div className="p-8 bg-gray-100 min-h-screen">
+    <div className="p-[49px] bg-gray-100 min-h-screen">
       {/* Back Navigation */}
       <div className="mb-6">
         <button

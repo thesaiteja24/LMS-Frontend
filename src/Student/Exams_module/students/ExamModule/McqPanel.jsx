@@ -9,6 +9,9 @@ export const McqPanel = () => {
     <div className="bg-white flex flex-col gap-4 p-4">
       {/* Question Header */}
       <div className="p-4">
+        <div className="font-bold text-2xl m-4">
+          {currentQuestion && `Subject: ${currentQuestion.Subject}`}
+        </div>
         <div className="flex flex-col md:flex-row items-start md:items-center gap-2">
           <span className="bg-[#E1EFFF] p-3 md:p-4 rounded-lg">
             {mcqIndex + 1}.

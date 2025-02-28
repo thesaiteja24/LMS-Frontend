@@ -502,9 +502,9 @@ export default function App() {
             element={
               <ProtectedRoute allowedRoles={["student_login_details"]}>
                 <ExamProvider>
-                  {/* <ExamSecurityWrapper> */}
+                  <ExamSecurityWrapper>
                     <Parent />
-                  {/* </ExamSecurityWrapper> */}
+                  </ExamSecurityWrapper>
                 </ExamProvider>
               </ProtectedRoute>
             }
