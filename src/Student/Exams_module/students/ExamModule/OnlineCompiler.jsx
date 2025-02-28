@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useContext } from "react";
 import CodeMirror from "@uiw/react-codemirror";
-import { javascript } from "@codemirror/lang-javascript";
 import { python } from "@codemirror/lang-python";
 import { java } from "@codemirror/lang-java";
 import { oneDark } from "@codemirror/theme-one-dark";
@@ -20,7 +19,7 @@ const OnlineCompiler = () => {
 
   // Track language, code, custom input states
   const [language, setLanguage] = useState(
-    existingData[questionId]?.language || "JavaScript"
+    existingData[questionId]?.language || "Java"
   );
   const [code, setCode] = useState(existingData[questionId]?.sourceCode || "");
   const [customInputEnabled, setCustomInputEnabled] = useState(
@@ -42,7 +41,6 @@ const OnlineCompiler = () => {
   const [loading, setLoading] = useState(false);
 
   const languageExtensions = {
-    JavaScript: javascript(),
     Python: python(),
     Java: java(),
   };
@@ -50,7 +48,7 @@ const OnlineCompiler = () => {
   // Sync with existingData each time questionId changes
   useEffect(() => {
     if (questionId) {
-      setLanguage(existingData[questionId]?.language || "JavaScript");
+      setLanguage(existingData[questionId]?.language || "Java");
       setCode(existingData[questionId]?.sourceCode || "");
       setCustomInputEnabled(
         existingData[questionId]?.customInputEnabled || false
@@ -185,7 +183,7 @@ const OnlineCompiler = () => {
   };
 
   return (
-    <div className="w-full md:w-2/3 xl:w-1/2 mx-auto m-2 bg-white rounded-2xl flex flex-col gap-4 p-4">
+    <div className=" md:w-2/3 xl:w-1/2 mx-auto m-2 bg-white rounded-2xl flex flex-col gap-4 p-4">
       {/* Language Selector + Run Button */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2">
@@ -195,7 +193,6 @@ const OnlineCompiler = () => {
             onChange={(e) => handleLanguageChange(e.target.value)}
             className="border rounded px-2 py-1"
           >
-            <option value="JavaScript">JavaScript</option>
             <option value="Python">Python</option>
             <option value="Java">Java</option>
           </select>
@@ -214,6 +211,7 @@ const OnlineCompiler = () => {
         <CodeMirror
           value={code}
           height="300px"
+          width="600px"
           theme={oneDark}
           extensions={[languageExtensions[language]]}
           onChange={handleCodeChange}
