@@ -175,19 +175,19 @@ const ExamDashboard = () => {
             <img className="w-8" src="ExamModule/Exam-blue.png" alt="" />
             Active Exams
           </h3>
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+          <div className="flex flex-row ">
             {active.map((exam) => (
               <Card
                 key={exam.examId}
                 className="cursor-pointer hover:shadow-lg"
               >
                 <CardHeader>
-                  <CardTitle>Batch: {exam.batch}</CardTitle>
+                  <CardTitle>Day Order : {exam.dayOrder}</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="flex flex-col space-y-3 p-4 bg-white shadow-md rounded-lg">
+                  <div className="flex flex-col space-y-3 p-7 bg-white shadow-md rounded-lg">
                     <div className="flex flex-row justify-evenly">
-                      <div>
+                      <div className="flex flex-col gap-4">
                         <div className="flex items-center gap-2">
                           <img
                             src="ExamModule/Date.png"
@@ -215,13 +215,15 @@ const ExamDashboard = () => {
                           </strong>
                         </div>
                       </div>
-                      <div className="flex flex-col">
+                      <div className="flex flex-col gap-4">
                         <span className="text-gray-600">
                           : {exam.startDate}
                         </span>
+
                         <span className="text-gray-600">
                           : {exam.startTime}
                         </span>
+
                         <span className="text-gray-600">
                           : {exam.totalExamTime} mins
                         </span>
@@ -258,14 +260,14 @@ const ExamDashboard = () => {
             <img className="w-8" src="ExamModule/Exam-blue.png" alt="" />
             Upcoming Exams
           </h3>
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+          <div className="flex flex-row">
             {upcoming.map((exam) => (
               <Card key={exam.examId}>
                 <CardHeader>
-                  <CardTitle>Batch: {exam.batch}</CardTitle>
+                  <CardTitle>Day Order : {exam.dayOrder}</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="flex flex-col space-y-3 p-4 bg-white shadow-md rounded-lg">
+                  <div className="flex flex-col space-y-3 p-7 bg-white shadow-md rounded-lg">
                     <div className="flex flex-row justify-evenly">
                       <div>
                         <div className="flex items-center gap-2">
@@ -295,7 +297,7 @@ const ExamDashboard = () => {
                           </strong>
                         </div>
                       </div>
-                      <div className="flex flex-col">
+                      <div className="flex flex-col gap-4">
                         <span className="text-gray-600">
                           : {exam.startDate}
                         </span>
@@ -327,16 +329,16 @@ const ExamDashboard = () => {
             <img className="w-8" src="ExamModule/Exam-blue.png" alt="" />
             Finished Exams
           </h3>
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+          <div className="flex flex-row">
             {finished.map((exam) => (
               <Card key={exam.examId}>
                 <CardHeader>
-                  <CardTitle>Batch: {exam.batch}</CardTitle>
+                  <CardTitle>Day Order : {exam.dayOrder}</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="flex flex-col space-y-3 p-4 bg-white shadow-md rounded-lg">
+                  <div className="flex flex-col space-y-3 p-7 bg-white shadow-md rounded-lg">
                     <div className="flex flex-row justify-evenly">
-                      <div>
+                      <div className="flex flex-col gap-4">
                         <div className="flex items-center gap-2">
                           <img
                             src="ExamModule/Date.png"
@@ -363,8 +365,11 @@ const ExamDashboard = () => {
                             Total Duration
                           </strong>
                         </div>
+                        <p className="text-red-600 font-semibold text-center mt-2 text-xl">
+                          Exam Completed
+                        </p>
                       </div>
-                      <div className="flex flex-col">
+                      <div className="flex flex-col justify-center gap-4">
                         <span className="text-gray-600">
                           : {exam.startDate}
                         </span>
@@ -374,11 +379,13 @@ const ExamDashboard = () => {
                         <span className="text-gray-600">
                           : {exam.totalExamTime} mins
                         </span>
+                        <img
+                          src="ExamModule/Exam-Completed.png"
+                          alt="Date"
+                          className="w-5 h-5"
+                        />
                       </div>
                     </div>
-                    <p className="text-red-600 font-semibold text-center mt-2 text-xl">
-                      Exam Completed
-                    </p>
                   </div>
                 </CardContent>
               </Card>

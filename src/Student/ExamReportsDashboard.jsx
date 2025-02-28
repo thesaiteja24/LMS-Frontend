@@ -17,7 +17,9 @@ export const ExamReportsDashboard = () => {
       try {
         setLoading(true);
         const response = await axios.get(
-          `${import.meta.env.VITE_BACKEND_URL}/api/v1/stdreports?stdId=${stdId}`
+          `${
+            import.meta.env.VITE_BACKEND_URL
+          }/api/v1/student-reports?stdId=${stdId}`
         );
         const { success, results } = response.data;
         if (success && Array.isArray(results)) {
@@ -148,7 +150,9 @@ export const ExamReportsDashboard = () => {
                     <button
                       onClick={() => {
                         localStorage.setItem("Analysis", JSON.stringify(exam));
-                        navigate("/exam-analysis");
+                        navigate("/exam-analysis", {
+                          state: { isReports: true },
+                        });
                       }}
                       type="button"
                       class="text-white bg-[#19216f] font-medium rounded-lg text-lg px-5 py-2.5 mb-2 "
