@@ -121,6 +121,11 @@ export const SidebarV = ({ setIsAuthenticated }) => {
             icon: FaMicrophoneAlt,
           },
           {
+            label: "Code Playground",
+            path: "/codeplayground",
+            icon: FaMicrophoneAlt,
+          },
+          {
             label: "Leave Request",
             path: "/leave-request-page",
             icon: MdOutlineRequestQuote,

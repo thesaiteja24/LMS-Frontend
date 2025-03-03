@@ -172,7 +172,7 @@ const BatchScheduler = () => {
     const updatedRow = {
       id: editingRowId,
       mentorName,
-      roomNo: parseInt(roomNo, 10),
+      roomNo,
       techStack: selectedTechStack,
       subject: selectedSubject,
       startDate,
