@@ -4,12 +4,13 @@ import { useNavigate } from "react-router-dom";
 import { Loader } from "lucide-react";
 import HalfDoughnutChart from "./HalfDoughnutChart";
 import Alert from "./Exams_module/students/Alert";
+import { decryptData } from '../../cryptoUtils.jsx';
 
 export const ExamReportsDashboard = () => {
   const [exams, setExams] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  const stdId = localStorage.getItem("id");
+  const stdId = decryptData(localStorage.getItem("id"));
   const navigate = useNavigate();
 
   useEffect(() => {

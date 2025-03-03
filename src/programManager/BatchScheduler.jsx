@@ -7,6 +7,7 @@ import Select from "react-select";
 import Swal from "sweetalert2";
 import { useUniqueBatches } from "../contexts/UniqueBatchesContext";
 import { toast } from "react-toastify";
+import { decryptData } from '../../cryptoUtils.jsx';
 
 const BatchScheduler = () => {
   const [mentorName, setMentorName] = useState("");
@@ -24,7 +25,7 @@ const BatchScheduler = () => {
   const [scheduleData, setScheduleData] = useState([]);
   const [loadingBatches, setLoadingBatches] = useState(false);
   const [loadingMentors, setLoadingMentors] = useState(false);
-  const location = localStorage.getItem("location");
+  const location = decryptData(localStorage.getItem("location"));
   const { batches, fetchBatches } = useUniqueBatches();
   const [editingRowId, setEditingRowId] = useState(null);
   const [loadingAddSchedule, setLoadingAddSchedule] = useState(false);

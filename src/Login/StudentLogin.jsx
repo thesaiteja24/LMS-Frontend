@@ -2,67 +2,65 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Eye, EyeOff } from 'lucide-react';
 import axios from 'axios';
-// import Cookies from 'js-cookie';
+import { encryptData } from '../../cryptoUtils.jsx'; // Import encryption method
 import './StudentLogin.css';
-import { useUniqueBatches } from '../contexts/UniqueBatchesContext';
-
-
-
 import Swal from 'sweetalert2/dist/sweetalert2.min.js';
 import Footer from '../Footer/Footer';
 
-export default function StudentLogin({setIsAuthenticated }) {
+export default function StudentLogin({ setIsAuthenticated }) {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
-  const {fetchBatches } = useUniqueBatches();
   const [loading, setLoading] = useState(false);
   
   const navigate = useNavigate();
   
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true); 
-  
+    setLoading(true);
+
     try {
-      // Determine if the username is an email or studentId
       const isEmail = username.includes('@');
       const payload = isEmail
         ? { email: username.toLowerCase(), password }
         : { studentId: username, password };
-  
-      // Make API call with the appropriate payload
+
       const response = await axios.post(
         `${import.meta.env.VITE_BACKEND_URL}/api/v1/login`,
         payload
       );
-  
-      // Success case
+
       if (response.status === 200) {
-        // Update authentication state
-        setIsAuthenticated(true); 
+        setIsAuthenticated(true);
+        
+        // Encrypt and store sensitive data in localStorage
         const id = response.data.id;
-        localStorage.setItem("id", id);
-        localStorage.setItem('profileStatus', response.data.user.Profile);
-        localStorage.setItem('userType', response.data.user.usertype);
-        localStorage.setItem('email', response.data.user.email);
-        localStorage.setItem('student_id', response.data.id);
-        localStorage.setItem('location', response.data.Location);
-        localStorage.setItem(`${response.data.user.usertype}`, response.data.id);
-  
-        // Redirect based on userType
-        const userType = localStorage.getItem('userType');
+        const userType = response.data.user.usertype;
+        const encryptedId = encryptData(id);
+        const encryptedEmail = encryptData(response.data.user.email);
+        const encryptedProfile = encryptData(response.data.user.Profile);
+        const encryptedLocation = encryptData(response.data.Location);
+        const encryptUserType = encryptData(userType);
+
+        localStorage.setItem('id', encryptedId);
+        localStorage.setItem('profileStatus', encryptedProfile);
+        localStorage.setItem('userType', encryptUserType);
+        localStorage.setItem('email', encryptedEmail);
+        localStorage.setItem('student_id', encryptedId);
+        localStorage.setItem('location', encryptedLocation);
+        localStorage.setItem(`${userType}`, encryptedId);
+
         const userRoutes = {
           student_login_details: '/student-profile',
           Mentors: '/mentor-dashboard',
           BDE_data: '/jobs-dashboard',
           Manager: '/viewbatch',
-          super: '/admin-dashboard', 
+          super: '/admin-dashboard',
           superAdmin: '/reports',
         };
         const redirectTo = userRoutes[userType] || '/not-found';
         navigate(redirectTo);
-  
+
         Swal.fire({
           title: 'Login Successful',
           icon: 'success',
@@ -70,7 +68,7 @@ export default function StudentLogin({setIsAuthenticated }) {
       }
     } catch (error) {
       console.error('Login failed:', error);
-  
+
       if (error.code === 'ERR_NETWORK' || error.message === 'Network Error') {
         Swal.fire({
           icon: 'error',
@@ -97,7 +95,6 @@ export default function StudentLogin({setIsAuthenticated }) {
       setLoading(false); // Reset loading to false
     }
   };
-  
 
   return (
     <>
@@ -186,8 +183,6 @@ export default function StudentLogin({setIsAuthenticated }) {
                 >
                   {loading ? 'Loading...' : 'Login'} {/* Change button text during loading */}
                 </button>
-
-               
               </form>
             </div>
           </div>

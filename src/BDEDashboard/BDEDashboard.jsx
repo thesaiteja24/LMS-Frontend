@@ -4,6 +4,9 @@ import { Link } from 'react-router-dom';
 import { useJobs } from '../contexts/JobsContext';
 import Swal from 'sweetalert2/dist/sweetalert2.min.js';  
 import './BDEDashboard.css';
+import { decryptData } from '../../cryptoUtils.jsx';
+
+
 
 const BDEDashboard = () => {
       const { jobs, loading, error, fetchJobs } = useJobs();
@@ -13,7 +16,7 @@ const BDEDashboard = () => {
         }, []);
 
      
-     const userType = localStorage.getItem('userType');
+     const userType = decryptData(localStorage.getItem('userType'));
   const [state, setState] = useState({
     selectedJob: null,
     isModalOpen: false,

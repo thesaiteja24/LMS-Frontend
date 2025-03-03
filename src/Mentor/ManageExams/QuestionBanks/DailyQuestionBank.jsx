@@ -3,6 +3,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useStudentsMentorData } from "../../../contexts/MentorStudentsContext";
 import { useNavigate } from "react-router-dom";
+import { decryptData } from '../../../../cryptoUtils.jsx'
 
 export const DailyQuestionBank = () => {
   const navigate = useNavigate();
@@ -10,8 +11,8 @@ export const DailyQuestionBank = () => {
   const [scheduleData, setScheduleData] = useState([]);
   const [examStatus, setExamStatus] = useState({}); // To store existing exams
   const { scheduleData: mentorScheduleData } = useStudentsMentorData();
-  const location = localStorage.getItem("location");
-  const mentorId = localStorage.getItem("Mentors");
+  const location = decryptData(localStorage.getItem("location"));
+  const mentorId = decryptData(localStorage.getItem("Mentors"));
 
   const API_FETCH_SCHEDULE = `${import.meta.env.VITE_BACKEND_URL}/api/v1/fetch-daily-exam-syllabus`;
   const API_CHECK_EXAM = `${import.meta.env.VITE_BACKEND_URL}/api/v1/check-exam-status`;

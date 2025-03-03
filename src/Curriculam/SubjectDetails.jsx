@@ -6,6 +6,8 @@ import { FaCheckCircle, FaBookOpen, FaLock, FaTimes, FaArrowLeft } from "react-i
 import Swal from "sweetalert2";
 import "sweetalert2/dist/sweetalert2.min.css";
 import "./SubjectDetails.css";
+import { decryptData } from '../../cryptoUtils.jsx';
+
 
 const SubjectDetails = () => {
   const { state } = useLocation();
@@ -26,7 +28,7 @@ const SubjectDetails = () => {
     try {
       const response = await axios.get(
         `${import.meta.env.VITE_BACKEND_URL}/api/v1/stdcurriculum`,
-        { params: { location: localStorage.getItem("location"), batchNo: studentDetails.BatchNo, subject } }
+        { params: { location: decryptData(localStorage.getItem("location")), batchNo: studentDetails.BatchNo, subject } }
       );
       const curriculumData = response.data.std_curiculum || [];
       const curriculumTable = curriculumData.map(item => {

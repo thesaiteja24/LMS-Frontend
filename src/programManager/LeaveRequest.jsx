@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import Swal from 'sweetalert2';
 import axios from 'axios';
+import { decryptData } from '../../cryptoUtils.jsx';
+
 
 const LeaveRequest = () => {
   const [leaveRequests, setLeaveRequests] = useState([]);
@@ -9,8 +11,8 @@ const LeaveRequest = () => {
   const [showModal, setShowModal] = useState(false);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
-  const location = localStorage.getItem('location');
-  const id = localStorage.getItem('id');
+  const location = decryptData(localStorage.getItem('location'));
+  const id = decryptData(localStorage.getItem('id'));
 
   // Fetch leave requests from the API
   const fetchLeaveRequests = useCallback(async () => {

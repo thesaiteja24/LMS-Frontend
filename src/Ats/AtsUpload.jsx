@@ -2,13 +2,15 @@ import React, { useState } from 'react';
 import Swal from 'sweetalert2';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import { decryptData } from '../../cryptoUtils.jsx';
+
 
 const AtsUpload = () => {
   const [fileName, setFileName] = useState('');
   const [responseMessage, setResponseMessage] = useState('');
   const [isAnalyzing, setIsAnalyzing] = useState(false); // State for loading status
   const navigate = useNavigate();
-  const std_id= localStorage.getItem('student_id')
+  const std_id= decryptData(localStorage.getItem('student_id'))
 
 
   const handleFileChange = (event) => {

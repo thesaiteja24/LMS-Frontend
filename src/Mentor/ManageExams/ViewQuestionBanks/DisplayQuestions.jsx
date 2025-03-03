@@ -4,9 +4,10 @@ import axios from "axios";
 import Swal from "sweetalert2";
 import "sweetalert2/dist/sweetalert2.min.css";
 import "./DisplayQuestions.css";
+import { decryptData } from '../../cryptoUtils.jsx';
 
 const DisplayQuestions = () => {
-  const mentorId = localStorage.getItem("Mentors");
+  const mentorId = decryptData(localStorage.getItem("Mentors"));
   const location = useLocation();
   const { Tags, data, subTopics, previousSubTopics, subject, batch, dayOrder } =
     location.state || {}; // Ensure safe extraction of data
