@@ -6,6 +6,7 @@ import Table from "./Table";
 import Select from "react-select";
 import Swal from "sweetalert2";
 import { useUniqueBatches } from "../contexts/UniqueBatchesContext";
+import { toast } from "react-toastify";
 
 const BatchScheduler = () => {
   const [mentorName, setMentorName] = useState("");
@@ -20,7 +21,7 @@ const BatchScheduler = () => {
   const [endDate, setEndDate] = useState("");
   const [mentors, setMentors] = useState([]);
   const [selectedBatches, setSelectedBatches] = useState([]);
-  const [scheduleData,setScheduleData] = useState([])
+  const [scheduleData, setScheduleData] = useState([]);
   const [loadingBatches, setLoadingBatches] = useState(false);
   const [loadingMentors, setLoadingMentors] = useState(false);
   const location = localStorage.getItem("location");
@@ -31,15 +32,34 @@ const BatchScheduler = () => {
 
   const techStackSubjects = {
     vijayawada: ["Python Full Stack (PFS)", "Java Full Stack (JFS)"],
-    hyderabad: ["Python Full Stack (PFS)", "Java Full Stack (JFS)", "DataScience", "DataAnalytics"],
+    hyderabad: [
+      "Python Full Stack (PFS)",
+      "Java Full Stack (JFS)",
+      "DataScience",
+      "DataAnalytics",
+    ],
     bangalore: ["Java Full Stack (JFS)"],
   };
 
   const mockSubjects = {
-    "Python Full Stack (PFS)": ["Python", "Flask", "Frontend", "MySQL", "SoftSkills", "Aptitude"],
-    "Java Full Stack (JFS)": ["Java","AdvancedJava", "Frontend", "MySQL", "SoftSkills", "Aptitude"],
-    "DataScience": ["DataScience"],
-    "DataAnalytics": ["DataAnalytics"],
+    "Python Full Stack (PFS)": [
+      "Python",
+      "Flask",
+      "Frontend",
+      "MySQL",
+      "SoftSkills",
+      "Aptitude",
+    ],
+    "Java Full Stack (JFS)": [
+      "Java",
+      "AdvancedJava",
+      "Frontend",
+      "MySQL",
+      "SoftSkills",
+      "Aptitude",
+    ],
+    DataScience: ["DataScience"],
+    DataAnalytics: ["DataAnalytics"],
   };
 
   const mockBatches = {
@@ -51,8 +71,8 @@ const BatchScheduler = () => {
     MySQL: ["Python Full Stack (PFS)", "Java Full Stack (JFS)"],
     SoftSkills: ["Python Full Stack (PFS)", "Java Full Stack (JFS)"],
     Aptitude: ["Python Full Stack (PFS)", "Java Full Stack (JFS)"],
-    "DataScience": ["DataScience"],
-    "DataAnalytics": ["DataAnalytics"],
+    DataScience: ["DataScience"],
+    DataAnalytics: ["DataAnalytics"],
   };
 
   const handleTechStackChange = (value) => {
@@ -64,51 +84,53 @@ const BatchScheduler = () => {
 
   const formatTimeTo24Hour = (time) => {
     if (!time) return "";
-    
+
     const [timePart, modifier] = time.split(" ");
     if (!timePart || !modifier) return time; // Return as-is if not in 12-hour format
-  
+
     let [hours, minutes] = timePart.split(":").map(Number);
-  
+
     if (modifier === "PM" && hours !== 12) {
       hours += 12;
     }
     if (modifier === "AM" && hours === 12) {
       hours = 0;
     }
-  
-    return `${String(hours).padStart(2, "0")}:${String(minutes).padStart(2, "0")}`;
+
+    return `${String(hours).padStart(2, "0")}:${String(minutes).padStart(
+      2,
+      "0"
+    )}`;
   };
-  
 
   const handleEditRow = (row) => {
     setEditingRowId(row.id || null);
-  
+
     // Update mentor name, room number, and dates
     setMentorName(row.MentorName || "");
     setRoomNo(row.RoomNo || "");
     setStartDate(row.StartDate || "");
     setEndDate(row.EndDate || "");
-  
+
     // Detect the TechStack based on the subject
     const detectedTechStack = Object.keys(mockSubjects).find((key) =>
       mockSubjects[key].includes(row.subject)
     );
     setSelectedTechStack(detectedTechStack || "");
-  
+
     // Populate availableSubjects based on the detected TechStack
     const subjectsForTechStack = mockSubjects[detectedTechStack] || [];
     setAvailableSubjects(subjectsForTechStack.map((subject) => subject));
-  
+
     // Set the selected subject as the one in the row
     setSelectedSubject(row.subject || "");
-  
+
     // Reflect batches directly from the row
     const availableRowBatches = Array.isArray(row.batchNo)
       ? row.batchNo.map((batch) => ({ value: batch, label: batch }))
       : [];
     setSelectedBatches(availableRowBatches);
-  
+
     // Reflect start time and end time directly from the row
     if (row.StartTime) {
       const formattedStartTime = formatTimeTo24Hour(row.StartTime);
@@ -117,7 +139,7 @@ const BatchScheduler = () => {
       console.warn("StartTime is missing or invalid in row.");
       setStartTime("");
     }
-  
+
     if (row.EndTime) {
       const formattedEndTime = formatTimeTo24Hour(row.EndTime);
       setEndTime(formattedEndTime);
@@ -125,9 +147,7 @@ const BatchScheduler = () => {
       console.warn("EndTime is missing or invalid in row.");
       setEndTime("");
     }
-  
   };
-  
 
   const handleSaveEdit = async () => {
     if (
@@ -163,13 +183,12 @@ const BatchScheduler = () => {
       location,
     };
     setLoadingSaveChanges(true);
-  
-    try {
 
+    try {
       const response = await axios.put(
         `${import.meta.env.VITE_BACKEND_URL}/api/v1/schedule`,
         updatedRow
-      ); 
+      );
       if (response.status === 200) {
         Swal.fire("Success", "Schedule updated successfully!", "success");
         setEditingRowId(null);
@@ -181,20 +200,23 @@ const BatchScheduler = () => {
       setStartTime("");
       setEndTime("");
       setStartDate("");
-    setEndDate("");
+      setEndDate("");
       setRoomNo("");
       setSelectedTechStack("");
       setSelectedSubject("");
       setSelectedBatches([]);
-      fetchMentors()
+      fetchMentors();
     } catch (error) {
-      console.error("Error updating schedule:", error.response?.data?.error || error.message);
+      console.error(
+        "Error updating schedule:",
+        error.response?.data?.error || error.message
+      );
       Swal.fire("Error", "Failed to update schedule. Try again.", "error");
-    }finally {
+    } finally {
       setLoadingSaveChanges(false); // ✅ Stop loading
     }
   };
-  
+
   // Add a Cancel button to clear the editing state
   const handleCancelEdit = () => {
     setEditingRowId(null);
@@ -208,20 +230,18 @@ const BatchScheduler = () => {
     setSelectedSubject("");
     setSelectedBatches([]);
   };
-  
 
-
-
-  
-
-  const fetchMentors = useCallback (async () => {
+  const fetchMentors = useCallback(async () => {
     setLoadingMentors(true);
     try {
-      const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/v1/schedule`, {
-        params: { location },
-      });
-      
-      setScheduleData(response.data.schedule_data)
+      const response = await axios.get(
+        `${import.meta.env.VITE_BACKEND_URL}/api/v1/schedule`,
+        {
+          params: { location },
+        }
+      );
+
+      setScheduleData(response.data.schedule_data);
       setMentors(response.data.mentor_data || []);
     } catch (error) {
       Swal.fire({
@@ -232,15 +252,15 @@ const BatchScheduler = () => {
     } finally {
       setLoadingMentors(false);
     }
-  },[location]);
+  }, [location]);
 
   useEffect(() => {
     if (selectedSubject) {
       fetchMentors(); // Fetch mentors dynamically when subject changes
     }
-  }, [selectedSubject,fetchMentors]);
+  }, [selectedSubject, fetchMentors]);
 
-  const fetchBatchData = useCallback( async () => {
+  const fetchBatchData = useCallback(async () => {
     setLoadingBatches(true);
     try {
       await fetchBatches(location);
@@ -253,16 +273,16 @@ const BatchScheduler = () => {
     } finally {
       setLoadingBatches(false);
     }
-  },[fetchBatches,location]);
+  }, [fetchBatches, location]);
 
-  const fetchData = useCallback ( async () => {
+  const fetchData = useCallback(async () => {
     await Promise.all([fetchMentors(), fetchBatchData()]);
-  },[fetchBatchData,fetchMentors]);
-
+  }, [fetchBatchData, fetchMentors]);
 
   const handleAddBatch = async () => {
     if (
-      !startDate || !endDate ||
+      !startDate ||
+      !endDate ||
       !selectedTechStack ||
       !selectedSubject ||
       !startTime ||
@@ -279,62 +299,63 @@ const BatchScheduler = () => {
       return;
     }
 
-  const selectedMentor = mentors.find((mentor) => mentor.name === mentorName);
-  const mentorId = selectedMentor?.id; // Adjust this field to match your backend structure
+    const selectedMentor = mentors.find((mentor) => mentor.name === mentorName);
+    const mentorId = selectedMentor?.id; // Adjust this field to match your backend structure
 
-  if (!mentorId) {
-    Swal.fire({
-      icon: "error",
-      title: "Mentor Not Found",
-      text: "Please select a valid mentor.",
-    });
-    return;
-  }
-  const newBatch = {
-    mentorId, 
-    mentorName,
-    startDate,
-    endDate,
-    startTime: formatTo12Hour(startTime),
-    endTime: formatTo12Hour(endTime),
-    roomNo,
-    techStack: selectedTechStack,
-    subject: selectedSubject,
-    location,
-    batches: selectedBatches.map((batch) => batch.value), // Extract selected batch values
-  };
+    if (!mentorId) {
+      Swal.fire({
+        icon: "error",
+        title: "Mentor Not Found",
+        text: "Please select a valid mentor.",
+      });
+      return;
+    }
+    const newBatch = {
+      mentorId,
+      mentorName,
+      startDate,
+      endDate,
+      startTime: formatTo12Hour(startTime),
+      endTime: formatTo12Hour(endTime),
+      roomNo,
+      techStack: selectedTechStack,
+      subject: selectedSubject,
+      location,
+      batches: selectedBatches.map((batch) => batch.value), // Extract selected batch values
+    };
 
-  setLoadingAddSchedule(true);
+    setLoadingAddSchedule(true);
 
     try {
-      await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/v1/schedule`, newBatch);
-      Swal.fire({
-        icon: "success",
-        title: "Batch Added",
-        text: "The batch has been successfully added!",
-      });
+      const response = await axios.post(
+        `${import.meta.env.VITE_BACKEND_URL}/api/v1/schedule`,
+        newBatch
+      );
+      toast.success(response.data.message);
+      toast.success(response.data.mentor_curriculum.message);
       fetchBatchData();
       setShowTable(true);
       setMentorName("");
       setStartTime("");
       setEndTime("");
       setStartDate("");
-    setEndDate("");
+      setEndDate("");
       setRoomNo("");
       setSelectedTechStack("");
       setSelectedSubject("");
       setSelectedBatches([]);
-      fetchMentors()
+      fetchMentors();
     } catch (error) {
       Swal.fire({
         icon: "error",
         title: "Error",
-        text: error.response?.data.error || "Failed to add batch. Please try again.",
+        text:
+          error.response?.data.error ||
+          "Failed to add batch. Please try again.",
       });
-    }finally {
+    } finally {
       setLoadingAddSchedule(false); // ✅ Stop loading
     }
-
   };
 
   const formatTo12Hour = (time) => {
@@ -344,11 +365,11 @@ const BatchScheduler = () => {
     return `${formattedHour}:${minute < 10 ? "0" + minute : minute} ${ampm}`;
   };
 
-
-
   // Filter batches based on the selected subject
   const filteredBatches = selectedSubject
-    ? batches.filter((batch) => mockBatches[selectedSubject]?.includes(batch.Course))
+    ? batches.filter((batch) =>
+        mockBatches[selectedSubject]?.includes(batch.Course)
+      )
     : [];
 
   useEffect(() => {
@@ -358,10 +379,14 @@ const BatchScheduler = () => {
   return (
     <div className="min-h-screen bg-gray-50 py-10 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-blue-100 to-white">
       <div className="bg-white shadow-md rounded-lg p-8 max-w-6xl mx-auto">
-        <h1 className="text-3xl font-bold text-center text-blue-700 mb-8">Batch Scheduler</h1>
+        <h1 className="text-3xl font-bold text-center text-blue-700 mb-8">
+          Batch Scheduler
+        </h1>
 
         <div className="mb-6">
-          <h2 className="text-lg font-semibold text-gray-700 mb-4">Batch Details</h2>
+          <h2 className="text-lg font-semibold text-gray-700 mb-4">
+            Batch Details
+          </h2>
           <div className="flex items-end gap-4">
             <Dropdown
               label="Tech Stack"
@@ -379,95 +404,112 @@ const BatchScheduler = () => {
         </div>
 
         <div className="mb-6">
-          <h2 className="text-lg font-semibold text-gray-700 mb-4">Schedule Details</h2>
+          <h2 className="text-lg font-semibold text-gray-700 mb-4">
+            Schedule Details
+          </h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-  <div className="flex flex-col">
-    <label htmlFor="batchSelect" className="text-gray-700 font-medium mb-2">
-      Select Batches
-    </label>
-    <Select
-      id="batchSelect"
-      isMulti
-      options={filteredBatches.map((batch) => ({ value: batch.Batch, label: batch.Batch }))}
-      value={selectedBatches}
-      onChange={(selectedOptions) => setSelectedBatches(selectedOptions || [])}
-      isLoading={loadingBatches}
-      placeholder="Select Batches"
-    />
-  </div>
+            <div className="flex flex-col">
+              <label
+                htmlFor="batchSelect"
+                className="text-gray-700 font-medium mb-2"
+              >
+                Select Batches
+              </label>
+              <Select
+                id="batchSelect"
+                isMulti
+                options={filteredBatches.map((batch) => ({
+                  value: batch.Batch,
+                  label: batch.Batch,
+                }))}
+                value={selectedBatches}
+                onChange={(selectedOptions) =>
+                  setSelectedBatches(selectedOptions || [])
+                }
+                isLoading={loadingBatches}
+                placeholder="Select Batches"
+              />
+            </div>
 
-  <div className="flex flex-col">
-   
-  <Dropdown
-  label="Mentor Name"
-  options={
-    loadingMentors
-      ? ["Loading..."]
-      : mentors
-          .filter((mentor) => mentor.Designation.includes(selectedSubject)) // ✅ Corrected filtering logic
-          .map((mentor) => mentor.name)
-  }
-  value={mentorName}
-  onChange={(value) => setMentorName(value)}
-/>
+            <div className="flex flex-col">
+              <Dropdown
+                label="Mentor Name"
+                options={
+                  loadingMentors
+                    ? ["Loading..."]
+                    : mentors
+                        .filter((mentor) =>
+                          mentor.Designation.includes(selectedSubject)
+                        ) // ✅ Corrected filtering logic
+                        .map((mentor) => mentor.name)
+                }
+                value={mentorName}
+                onChange={(value) => setMentorName(value)}
+              />
+            </div>
 
-  </div>
-
-  <div className="flex flex-col">
-   
-    <InputField
-      id="roomNumber"
-      type="text"
-      label="Room Number"
-      value={roomNo}
-      onChange={(e) => setRoomNo(e.target.value)}
-      placeholder="Enter Room Number"
-    />
-  </div>
-</div>
-
+            <div className="flex flex-col">
+              <InputField
+                id="roomNumber"
+                type="text"
+                label="Room Number"
+                value={roomNo}
+                onChange={(e) => setRoomNo(e.target.value)}
+                placeholder="Enter Room Number"
+              />
+            </div>
+          </div>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-        <div className="flex flex-col">
-          <label htmlFor="startTime" className="text-gray-700 font-medium mb-2">
-            Start Time
-          </label>
-          <input
-            type="time"
-            id="startTime"
-            className="border rounded-lg px-3 py-2"
-            value={startTime}
-            onChange={(e) => {
-              const inputTime = e.target.value;
-              setStartTime(inputTime);
+          <div className="flex flex-col">
+            <label
+              htmlFor="startTime"
+              className="text-gray-700 font-medium mb-2"
+            >
+              Start Time
+            </label>
+            <input
+              type="time"
+              id="startTime"
+              className="border rounded-lg px-3 py-2"
+              value={startTime}
+              onChange={(e) => {
+                const inputTime = e.target.value;
+                setStartTime(inputTime);
 
-              // Add 90 minutes to the start time
-              const [hours, minutes] = inputTime.split(":").map(Number);
-              const startDate = new Date();
-              startDate.setHours(hours, minutes);
-              const endDate = new Date(startDate.getTime() + 90 * 60000); // Add 90 minutes in milliseconds
+                // Add 90 minutes to the start time
+                const [hours, minutes] = inputTime.split(":").map(Number);
+                const startDate = new Date();
+                startDate.setHours(hours, minutes);
+                const endDate = new Date(startDate.getTime() + 90 * 60000); // Add 90 minutes in milliseconds
 
-              const endHours = String(endDate.getHours()).padStart(2, "0");
-              const endMinutes = String(endDate.getMinutes()).padStart(2, "0");
-              setEndTime(`${endHours}:${endMinutes}`);
-            }}
-          />
-        </div>
-        <div className="flex flex-col">
-          <label htmlFor="endTime" className="text-gray-700 font-medium mb-2">
-            End Time
-          </label>
-          <input
-            type="time"
-            id="endTime"
-            className="border rounded-lg px-3 py-2"
-            value={endTime}
-            onChange={(e) => setEndTime(e.target.value)}
-          />
-        </div>
-        <div className="flex flex-col">
-            <label htmlFor="startDate" className="text-gray-700 font-medium mb-2">
+                const endHours = String(endDate.getHours()).padStart(2, "0");
+                const endMinutes = String(endDate.getMinutes()).padStart(
+                  2,
+                  "0"
+                );
+                setEndTime(`${endHours}:${endMinutes}`);
+              }}
+            />
+          </div>
+          <div className="flex flex-col">
+            <label htmlFor="endTime" className="text-gray-700 font-medium mb-2">
+              End Time
+            </label>
+            <input
+              type="time"
+              id="endTime"
+              className="border rounded-lg px-3 py-2"
+              value={endTime}
+              onChange={(e) => setEndTime(e.target.value)}
+            />
+          </div>
+          <div className="flex flex-col">
+            <label
+              htmlFor="startDate"
+              className="text-gray-700 font-medium mb-2"
+            >
               Start Date
             </label>
             <input
@@ -492,54 +534,54 @@ const BatchScheduler = () => {
               onChange={(e) => setEndDate(e.target.value)}
             />
           </div>
+        </div>
 
-        
+        <div className="flex gap-4 mt-4">
+          {editingRowId ? (
+            <>
+              <button
+                onClick={handleSaveEdit}
+                className={`block max-w-xs px-6 py-3 font-bold rounded-lg transition duration-300 ${
+                  loadingSaveChanges
+                    ? "bg-gray-500 cursor-not-allowed text-gray-300"
+                    : "bg-green-500 text-white hover:bg-green-600"
+                }`}
+                disabled={loadingSaveChanges} // ✅ Disable button while loading
+              >
+                {loadingSaveChanges ? "Saving..." : "Save Changes"}{" "}
+                {/* ✅ Change button text */}
+              </button>
+
+              <button
+                onClick={handleCancelEdit}
+                className="block max-w-xs px-6 py-3 bg-gray-500 text-white font-bold rounded-lg hover:bg-gray-600 transition duration-300"
+              >
+                Cancel
+              </button>
+            </>
+          ) : (
+            <button
+              onClick={handleAddBatch}
+              className={`block max-w-3xl px-6 py-3 font-bold rounded-lg transition duration-300 ${
+                loadingAddSchedule
+                  ? "bg-gray-500 cursor-not-allowed text-gray-300"
+                  : "bg-blue-600 text-white hover:bg-blue-700"
+              }`}
+              disabled={loadingAddSchedule} // ✅ Disable button while loading
+            >
+              {loadingAddSchedule ? "Loading..." : "Add Schedule"}{" "}
+              {/* ✅ Change button text */}
+            </button>
+          )}
+        </div>
       </div>
-
-
-      <div className="flex gap-4 mt-4">
-  {editingRowId ? (
-    <>
-       <button
-      onClick={handleSaveEdit}
-      className={`block max-w-xs px-6 py-3 font-bold rounded-lg transition duration-300 ${
-        loadingSaveChanges
-          ? "bg-gray-500 cursor-not-allowed text-gray-300"
-          : "bg-green-500 text-white hover:bg-green-600"
-      }`}
-      disabled={loadingSaveChanges} // ✅ Disable button while loading
-    >
-      {loadingSaveChanges ? "Saving..." : "Save Changes"} {/* ✅ Change button text */}
-    </button>
-              
-      <button
-        onClick={handleCancelEdit}
-        className="block max-w-xs px-6 py-3 bg-gray-500 text-white font-bold rounded-lg hover:bg-gray-600 transition duration-300"
-      >
-        Cancel
-      </button>
-    </>
-  ) : (
-    <button
-            onClick={handleAddBatch}
-            className={`block max-w-3xl px-6 py-3 font-bold rounded-lg transition duration-300 ${
-              loadingAddSchedule
-                ? "bg-gray-500 cursor-not-allowed text-gray-300"
-                : "bg-blue-600 text-white hover:bg-blue-700"
-            }`}
-            disabled={loadingAddSchedule} // ✅ Disable button while loading
-          >
-            {loadingAddSchedule ? "Loading..." : "Add Schedule"} {/* ✅ Change button text */}
-          </button>
-  )}
-</div>
-
-      </div>
-      {showTable && <Table
-        data={scheduleData}
-        onEditRow={handleEditRow}
-        // deleteApi={`${import.meta.env.VITE_BACKEND_URL}/api/v1/schedule`}
-      />}
+      {showTable && (
+        <Table
+          data={scheduleData}
+          onEditRow={handleEditRow}
+          // deleteApi={`${import.meta.env.VITE_BACKEND_URL}/api/v1/schedule`}
+        />
+      )}
     </div>
   );
 };
