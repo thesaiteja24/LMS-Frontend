@@ -7,6 +7,10 @@ import './StudentProfile.css';
 import { useStudentsData } from '../contexts/StudentsListContext';
 import { useEdit } from '../contexts/EditContext';
 import { useStudent } from '../contexts/StudentProfileContext';
+import { decryptData } from '../../cryptoUtils.jsx';
+import { encryptData } from '../../cryptoUtils.jsx'; // Import encryption method
+
+
 
 const departmentList = ['CSE-AI & ML','ECE','EEE','IT','MECH','CIVIL','CSE-Blockchain','CSE-Cyber Security','CSE-Data Analytics',
     'CSE','ECE-Embedded Systems','ECE-VLSI','MECH-Robotics','CSBS','BSC-CSE','BSC-AI','BSC-CSCS','BSC-Data Science','BSC-Data Analytics','BSC-Physics','BSC-Chemistry','BSC-Mathematics','BSC-Statistics',
@@ -17,7 +21,7 @@ const StudentProfileV = () => {
     const [showPassword, setShowPassword] = useState(false);
 const [showCPassword, setShowCPassword] = useState(false);
     const {fetchStudentsData } = useStudentsData();
-    const email = localStorage.getItem("email");
+    const email = decryptData(localStorage.getItem("email"));
     const { edit, setEdit } = useEdit();
     const {studentDetails, fetchStudentDetails } = useStudent();
     const [isDepartmentAdded, setIsDepartmentAdded] = useState(false);
@@ -392,12 +396,12 @@ const [showCPassword, setShowCPassword] = useState(false);
 
 
 
-            localStorage.setItem("profileStatus", "true");
+            localStorage.setItem("profileStatus", encryptData("true"));
 
             if (formData.resume) {
                 const resumeFormData = new FormData();
                 resumeFormData.append("resume", formData.resume);
-                resumeFormData.append("student_id", localStorage.getItem("student_id")); // ✅ Append student_id
+                resumeFormData.append("student_id", decryptData(localStorage.getItem("student_id"))); // ✅ Append student_id
             
             
                 try {

@@ -4,6 +4,8 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { decryptData } from '../../../cryptoUtils.jsx';
+
 
 export const Dashboard = () => {
   const navigate = useNavigate();
@@ -11,7 +13,7 @@ export const Dashboard = () => {
   const [filteredBatches, setFilteredBatches] = useState([]);
   const [locationFilter, setLocationFilter] = useState("all");
 
-  const localStorageLocation = localStorage.getItem("location");
+  const localStorageLocation = decryptData(localStorage.getItem("location"));
   const locations = ["all", "vijayawada", "hyderabad", "bangalore"];
 
   // Fetch batches on mount

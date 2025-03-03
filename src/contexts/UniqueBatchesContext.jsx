@@ -7,7 +7,6 @@ const UniqueBatchesContext = createContext();
 export const UniqueBatchesProvider = ({ children }) => {
   const [batches, setBatches] = useState([]);
   const [loading, setLoading] = useState(true);
-  // const [location, setLocation] = useState(localStorage.getItem("location"));
 
   // Memoized fetch function
   const fetchBatches = useCallback(async (location) => {

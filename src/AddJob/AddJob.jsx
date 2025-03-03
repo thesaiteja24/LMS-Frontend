@@ -4,6 +4,8 @@ import './AddJob.css'
 import { useJobs } from '../contexts/JobsContext'
 import Swal from 'sweetalert2/dist/sweetalert2.min.js';  
 import { useNavigate } from 'react-router-dom';
+import { decryptData } from '../../cryptoUtils.jsx';
+
 
 export default function AddJob() {
     const {fetchJobs} = useJobs()
@@ -35,8 +37,8 @@ export default function AddJob() {
     const [selectedDepartments, setSelectedDepartments] = useState([]);
     const [selectedYears, setSelectedYears] = useState([]);
 
-   const location = localStorage.getItem('location');
-   const BDEId = localStorage.getItem('id');
+   const location = decryptData(localStorage.getItem('location'));
+   const BDEId = decryptData(localStorage.getItem('id'));
 
     
 

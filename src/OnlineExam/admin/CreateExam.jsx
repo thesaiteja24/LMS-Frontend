@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import {  useNavigate } from "react-router-dom";
 import axios from "axios";
+import { decryptData } from '../../cryptoUtils.jsx';
 
 const CreateExam = () => {
     const [examId, setExamId] = useState("");
@@ -12,7 +13,7 @@ const CreateExam = () => {
     const [error, setError] = useState("");
     const navigate = useNavigate();
 
-    const location = localStorage.getItem('location')
+    const location = decryptData(localStorage.getItem('location'))
   
 
     const handleCreateExam = async (e) => {

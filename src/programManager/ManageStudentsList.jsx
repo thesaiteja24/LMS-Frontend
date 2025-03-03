@@ -5,12 +5,14 @@ import '../StudentsList/StudentsList.css';
 import { write, utils } from 'xlsx';
 import { useStudentsManageData } from '../contexts/ManagerStudentsContext';
 import { saveAs } from 'file-saver';
+import { decryptData } from '../../cryptoUtils.jsx';
+
 
 export default function StudentsList() {
   const [page, setPage] = useState(1);
   const { studentsList, loading, error, fetchManageStudents } = useStudentsManageData();
   const { book_new, book_append_sheet, json_to_sheet } = utils;
-  const location = localStorage.getItem('location');
+  const location = decryptData(localStorage.getItem('location'));
 
   // **Filters**
   const [searchStudentId, setSearchStudentId] = useState('');

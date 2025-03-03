@@ -16,7 +16,6 @@ const DailyExam = () => {
   const [selectedExam, setSelectedExam] = useState(null);
   const [acceptedTerms, setAcceptedTerms] = useState(false);
   const navigate = useNavigate();
-  // const studentId = localStorage.getItem("student_id");
 
   // Fetch exams data
   const fetchExams = useCallback(async () => {

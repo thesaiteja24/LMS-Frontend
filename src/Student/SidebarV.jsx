@@ -30,6 +30,8 @@ import { MdOutlineRequestQuote } from "react-icons/md";
 import { useLocation, useNavigate } from "react-router-dom";
 import classNames from "classnames";
 import { useStudent } from "../contexts/StudentProfileContext";
+import { decryptData } from '../../cryptoUtils.jsx';
+
 
 export const SidebarV = ({ setIsAuthenticated }) => {
   const location = useLocation();
@@ -42,8 +44,8 @@ export const SidebarV = ({ setIsAuthenticated }) => {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [isLoggedOut, setIsLoggedOut] = useState(false);
 
-  const userType = localStorage.getItem("userType") || "null";
-  const profileStatus = localStorage.getItem("profileStatus");
+  const userType = decryptData(localStorage.getItem("userType")) || "null";
+  const profileStatus = decryptData(localStorage.getItem("profileStatus"));
 
   // 2) Navigation with check for "incomplete profile"
   const handleNavigation = (path) => {
@@ -268,7 +270,7 @@ export const SidebarV = ({ setIsAuthenticated }) => {
   const menuItems = allMenuItems.filter((item) => item.label !== "Logout");
   const logoutItem = allMenuItems.find((item) => item.label === "Logout");
 
-  const isLoggedIn = !!localStorage.getItem("userType") && !isLoggedOut;
+  const isLoggedIn = !!decryptData(localStorage.getItem("userType")) && !isLoggedOut;
   if (!isLoggedIn) {
     // Not logged in => show top bar with login button
     return (

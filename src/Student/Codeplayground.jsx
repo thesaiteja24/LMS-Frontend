@@ -531,7 +531,7 @@ ${jsCode}
                 >
                   {loading ? "Running..." : "Run Code"}
                 </button>
-                <button
+                {/* <button
                   onClick={handleSaveFile}
                   style={{
                     backgroundColor: "#444",
@@ -542,7 +542,7 @@ ${jsCode}
                   }}
                 >
                   Save Code
-                </button>
+                </button> */}
                 <button
                   onClick={handleDownloadFile}
                   style={{

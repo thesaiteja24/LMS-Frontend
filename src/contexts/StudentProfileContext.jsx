@@ -7,6 +7,8 @@ import React, {
 } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import { decryptData } from '../../cryptoUtils.jsx';
+
 
 const StudentProfileContext = createContext();
 
@@ -26,9 +28,9 @@ export const StudentProvider = ({ children }) => {
   // 1) FETCH STUDENT DETAILS (existing code)
   // --------------------------------------------------
   const fetchStudentDetails = useCallback(async () => {
-    const student_id = localStorage.getItem('student_login_details');
-    const location = localStorage.getItem('location');
-
+    const student_id = decryptData(localStorage.getItem('student_login_details'));
+    const location = decryptData(localStorage.getItem('location'));
+  console.log(student_id)
     if (!student_id) {
       setError('Student ID not found in local storage.');
       setLoading(false);

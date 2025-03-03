@@ -3,6 +3,8 @@ import axios from "axios";
 import Swal from "sweetalert2";
 // import { useStudentsMentorData } from "../contexts/MentorStudentsContext";
 import './CurriculumTable.css';
+import { decryptData } from '../../cryptoUtils.jsx';
+
 
 const CurriculumTable = ({
   subject,
@@ -19,7 +21,7 @@ const CurriculumTable = ({
     new Set()
   );
   const [loading, setLoading] = useState(false);
-  const location = localStorage.getItem("location");
+  const location = decryptData(localStorage.getItem("location"));
   const mentorId = mentorData?.id;
   const mentorName = mentorData?.name;
 

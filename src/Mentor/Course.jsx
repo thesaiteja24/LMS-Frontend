@@ -3,16 +3,18 @@ import axios from "axios"; // Import axios for API calls
 import CurriculumTable from "./CurriculumTable";
 import { useStudentsMentorData } from "../contexts/MentorStudentsContext";
 import { Tabel } from "./Tabel";
+import { decryptData } from '../../cryptoUtils.jsx';
+
 
 const Course = () => {
   const [selectedSubject, setSelectedSubject] = useState("");
   const [syllabus, setSyllabus] = useState([]);
   const [availableSubjects, setAvailableSubjects] = useState([]);
   const [filteredBatches, setFilteredBatches] = useState([]);
-  const mentorId = localStorage.getItem("id");
-  const { classes, mentorData, scheduleData, fetchMentorStudents } =
+  const mentorId = decryptData(localStorage.getItem("id"));
+  const { scheduleData, fetchMentorStudents } =
     useStudentsMentorData();
-  const location = localStorage.getItem("location");
+  const location = decryptData(localStorage.getItem("location"));
   const [selectedBatch, setSelectedBatch] = useState(""); // Add this at the top
 
   useEffect(() => {

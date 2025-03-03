@@ -3,6 +3,7 @@ import axios from "axios";
 import Swal from "sweetalert2";
 import moment from "moment";
 import { FaChalkboardTeacher, FaClock, FaCalendarAlt, FaMapMarkerAlt, FaUsers, FaDoorOpen } from "react-icons/fa";
+import { decryptData } from '../../cryptoUtils.jsx';
 
 const LiveClasses = () => {
   const [liveClasses, setLiveClasses] = useState([]);
@@ -10,7 +11,7 @@ const LiveClasses = () => {
   const [locationFilter, setLocationFilter] = useState("all");
 
   const locations = ["all", "vijayawada", "hyderabad", "bangalore"];
-  const storedLocation = localStorage.getItem("location") || "all";
+  const storedLocation = decryptData(localStorage.getItem("location"))|| "all";
 
   // Fetch live classes
   const fetchLiveClasses = useCallback(async () => {

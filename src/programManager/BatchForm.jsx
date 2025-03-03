@@ -11,6 +11,7 @@ import {
 import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 import axios from "axios";
+import { decryptData } from '../../cryptoUtils.jsx';
 
 const techStacks = {
   vijayawada: ["Python Full Stack (PFS)", "Java Full Stack (JFS)"],
@@ -33,7 +34,7 @@ const BatchForm = () => {
   });
 
   const [duration, setDuration] = useState(null); // Store calculated duration
-  const location = localStorage.getItem("location") || "Vijayawada"; // Default to Vijayawada
+  const location = decryptData(localStorage.getItem("location")); // Default to Vijayawada
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false); // Loading state
   const { fetchBatches } = useUniqueBatches();

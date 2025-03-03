@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect, useCallback, useMemo } from 'react';
 import axios from 'axios';
+import { decryptData } from '../../cryptoUtils.jsx';
 
 const MentorStudentsContext = createContext();
 
@@ -13,14 +14,14 @@ export const StudentsMentorProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
- const location = localStorage.getItem("location")
+ const location = decryptData(localStorage.getItem("location"))
 
   const fetchMentorStudents = useCallback(async (selectedBatch) => {
     setLoading(true);
     setError(null);
 
     try {
-      const  mentorId= localStorage.getItem('Mentors');
+      const  mentorId= decryptData(localStorage.getItem('Mentors'));
 
       if (!mentorId) {
         throw new Error('Mentor ID is missing in local storage.');

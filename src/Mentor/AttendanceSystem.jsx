@@ -10,6 +10,8 @@ import axios from "axios";
 import Swal from "sweetalert2/dist/sweetalert2.min.js";
 import { useNavigate } from "react-router-dom";
 import * as XLSX from "xlsx";
+import { decryptData } from '../../cryptoUtils.jsx';
+
 
 export default function AttendanceSystem() {
   const navigate = useNavigate();
@@ -20,7 +22,7 @@ export default function AttendanceSystem() {
   const [filteredBatches, setFilteredBatches] = useState([]);
   const [students, setStudents] = useState([]);
   const [counts, setCounts] = useState({ total: 0, present: 0, absent: 0 });
-  const location = localStorage.getItem("location");
+  const location = decryptData(localStorage.getItem("location"));
 
   useEffect(() => {
     fetchMentorStudents(selectedBatch);

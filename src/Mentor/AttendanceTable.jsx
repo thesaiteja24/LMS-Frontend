@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import * as XLSX from "xlsx";
 import axios from "axios";
 import { useStudentsMentorData } from "../contexts/MentorStudentsContext";
+import { decryptData } from '../../cryptoUtils.jsx';
 
 /** Convert "YY-MM-DD" => "YYYY-MM-DD". */
 function convertDateYYMMDDtoYYYYMMDD(shortDate) {
@@ -58,7 +59,7 @@ const AttendanceTable = () => {
   }, [fetchMentorStudents, selectedBatch]);
 
   useEffect(() => {
-    const location = localStorage.getItem("location");
+    const location = decryptData(localStorage.getItem("location"));
     setSelectedLocation(location);
   }, []);
 

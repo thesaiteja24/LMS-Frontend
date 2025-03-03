@@ -8,6 +8,8 @@ import { useNavigate } from "react-router-dom";
 import { ExamContext } from "./ExamContext";
 import ExamCountdownTimer from "./ExamCountDownTimer";
 import InstructionsModal from "./InstructionsModal"; // <-- Import Modal
+import { decryptData } from '../../../../../cryptoUtils.jsx'
+
 
 const ExamDashboard = () => {
   const { setExamData } = useContext(ExamContext);
@@ -25,8 +27,8 @@ const ExamDashboard = () => {
   const [showInstructions, setShowInstructions] = useState(false);
 
   // These values might come from localStorage or your context
-  const location = localStorage.getItem("location");
-  const studentId = localStorage.getItem("student_id");
+  const location = decryptData(localStorage.getItem("location"));
+  const studentId = decryptData(localStorage.getItem("student_id"));
   const batch = studentDetails?.BatchNo;
   const navigate = useNavigate();
 

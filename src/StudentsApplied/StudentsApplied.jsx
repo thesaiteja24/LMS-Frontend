@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import './StudentsApplied.css';
 import axios from 'axios';
+import { decryptData } from '../../cryptoUtils.jsx';
 
 const StudentsApplied = () => {
   const [appliedJobs, setAppliedJobs] = useState([]); 
   const [loading, setLoading] = useState(true);
-  const student_id = localStorage.getItem('student_id');
+  const student_id = decryptData(localStorage.getItem('student_id'));
   useEffect(() => {
     const fetchAppliedJobs = async () => {
       try {
