@@ -2,12 +2,14 @@ import React, { useState, useEffect } from "react";
 import axios from "axios"; // Import axios for API calls
 import CurriculumTable from "./CurriculumTable";
 import { useStudentsMentorData } from "../contexts/MentorStudentsContext";
+import { Tabel } from "./Tabel";
 
 const Course = () => {
   const [selectedSubject, setSelectedSubject] = useState("");
   const [syllabus, setSyllabus] = useState([]);
   const [availableSubjects, setAvailableSubjects] = useState([]);
   const [filteredBatches, setFilteredBatches] = useState([]);
+  const mentorId = localStorage.getItem("id");
   const { classes, mentorData, scheduleData, fetchMentorStudents } =
     useStudentsMentorData();
   const location = localStorage.getItem("location");
@@ -125,7 +127,7 @@ const Course = () => {
         <div className="w-full border-t border-[#303C60] mt-6"></div>
   
         {/* Curriculum Table Section */}
-        <div className="bg-white rounded-md mt-6 min-h-[300px] sm:min-h-[400px] flex items-center justify-center px-4 sm:px-6">
+        <div className="bg-white rounded-md mt-6 min-h-[500px] flex items-center justify-center">
           {syllabus.length > 0 && selectedBatch ? (
             <CurriculumTable
               classes={classes}
@@ -133,10 +135,11 @@ const Course = () => {
               syllabus={syllabus}
               mentorData={mentorData}
               subject={selectedSubject}
-              batches={selectedBatch}
+              batch={selectedBatch}
+              mentorId={mentorId}
             />
           ) : (
-            <p className="text-gray-500 text-center">No syllabus available</p>
+            <p className="text-gray-500">No syllabus available</p>
           )}
         </div>
   

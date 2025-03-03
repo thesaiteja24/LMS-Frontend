@@ -8,6 +8,7 @@ export const ExamAnalysis = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const submissionResult = JSON.parse(localStorage.getItem("Analysis"));
+  const isReports = location.state?.isReports;
 
   // Effect to override back navigation
   useEffect(() => {
@@ -15,7 +16,11 @@ export const ExamAnalysis = () => {
     window.history.pushState(null, "", window.location.href);
 
     const handlePopState = () => {
-      navigate("/exam-dashboard");
+      if (isReports) {
+        navigate("/exam-reports-dashboard");
+      } else {
+        navigate("/exam-dashboard");
+      }
     };
 
     window.addEventListener("popstate", handlePopState);

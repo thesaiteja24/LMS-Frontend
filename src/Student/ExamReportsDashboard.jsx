@@ -17,7 +17,9 @@ export const ExamReportsDashboard = () => {
       try {
         setLoading(true);
         const response = await axios.get(
-          `${import.meta.env.VITE_BACKEND_URL}/api/v1/stdreports?stdId=${stdId}`
+          `${
+            import.meta.env.VITE_BACKEND_URL
+          }/api/v1/student-reports?stdId=${stdId}`
         );
         const { success, results } = response.data;
         if (success && Array.isArray(results)) {
@@ -127,20 +129,23 @@ export const ExamReportsDashboard = () => {
                 return (
                   <div
                     key={exam._id}
-                    className=" bg-white rounded-xl shadow-lg p-2 flex flex-col items-center transform hover:scale-105 transition"
+                    className=" bg-white rounded-xl shadow-lg flex flex-col items-center transform transition"
                   >
-                    <div className="flex flex-row justify-start items-center">
+                    <div className="w-full rounded-t-lg px-4 py-2 text-2xl text-white font-bold bg-[#19216f]">
+                      View {exam.dayOrder.toUpperCase()} Exam Reports
+                    </div>
+                    <div className="flex flex-col px-4 justify-start items-center">
                       {/* Display the arc chart */}
                       <HalfDoughnutChart
                         totalScore={totalScore}
                         maximumScore={maxScore}
                       />
                       {/* Exam details */}
-                      <div className="flex flex-col justify-start">
-                        <p className="text-green-600 font-medium">
+                      <div className="flex flex-row gap-4 justify-start mb-3">
+                        <p className="text-green-600 font-lg text-xl">
                           Correct Answers: {correctCount}
                         </p>
-                        <p className="text-red-600 font-medium">
+                        <p className="text-red-600 font-lg text-xl">
                           Incorrect Answers: {incorrectCount}
                         </p>
                       </div>
@@ -148,7 +153,9 @@ export const ExamReportsDashboard = () => {
                     <button
                       onClick={() => {
                         localStorage.setItem("Analysis", JSON.stringify(exam));
-                        navigate("/exam-analysis");
+                        navigate("/exam-analysis", {
+                          state: { isReports: true },
+                        });
                       }}
                       type="button"
                       class="text-white bg-[#19216f] font-medium rounded-lg text-lg px-5 py-2.5 mb-2 "
@@ -175,7 +182,7 @@ export const ExamReportsDashboard = () => {
   };
 
   return (
-    <div className="p-8 bg-gray-100 min-h-screen">
+    <div className="p-[49px] bg-gray-100 min-h-screen">
       {/* Back Navigation */}
       <div className="mb-6">
         <button
