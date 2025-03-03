@@ -65,6 +65,8 @@ import { Dashboard } from "./programManager/Performance/Dashboard.jsx";
 import DailyPerformance from "./programManager/Performance/DailyPerformance.jsx";
 import { classNames } from "@react-pdf-viewer/core";
 import { ExamReportsDashboard } from "./Student/ExamReportsDashboard.jsx";
+import CodePlayground from "./Student/Codeplayground.jsx";
+
 
 const ProtectedRoute = ({ children, allowedRoles }) => {
   const userType = localStorage.getItem("userType");
@@ -493,6 +495,14 @@ export default function App() {
                 <ExamProvider>
                   <ExamDashboard />
                 </ExamProvider>
+              </ProtectedRoute>
+            }
+          />
+           <Route
+            path="/codeplayground"
+            element={
+              <ProtectedRoute allowedRoles={["student_login_details"]}>
+                <CodePlayground />
               </ProtectedRoute>
             }
           />

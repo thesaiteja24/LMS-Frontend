@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import Swal from "sweetalert2";
 // import { useStudentsMentorData } from "../contexts/MentorStudentsContext";
+import './CurriculumTable.css';
 
 const CurriculumTable = ({
   subject,
@@ -126,7 +127,10 @@ const CurriculumTable = ({
 
       // Validate all video URLs before submission
       for (const item of curriculumData) {
-        if (item.videoUrl.trim() && !isValidVideoUrl(item.videoUrl.trim())) {
+        // Convert to string if necessary or check if it's a string
+        const videoUrl = typeof item.videoUrl === 'string' ? item.videoUrl : '';
+      
+        if (videoUrl.trim() && !isValidVideoUrl(videoUrl.trim())) {
           Swal.fire({
             title: "Invalid Video URL",
             text: "Please enter a valid YouTube or Google Drive link.",
@@ -137,6 +141,7 @@ const CurriculumTable = ({
           return;
         }
       }
+      
 
       // Build final payload for all new (unsubmitted) DayOrders
       const payloads = curriculumData
@@ -268,10 +273,15 @@ const CurriculumTable = ({
         confirmButtonText: "OK",
       });
     } catch (error) {
-      console.error("Error submitting curriculum:", error.response);
+      console.error("Error submitting curriculum:", error);
+      // Determine the error message based on the error object structure
+      const errorMessage = error.response && error.response.data && error.response.data.error
+        ? error.response.data.error
+        : "An unexpected error occurred. Please try again.";
+    
       Swal.fire({
         title: "Warning",
-        text: error.response.data.error,
+        text: errorMessage,
         icon: "warning",
         confirmButtonText: "Retry",
       });
@@ -293,76 +303,59 @@ const CurriculumTable = ({
     <div className="bg-white w-full max-w-[1200px] h-auto  p-6 pt-0 flex flex-col justify-center">
       {/* Table Section with Drop Shadow on Wrapper */}
       {curriculumData.length > 0 ? (
-        <div className="mt-8 overflow-x-auto shadow-md bg-white">
+      <div className="max-h-[500px] overflow-y-auto scrollbar-custom">
           {/* Scrollable Table with Custom Scrollbar */}
           <div className="max-h-[500px] overflow-y-auto scrollbar-thin scrollbar-thumb-[#0C1BAA] scrollbar-track-[#F5F5F5]">
-            <table className="w-full border-collapse">
-              <thead className="sticky top-0 bg-[#0C1BAA] text-white text-left text-[16px] font-medium">
-                <tr>
-                  <th className="px-6 py-4">Day Order</th>
-                  <th className="px-6 py-4">Topic</th>
-                  <th className="px-6 py-4">Topics to Cover</th>
-                  <th className="px-6 py-4">Video URL</th>
-                </tr>
-              </thead>
-              <tbody>
-                {curriculumData.map((item, index) => (
-                  <tr
-                    key={index}
-                    className={`${
-                      index % 2 === 0 ? "bg-[#F5F5F5]" : "bg-white"
-                    } text-black`}
-                  >
-                    <td className="px-6 py-4">{item.DayOrder}</td>
-                    <td className="px-6 py-4">{item.Topics}</td>
-                    <td className="px-6 py-4">
-                      <ul className="list-none space-y-1">
-                        {item.SubTopics.map((subTopic, subIndex) => (
-                          <li key={subIndex} className="flex items-center">
-                            <input
-                              type="checkbox"
-                              className="mr-2"
-                              checked={
-                                item.subTopicsStatus[subTopic] ||
-                                checkedSubTopics[item.DayOrder]?.[subTopic] ||
-                                false
-                              }
-                              onChange={() =>
-                                handleCheckboxChange(item.DayOrder, subTopic)
-                              }
-                              disabled={item.subTopicsStatus[subTopic]}
-                            />
-                            {subTopic}
-                          </li>
-                        ))}
-                      </ul>
-                    </td>
-                    <td className="px-6 py-4">
-                      {item.locked ? (
-                        <a
-                          href={item.videoUrl}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-blue-600 underline"
-                        >
-                          {item.videoUrl}
-                        </a>
-                      ) : (
-                        <input
-                          type="text"
-                          value={item.videoUrl}
-                          className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500"
-                          placeholder="Enter URL..."
-                          onChange={(e) =>
-                            handleUpdate(index, "videoUrl", e.target.value)
-                          }
-                        />
-                      )}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+          <table className="w-full border-collapse">
+  <thead className="sticky top-0 bg-[#0C1BAA] text-white text-left text-[16px] font-medium">
+    <tr>
+      <th className="px-6 py-4 w-[10%] text-center">Day Order</th>
+      <th className="px-6 py-4 w-[15%] text-center">Topic</th>
+      <th className="px-6 py-4 w-[35%] text-center">Topics to Cover</th>
+      <th className="px-6 py-4 w-[40%] text-center">Video URL</th>
+    </tr>
+  </thead>
+  <tbody>
+    {curriculumData.map((item, index) => (
+      <tr key={index} className={`${index % 2 === 0 ? "bg-[#F5F5F5]" : "bg-white"} text-black`}>
+        <td className="px-6 py-4 w-[10%]">{item.DayOrder}</td>
+        <td className="px-6 py-4 w-[15%]">{item.Topics}</td>
+        <td className="px-6 py-4 w-[35%]">
+          <ul className="list-none space-y-1">
+            {item.SubTopics.map((subTopic, subIndex) => (
+              <li key={subIndex} className="flex items-center">
+                <input
+                  type="checkbox"
+                  className="mr-2"
+                  checked={item.subTopicsStatus[subTopic] || checkedSubTopics[item.DayOrder]?.[subTopic] || false}
+                  onChange={() => handleCheckboxChange(item.DayOrder, subTopic)}
+                  disabled={item.subTopicsStatus[subTopic]}
+                />
+                {subTopic}
+              </li>
+            ))}
+          </ul>
+        </td>
+        <td className="px-6 py-4 w-[40%] break-words">
+          {item.locked ? (
+            <a href={item.videoUrl} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline break-all">
+              {item.videoUrl}
+            </a>
+          ) : (
+            <input
+              type="text"
+              value={item.videoUrl}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500"
+              placeholder="Enter URL..."
+              onChange={(e) => handleUpdate(index, "videoUrl", e.target.value)}
+            />
+          )}
+        </td>
+      </tr>
+    ))}
+  </tbody>
+</table>
+
           </div>
         </div>
       ) : (

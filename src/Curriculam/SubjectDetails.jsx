@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { useStudent } from "../contexts/StudentProfileContext";
-import { FaCheckCircle, FaBookOpen, FaEdit, FaLock, FaBars, FaTimes, FaStar, FaRegStar,FaArrowLeft } from "react-icons/fa";
+import { FaCheckCircle, FaBookOpen, FaEdit, FaLock, FaBars, FaTimes, FaStar, FaRegStar, FaArrowLeft } from "react-icons/fa";
 import Swal from "sweetalert2";
 import "sweetalert2/dist/sweetalert2.min.css";
 import "./SubjectDetails.css";
@@ -175,6 +175,11 @@ const SubjectDetails = () => {
     }
   };
 
+  // Normalize video URLs to always be an array.
+  const videoUrls = Array.isArray(selectedTopic?.VideoUrl)
+    ? selectedTopic.VideoUrl
+    : [selectedTopic?.VideoUrl];
+
   return (
     <div className="flex min-h-screen bg-gray-100 relative transition-all duration-500 ease-in-out">
       {/* Sidebar Toggle Button */}
@@ -186,7 +191,7 @@ const SubjectDetails = () => {
           <img src="/icon.svg" alt="Menu Icon" />
         </button>
       )}
-  
+
       {/* Sidebar */}
       <div
         ref={sidebarRef}
@@ -210,7 +215,7 @@ const SubjectDetails = () => {
             <FaTimes />
           </button>
         </div>
-  
+
         <ul className="space-y-3">
           {filteredCurriculum.map((item, index) => (
             <li
@@ -234,31 +239,38 @@ const SubjectDetails = () => {
           ))}
         </ul>
       </div>
-  
+
       {/* Right Content Section (Fix Sidebar Spacing Issue) */}
       <div
         className={`flex-1 h-screen overflow-y-auto p-10 transition-all duration-500 
-          ${sidebarOpen ? "lg:ml-[50px]" : "lg:ml-0"}`} // Reduced the gap when sidebar is open
+          ${sidebarOpen ? "lg:ml-[50px]" : "lg:ml-0"}`}
       >
-             <h1 className="text-2xl lg:text-4xl   font-bold text-indigo-800 mb-6 text-center md:text-left">
+        <h1 className="text-2xl lg:text-4xl font-bold text-indigo-800 mb-6 text-center md:text-left">
           {selectedTopic?.Topics || "Select a Topic"}
         </h1>
         {/* Main Content Section */}
-        <div className="bg-[#F5F5F5] ">
+        <div className="bg-[#F5F5F5]">
           {/* Responsive Layout - Tablet Breakpoint Fix */}
           <div className="flex w-[90%] gap-6 md:gap-10 lg:gap-6 flex-col md:flex-col lg:flex-row">
             {/* Left Container - Adapts to Video */}
             <div className="w-full md:w-full lg:w-[70%] bg-white shadow-lg rounded-md overflow-hidden">
-              {selectedTopic?.VideoUrl ? (
-                <iframe
-                  className="w-full aspect-video rounded-md"
-                  src={getEmbedUrl(selectedTopic.VideoUrl)}
-                  title="YouTube Video"
-                  frameBorder="0"
-                  allowFullScreen
-                ></iframe>
+              {videoUrls[0] ? (
+                <div className="flex flex-col gap-4">
+                  {videoUrls.map((url, idx) => (
+                    <iframe
+                      key={idx}
+                      className="w-full aspect-video rounded-md"
+                      src={getEmbedUrl(url)}
+                      title={`Video ${idx + 1}`}
+                      frameBorder="0"
+                      allowFullScreen
+                      sandbox="allow-same-origin allow-scripts allow-forms"
+                    ></iframe>
+                  ))}
+                </div>
               ) : (
                 <div className="w-full flex flex-col items-center justify-center bg-white/20 shadow-xl rounded-lg animate-fadeIn border border-gray-200 py-10">
+                  {/* Fallback content if no URLs */}
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     className="w-16 h-16 text-indigo-500 animate-pulse"
@@ -280,7 +292,7 @@ const SubjectDetails = () => {
                 </div>
               )}
             </div>
-  
+
             {/* Right Container - Subtopics (Moves Below Left Container on Tablets) */}
             <div className="w-full md:w-full lg:w-[30%] bg-white shadow-lg rounded-md flex flex-col">
               <div className="bg-[#0C1BAA] text-white text-center font-bold py-4 rounded-t-md text-lg">
@@ -289,7 +301,7 @@ const SubjectDetails = () => {
               <div className="p-5 flex-1">
                 <ul className="space-y-3 text-black font-inter text-[16px] leading-[19px]">
                   {selectedTopic?.SubTopics?.map((sub, index) => (
-                    <li key={index} className="flex items-start ">
+                    <li key={index} className="flex items-start">
                       <span className="text-blue-700 text-lg mr-2 flex justify-center items-center font-bold">•</span> {sub.subTopic}
                     </li>
                   ))}
@@ -301,11 +313,6 @@ const SubjectDetails = () => {
       </div>
     </div>
   );
-  
-  
-  
-  
-  
 };
 
 export default SubjectDetails;

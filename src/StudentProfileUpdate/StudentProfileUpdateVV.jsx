@@ -330,6 +330,27 @@ export default function StudentProfileUpdateVV() {
       </div>
     </td>
   </tr>
+  <tr>
+    <td className="font-semibold pr-3">
+      <div className="mb-2">Skills</div>
+    </td>
+    <td className="pr-3">
+      <div className="mb-2">:</div>
+    </td>
+    <td>
+      <div className="mb-2">
+        {studentDetails?.githubLink ? (
+          <p
+            className="text-black "
+          >
+            {studentDetails.studentSkills.join(',')}
+          </p>
+        ) : (
+          "N/A"
+        )}
+      </div>
+    </td>
+  </tr>
   {/* Optional: Arrears fields */}
   {studentDetails?.arrears === "true" && (
     <tr>
@@ -356,6 +377,7 @@ export default function StudentProfileUpdateVV() {
         <div className="mb-2">{studentDetails?.ArrearsCount || "N/A"}</div>
       </td>
     </tr>
+    
   )}
 </tbody>
 
