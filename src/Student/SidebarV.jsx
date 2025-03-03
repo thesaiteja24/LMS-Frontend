@@ -21,6 +21,7 @@ import {
   FaBookOpen,
   FaTachometerAlt,
   FaChartLine,
+  FaCode 
 } from "react-icons/fa";
 import { IoMdCloudUpload } from "react-icons/io";
 import { TbReportAnalytics } from "react-icons/tb";
@@ -123,7 +124,7 @@ export const SidebarV = ({ setIsAuthenticated }) => {
           {
             label: "Code Playground",
             path: "/codeplayground",
-            icon: FaMicrophoneAlt,
+            icon: FaCode,
           },
           {
             label: "Leave Request",
