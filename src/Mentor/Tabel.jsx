@@ -14,7 +14,7 @@ export const Tabel = ({ subject, batch, mentorId }) => {
     }
   }, [subject, batch, mentorId]);
 
-  const fetchCurriculumTable = async () => {
+  const fetchCurriculumTable = async () => {  
     try {
       setLoading(true);
       const url = `${
