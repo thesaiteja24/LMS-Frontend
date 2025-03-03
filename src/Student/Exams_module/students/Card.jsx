@@ -2,7 +2,9 @@ import React from "react";
 
 export const Card = ({ children, className }) => {
   return (
-    <div className={`bg-white rounded-lg ${className} shadow-md`}>
+    <div
+      className={`bg-white rounded-lg ${className} shadow-md w-full sm:w-80`}
+    >
       {children}
     </div>
   );
@@ -15,7 +17,7 @@ export const CardHeader = ({ children }) => (
 );
 
 export const CardTitle = ({ children }) => (
-  <h3 className="text-lg font-semibold">{children}</h3>
+  <h3 className="text-lg font-semibold mx-4 my-2">{children}</h3>
 );
 
 export const CardContent = ({ children }) => <div>{children}</div>;

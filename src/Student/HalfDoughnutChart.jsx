@@ -17,7 +17,6 @@ const HalfDoughnutChart = ({ totalScore, maximumScore }) => {
         data: [totalScore, Math.max(0, validMax - totalScore)],
         backgroundColor: ["#4ade80", "#d4d4d4"], // Green and Gray
         hoverBackgroundColor: ["#22c55e", "#e2e2e2"],
-        borderWidth: 0, // Remove border
       },
     ],
   };
@@ -34,7 +33,10 @@ const HalfDoughnutChart = ({ totalScore, maximumScore }) => {
   };
 
   return (
-    <div className="relative h-55 flex justify-center items-center">
+    <div
+      className="relative flex justify-center items-center"
+      style={{ width: "16rem", height: "10rem" }}
+    >
       <Doughnut data={data} options={options} />
       {/* Inner Text Display */}
       <div className="absolute mt-4 top-1/2 transform -translate-y-1/2 text-center">
