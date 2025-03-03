@@ -260,7 +260,7 @@ const ExamDashboard = () => {
             <img className="w-8" src="ExamModule/Exam-blue.png" alt="" />
             Upcoming Exams
           </h3>
-          <div className="flex flex-row">
+          <div className="flex flex-row gap-8">
             {upcoming.map((exam) => (
               <Card key={exam.examId}>
                 <CardHeader>
@@ -329,7 +329,7 @@ const ExamDashboard = () => {
             <img className="w-8" src="ExamModule/Exam-blue.png" alt="" />
             Finished Exams
           </h3>
-          <div className="flex flex-row">
+          <div className="flex flex-row gap-8">
             {finished.map((exam) => (
               <Card key={exam.examId}>
                 <CardHeader>
