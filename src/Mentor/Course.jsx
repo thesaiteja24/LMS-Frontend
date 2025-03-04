@@ -78,7 +78,7 @@ const Course = () => {
       <div className="w-full max-w-[1200px] border-t border-[#D1D1D1] mt-4"></div>
 
       {/* Main White Container */}
-      <div className="bg-white w-full max-w-[1200px] h-auto shadow-md rounded-md mt-6 p-6 flex flex-col justify-center">
+      <div className="bg-white w-full max-w-full h-auto shadow-md rounded-md mt-6 p-6 flex flex-col justify-center">
         {/* Subject & Batch Selection */}
         <div className="w-full flex flex-col sm:flex-row justify-between items-center px-8 space-y-4 sm:space-y-0">
           {/* Select Subject */}
@@ -140,15 +140,16 @@ const Course = () => {
         <div className="w-full max-w-[1528px] border-t border-[#303C60] mt-6 mx-auto"></div>
 
         {/* Curriculum Table Section */}
-        <div className="bg-white rounded-md mt-6 min-h-[500px] flex items-center justify-center">
-          <div>
-            <Tabel
-              subject={selectedSubject}
-              batch={selectedBatch}
-              mentorId={mentorId}
-            />
-          </div>
-        </div>
+        <div className="w-full max-w-7xl mx-auto mt-6 bg-white rounded-md min-h-[500px] p-4 md:p-6">
+  <div className="overflow-x-auto flex items-center justify-center h-full">
+    <Tabel
+      subject={selectedSubject}
+      batch={selectedBatch}
+      mentorId={mentorId}
+    />
+  </div>
+</div>
+
       </div>
     </div>
   );

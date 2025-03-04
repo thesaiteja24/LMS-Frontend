@@ -84,130 +84,124 @@ export const Tabel = ({ subject, batch, mentorId }) => {
   };
 
   return (
-    <div className="bg-white w-full max-w-[1200px] h-auto p-6 flex flex-col justify-center">
-      {loading && <p className="mt-4 text-center">Loading...</p>}
-      {Object.keys(editedData).length > 0 ? (
-      <div className="max-h-[500px] overflow-y-auto scrollbar-custom">
-          <div className="max-h-[500px] overflow-y-auto scrollbar-thin scrollbar-thumb-[#0C1BAA] scrollbar-track-[#F5F5F5]">
-            <table className="w-full border-collapse">
-              <thead className="sticky top-0 bg-[#0C1BAA] text-white text-left text-[16px] font-medium">
-                <tr>
-                  <th className="px-6 py-4">Day Order</th>
-                  <th className="px-6 py-4">Topic</th>
-                  <th className="px-6 py-4">Topics to Cover</th>
-                  <th className="px-6 py-4">Video URL</th>
-                  <th className="px-6 py-4">Action</th>
-                </tr>
-              </thead>
-              <tbody>
-                {Object.entries(editedData).map(([id, item], index) => {
-                  // Determine if the row is complete:
-                  // row is complete if the videoUrl from the response matches the edited value
-                  // and all subtopics have status "true"
-                  const rowComplete =
-                    tableData[id]?.videoUrl &&
-                    tableData[id].videoUrl === item.videoUrl &&
-                    item.SubTopics.every((sub) => sub.status === "true");
+<div className="bg-white w-full max-w-[1200px] h-auto p-6 flex flex-col justify-center">
+  {loading && <p className="mt-4 text-center">Loading...</p>}
 
-                  return (
-                    <tr
-                      key={id}
-                      className={`${
-                        index % 2 === 0 ? "bg-[#F5F5F5]" : "bg-white"
-                      } text-black`}
-                    >
-                      <td className="px-6 py-4">Class {index + 1}</td>
-                      <td className="px-6 py-4">{item.Topics}</td>
-                      <td className="px-6 py-4">
-                        <ul className="list-none space-y-1">
-                          {item.SubTopics.slice()
-                            .sort((a, b) => {
-                              const parseTag = (tag) => {
-                                const match = tag.match(/Day-(\d+):(\d+)/);
-                                if (match) {
-                                  return {
-                                    day: parseInt(match[1], 10),
-                                    id: parseInt(match[2], 10),
-                                  };
-                                }
-                                return { day: 0, id: 0 };
+  {Object.keys(editedData).length > 0 ? (
+    <div className="max-h-[500px] overflow-y-auto scrollbar-thin scrollbar-thumb-[#0C1BAA] scrollbar-track-[#F5F5F5]">
+      <div className="max-h-[500px] overflow-y-auto scrollbar-custom">
+        <table className="w-full border-collapse text-xs sm:text-sm md:text-base">
+          <thead className="sticky top-0 bg-[#0C1BAA] text-white text-left font-medium">
+            <tr>
+              <th className="px-6 py-4">Day Order</th>
+              <th className="px-6 py-4">Topic</th>
+              <th className="px-6 py-4">Topics to Cover</th>
+              <th className="px-6 py-4">Video URL</th>
+              <th className="px-6 py-4">Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            {Object.entries(editedData).map(([id, item], index) => {
+
+              const rowComplete =
+                tableData[id]?.videoUrl &&
+                tableData[id].videoUrl === item.videoUrl &&
+                item.SubTopics.every((sub) => sub.status === "true");
+
+              return (
+                <tr
+                  key={id}
+                  className={`${
+                    index % 2 === 0 ? "bg-[#F5F5F5]" : "bg-white"
+                  } text-black`}
+                >
+                  <td className="px-6 py-4">Class {index + 1}</td>
+                  <td className="px-6 py-4">{item.Topics}</td>
+                  <td className="px-6 py-4">
+                    <ul className="list-none space-y-1">
+                      {item.SubTopics.slice()
+                        .sort((a, b) => {
+                          const parseTag = (tag) => {
+                            const match = tag.match(/Day-(\d+):(\d+)/);
+                            if (match) {
+                              return {
+                                day: parseInt(match[1], 10),
+                                id: parseInt(match[2], 10),
                               };
-                              const aInfo = parseTag(a.tag || "");
-                              const bInfo = parseTag(b.tag || "");
-                              if (aInfo.day !== bInfo.day) {
-                                return aInfo.day - bInfo.day;
-                              }
-                              return aInfo.id - bInfo.id;
-                            })
-                            .map((sub, subIndex) => (
-                              <li
-                                key={subIndex}
-                                className={
-                                  "Day-" + (index + 1) !==
-                                  (sub.tag.match(/(Day-\d+)/)?.[0] || "")
-                                    ? "text-red-500"
-                                    : ""
-                                }
-                              >
-                                <input
-                                  type="checkbox"
-                                  className="mr-2"
-                                  checked={sub.status === "true"}
-                                  disabled={sub.status === "true"}
-                                  // Instead of passing the subIndex from the sorted array,
-                                  // pass the subtopic's tag (or another unique field).
-                                  onChange={() =>
-                                    handleSubtopicChange(id, sub.tag)
-                                  }
-                                />
-                                {sub.title}
-                              </li>
-                            ))}
-                        </ul>
-                      </td>
-                      <td className="px-6 py-4">
-                        {rowComplete ? (
-                          <a
-                            href={item.videoUrl}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                          >
-                            {item.videoUrl}
-                          </a>
-                        ) : (
-                          <input
-                            type="text"
-                            placeholder="Enter Video URL..."
-                            value={item.videoUrl || ""}
-                            onChange={(e) =>
-                              handleVideoUrlChange(id, e.target.value)
                             }
-                            className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500"
-                          />
-                        )}
-                      </td>
-                      <td className="px-6 py-4">
-                        {!rowComplete && (
-                          <button
-                            onClick={() => handleRowSubmit(id)}
-                            className="w-[100px] h-[36px] text-white text-base font-semibold rounded-md transition bg-[#0C1BAA] hover:bg-blue-900"
+                            return { day: 0, id: 0 };
+                          };
+                          const aInfo = parseTag(a.tag || "");
+                          const bInfo = parseTag(b.tag || "");
+                          if (aInfo.day !== bInfo.day) {
+                            return aInfo.day - bInfo.day;
+                          }
+                          return aInfo.id - bInfo.id;
+                        })
+                        .map((sub, subIndex) => (
+                          <li
+                            key={subIndex}
+                            className={
+                              "Day-" + (index + 1) !==
+                              (sub.tag.match(/(Day-\d+)/)?.[0] || "")
+                                ? "text-red-500"
+                                : ""
+                            }
                           >
-                            Submit
-                          </button>
-                        )}
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
-        </div>
-      ) : (
-        <p className="mt-4 text-center text-gray-500">
-          No curriculum data available.
-        </p>
-      )}
+                            <input
+                              type="checkbox"
+                              className="mr-2"
+                              checked={sub.status === "true"}
+                              disabled={sub.status === "true"}
+                              onChange={() => handleSubtopicChange(id, sub.tag)}
+                            />
+                            {sub.title}
+                          </li>
+                        ))}
+                    </ul>
+                  </td>
+                  <td className="px-6 py-4">
+                    {rowComplete ? (
+                      <a
+                        href={item.videoUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        {item.videoUrl}
+                      </a>
+                    ) : (
+                      <input
+                        type="text"
+                        placeholder="Enter Video URL..."
+                        value={item.videoUrl || ""}
+                        onChange={(e) => handleVideoUrlChange(id, e.target.value)}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500"
+                      />
+                    )}
+                  </td>
+                  <td className="px-6 py-4">
+                    {!rowComplete && (
+                      <button
+                        onClick={() => handleRowSubmit(id)}
+                        className="w-[100px] h-[36px] text-white text-base font-semibold rounded-md transition bg-[#0C1BAA] hover:bg-blue-900"
+                      >
+                        Submit
+                      </button>
+                    )}
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
     </div>
+  ) : (
+    <p className="mt-4 text-center text-gray-500">
+      No curriculum data available.
+    </p>
+  )}
+</div>
+
   );
 };

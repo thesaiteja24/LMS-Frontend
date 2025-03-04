@@ -12,8 +12,8 @@
 
 /* Form Style */
 .student-profile-container form {
-    width: 50%;
-    margin: 20px;
+    width: 70%;
+    margin: 10px;
 }
 
 /* Input Groups */
@@ -34,7 +34,7 @@
 }
 
 .form-group{
-    margin-right: 2px;
+    margin-right: 10px;
     margin-left: 10px;
 }
 

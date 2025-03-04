@@ -1,4 +1,4 @@
-import React, { useState,useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -8,22 +8,22 @@ import { useStudentsData } from '../contexts/StudentsListContext';
 import { useEdit } from '../contexts/EditContext';
 import { useStudent } from '../contexts/StudentProfileContext';
 import { decryptData } from '../../cryptoUtils.jsx';
-import { encryptData } from '../../cryptoUtils.jsx'; // Import encryption method
+// import { encryptData } from '../../cryptoUtils.jsx'; // Import encryption method
 
 
 
-const departmentList = ['CSE-AI & ML','ECE','EEE','IT','MECH','CIVIL','CSE-Blockchain','CSE-Cyber Security','CSE-Data Analytics',
-    'CSE','ECE-Embedded Systems','ECE-VLSI','MECH-Robotics','CSBS','BSC-CSE','BSC-AI','BSC-CSCS','BSC-Data Science','BSC-Data Analytics','BSC-Physics','BSC-Chemistry','BSC-Mathematics','BSC-Statistics',
-    'BSC-Zoology','BSC-Botany','BCA','B.COM-Economics','B.COM-General','B.COM-Computer Application','B.COM-Finance','B.COM-Banking','B.COM-Business Process','B.COM-Management','MCA','MSC','BBA'
+const departmentList = ['CSE-AI & ML', 'ECE', 'EEE', 'IT', 'MECH', 'CIVIL', 'CSE-Blockchain', 'CSE-Cyber Security', 'CSE-Data Analytics',
+    'CSE', 'ECE-Embedded Systems', 'ECE-VLSI', 'MECH-Robotics', 'CSBS', 'BSC-CSE', 'BSC-AI', 'BSC-CSCS', 'BSC-Data Science', 'BSC-Data Analytics', 'BSC-Physics', 'BSC-Chemistry', 'BSC-Mathematics', 'BSC-Statistics',
+    'BSC-Zoology', 'BSC-Botany', 'BCA', 'B.COM-Economics', 'B.COM-General', 'B.COM-Computer Application', 'B.COM-Finance', 'B.COM-Banking', 'B.COM-Business Process', 'B.COM-Management', 'MCA', 'MSC', 'BBA'
 ]
 
 const StudentProfileV = () => {
     const [showPassword, setShowPassword] = useState(false);
-const [showCPassword, setShowCPassword] = useState(false);
-    const {fetchStudentsData } = useStudentsData();
+    const [showCPassword, setShowCPassword] = useState(false);
+    const { fetchStudentsData } = useStudentsData();
     const email = decryptData(localStorage.getItem("email"));
     const { edit, setEdit } = useEdit();
-    const {studentDetails, fetchStudentDetails } = useStudent();
+    const { studentDetails, fetchStudentDetails } = useStudent();
     const [isDepartmentAdded, setIsDepartmentAdded] = useState(false);
     const [newDepartment, setNewDepartment] = useState('');
     const [departments, setDepartments] = useState(departmentList);
@@ -37,13 +37,13 @@ const [showCPassword, setShowCPassword] = useState(false);
         collegeUSNNumber: studentDetails?.collegeUSNNumber || '',
         githubLink: studentDetails?.githubLink || '',
         arrears: studentDetails?.arrears || false, // Defaulting to false
-        arrearsCount:studentDetails?.ArrearsCount,
+        arrearsCount: studentDetails?.ArrearsCount,
         qualification: studentDetails?.qualification || '',
         department: studentDetails?.department || '',
-        password:'', // Should be empty for security reasons
-        cpassword:'', // Should be empty for security reasons
+        password: '', // Should be empty for security reasons
+        cpassword: '', // Should be empty for security reasons
         state: studentDetails?.state || '',
-        cityname: studentDetails?.city || '', 
+        cityname: studentDetails?.city || '',
         yearOfPassing: studentDetails?.yearOfPassing || '',
         collegeName: studentDetails?.collegeName || '',
         tenthStandard: studentDetails?.tenthStandard || '',
@@ -78,7 +78,7 @@ const [showCPassword, setShowCPassword] = useState(false);
     const togglePasswordVisibility = () => {
         setShowPassword(!showPassword);
     };
-    
+
     const toggleCPasswordVisibility = () => {
         setShowCPassword(!showCPassword);
     };
@@ -89,19 +89,19 @@ const [showCPassword, setShowCPassword] = useState(false);
     const [currentSkill, setCurrentSkill] = useState('');
     const [isOther, setIsOther] = useState(false);
     const [newSkill, setNewSkill] = useState('');
-
+    const profileStatus = localStorage.getItem("profileStatus") === 'true';
     const handleArrearsChange = (e) => {
         const value = e.target.value === 'yes' ? true : false;
         setFormData((prevState) => ({
-          ...prevState,
-          arrears: value,
-          arrearsCount: value ? prevState.arrearsCount : 0,
+            ...prevState,
+            arrears: value,
+            arrearsCount: value ? prevState.arrearsCount : 0,
         }));
         if (!value) {
-          setArrearsCount(0);
+            setArrearsCount(0);
         }
-      };
-      
+    };
+
 
     const handleArrearsCountChange = (e) => {
         const value = e.target.value;
@@ -113,24 +113,24 @@ const [showCPassword, setShowCPassword] = useState(false);
             }));
         }
     };
-    
+
 
     const handleDOBChange = (e) => {
         const selectedDate = e.target.value;
         const calculatedAge = calculateAge(selectedDate);
-        
+
         setFormData(prevState => ({
             ...prevState,
             dob: selectedDate,
             age: calculatedAge // ✅ Ensure age is stored in formData
         }));
-    
+
         setErrors(prevErrors => ({
             ...prevErrors,
             age: calculatedAge >= 18 ? '' : 'You must be at least 18 years old.'
         }));
     };
-    
+
     const calculateAge = (dob) => {
         if (!dob) return ''; // Handle empty dob
         const birthDate = new Date(dob);
@@ -142,15 +142,15 @@ const [showCPassword, setShowCPassword] = useState(false);
         }
         return age;
     };
-    
-    
-    
+
+
+
 
     const validateName = (name) => {
         return /^[a-zA-Z\s]+$/.test(name) ? '' : 'Name must contain only letters and spaces.';
     };
 
-    
+
 
     const validateCollegeUSNNumber = (usn) => {
         return /^[a-zA-Z0-9]{1,50}$/.test(usn) ? '' : 'USN must be  alphanumeric characters.';
@@ -178,63 +178,74 @@ const [showCPassword, setShowCPassword] = useState(false);
     const validatePassoutYear = (year) => {
         return /^\d{4}$/.test(year) ? '' : 'Year must be exactly 4 digits.';
     };
-    
+
 
     const handleChange = (e) => {
         const { name, value } = e.target;
+
+        // Update form data
         setFormData({
             ...formData,
             [name]: value,
         });
-    
+
         let errorMessage = '';
-        switch (name) {
-            case 'gender':
-                errorMessage = value ? '' : 'Please select a gender.';
-                break;
-            case 'name':
-                errorMessage = validateName(value);
-                break;
-            case 'collegeUSNNumber':
-                errorMessage = validateCollegeUSNNumber(value);
-                break;
-            case 'githubLink':
-                errorMessage = validateGithubLink(value);
-                break;
-            case 'password':
-                errorMessage = validatePassword(value);
-                break;
-            case 'cpassword':
-                errorMessage = validatePassword(value);
-                if (value !== formData.password) {
-                    errorMessage = 'Password and Confirm Password do not match.';
-                }
-                break;
-            case 'yearOfPassing': // ✅ Graduation passout year validation
-            case 'tenthPassoutYear': // ✅ 10th passout year validation
-            case 'twelfthPassoutYear': // ✅ 12th passout year validation
-                errorMessage = validatePassoutYear(value);
-                break;    
-            
-            case 'tenthStandard':
-                errorMessage = validatePercentage(value);
-                break;
-            case 'twelfthStandard':
-                errorMessage = validatePercentage(value);
-                break;
-            case 'highestGraduationPercentage':
-                errorMessage = validatePercentage(value);
-                break;
-            case 'cityname':
-            case 'state':
-            case 'qualification':
-            case 'collegeName':
-                errorMessage = validateInput(value);
-                break;
-            default:
-                break;
+
+        // Skip password validation if profileStatus is true
+        if (profileStatus && (name === 'password' || name === 'cpassword')) {
+            // If profileStatus is true, no need to validate passwords
+            errorMessage = '';
+        } else {
+            // Proceed with normal validation
+            switch (name) {
+                case 'gender':
+                    errorMessage = value ? '' : 'Please select a gender.';
+                    break;
+                case 'name':
+                    errorMessage = validateName(value);
+                    break;
+                case 'collegeUSNNumber':
+                    errorMessage = validateCollegeUSNNumber(value);
+                    break;
+                case 'githubLink':
+                    errorMessage = validateGithubLink(value);
+                    break;
+                case 'password':
+                    errorMessage = validatePassword(value);
+                    break;
+                case 'cpassword':
+                    // Ensure cpassword matches password
+                    errorMessage = validatePassword(value);
+                    if (value !== formData.password) {
+                        errorMessage = 'Password and Confirm Password do not match.';
+                    }
+                    break;
+                case 'yearOfPassing': // Graduation passout year validation
+                case 'tenthPassoutYear': // 10th passout year validation
+                case 'twelfthPassoutYear': // 12th passout year validation
+                    errorMessage = validatePassoutYear(value);
+                    break;
+                case 'tenthStandard':
+                    errorMessage = validatePercentage(value);
+                    break;
+                case 'twelfthStandard':
+                    errorMessage = validatePercentage(value);
+                    break;
+                case 'highestGraduationPercentage':
+                    errorMessage = validatePercentage(value);
+                    break;
+                case 'cityname':
+                case 'state':
+                case 'qualification':
+                case 'collegeName':
+                    errorMessage = validateInput(value);
+                    break;
+                default:
+                    break;
+            }
         }
-    
+
+        // Update errors state
         setErrors({
             ...errors,
             [name]: errorMessage,
@@ -242,41 +253,68 @@ const [showCPassword, setShowCPassword] = useState(false);
     };
 
 
-    
 
     const handleFileChange = (e) => {
         const fieldName = e.target.name;
         const file = e.target.files[0];
-
+      
         let validTypes = [];
-        let maxSize = 0;
-        if (fieldName === 'resume') {
-            validTypes = ['application/pdf'];
-            maxSize = 100 * 1024; // 100 KB
-        } else if (fieldName === 'profilePic') {
-            validTypes = ['image/jpeg', 'image/png', 'image/gif'];
-            maxSize = 10 * 1024; // 10 KB
+        let maxSize = 10 * 1024; // 10 KB
+      
+        if (fieldName === "resume") {
+          validTypes = ["application/pdf"];
+          maxSize = 100 * 1024; // 100 KB for resume
+        } else if (fieldName === "profilePic") {
+          validTypes = ["image/jpeg", "image/png", "image/gif"];
+          maxSize = 10 * 1024; // 10 KB for profile pic
         }
-
+      
         if (file) {
-            if (!validTypes.includes(file.type)) {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Invalid File Type',
-                    text: fieldName === 'resume' ? 'Please upload a PDF document.' : 'Please upload an image file (JPEG, PNG, GIF).',
-                });
-                e.target.value = '';
-                return;
-            }
-
-           
-
-            setFormData({
-                ...formData,
-                [fieldName]: file,handleDOBChange
+          // Check for valid file type
+          if (!validTypes.includes(file.type)) {
+            Swal.fire({
+              icon: "error",
+              title: "Invalid File Type",
+              text:
+                fieldName === "resume"
+                  ? "Please upload a PDF document."
+                  : "Please upload an image file (JPEG, PNG, GIF).",
             });
+            e.target.value = "";
+            return;
+          }
+      
+          // Check for size strictly less than 10 KB (for profile pic)
+          if (file.size >= maxSize && fieldName === "profilePic") {
+            Swal.fire({
+              icon: "error",
+              title: "File Too Large",
+              text: "Profile picture must be less than 10 KB.",
+            });
+            e.target.value = "";
+            return;
+          }
+      
+          // Check for size strictly less than 100 KB (for resume)
+          if (file.size >= maxSize && fieldName === "resume") {
+            Swal.fire({
+              icon: "error",
+              title: "File Too Large",
+              text: "Resume must be less than 100 KB.",
+            });
+            e.target.value = "";
+            return;
+          }
+      
+          // If all validations pass, update form data
+          setFormData((prevFormData) => ({
+            ...prevFormData,
+            [fieldName]: file,
+          }));
         }
-    };
+      };
+      
+    
 
     const handleSkillChange = (e) => {
         const value = e.target.value;
@@ -318,109 +356,123 @@ const [showCPassword, setShowCPassword] = useState(false);
         setFormData({ ...formData, department: value });
         setIsOther(value === 'Others');
     };
-
     const handleSubmit = async (e) => {
+        console.log("Submitting form...");
         e.preventDefault();
         setEdit(true);
-    const newErrors = {
-        name: validateName(formData.name),
-        gender: formData.gender ? '' : 'Please select a gender.', 
-        collegeUSNNumber: validateCollegeUSNNumber(formData.collegeUSNNumber),
-        githubLink: validateGithubLink(formData.githubLink),
-        password: validatePassword(formData.password),
-        cpassword: formData.password !== formData.cpassword ? 'Password and Confirm Password do not match.' : '',
-        yearOfPassing: validateYearOfPassing(formData.yearOfPassing),
-        tenthPassoutYear: validatePassoutYear(formData.tenthPassoutYear), // ✅ 10th passout year validation
-        twelfthPassoutYear: validatePassoutYear(formData.twelfthPassoutYear),
-        tenthStandard: validatePercentage(formData.tenthStandard),
-        twelfthStandard: validatePercentage(formData.twelfthStandard),
-        highestGraduationPercentage: validatePercentage(formData.highestGraduationPercentage),
-        age: formData.age >= 18 ? '' : 'You must be at least 18 years old.',
-        state: validateInput(formData.state),
-        cityname: validateInput(formData.cityname),
-        qualification: validateInput(formData.qualification),
-        collegeName: validateInput(formData.collegeName),
-    };
     
-    const hasErrors = Object.values(newErrors).some(error => error !== '');
-    if (hasErrors) {
-        setErrors(newErrors);
-        return;
-    }
+        // Validate fields only if profileStatus is false
+        const newErrors = {
+            name: validateName(formData.name),
+            gender: formData.gender ? '' : 'Please select a gender.',
+            collegeUSNNumber: validateCollegeUSNNumber(formData.collegeUSNNumber),
+            githubLink: validateGithubLink(formData.githubLink),
+            // Only validate password if profileStatus is false
+            password: !profileStatus ? validatePassword(formData.password) : '',
+            cpassword: !profileStatus && formData.password !== formData.cpassword ? 'Password and Confirm Password do not match.' : '',
+            yearOfPassing: validateYearOfPassing(formData.yearOfPassing),
+            tenthPassoutYear: validatePassoutYear(formData.tenthPassoutYear),
+            twelfthPassoutYear: validatePassoutYear(formData.twelfthPassoutYear),
+            tenthStandard: validatePercentage(formData.tenthStandard),
+            twelfthStandard: validatePercentage(formData.twelfthStandard),
+            highestGraduationPercentage: validatePercentage(formData.highestGraduationPercentage),
+            age: formData.age >= 18 ? '' : 'You must be at least 18 years old.',
+            state: validateInput(formData.state),
+            cityname: validateInput(formData.cityname),
+            qualification: validateInput(formData.qualification),
+            collegeName: validateInput(formData.collegeName),
+        };
     
-     
+        console.log("Form errors:", newErrors); // Log errors to see which field is causing the issue
+    
+        const hasErrors = Object.values(newErrors).some((error) => error !== '');
+        if (hasErrors) {
+            setErrors(newErrors); // Show error messages
+            console.log("Form has errors", newErrors); // Log error details
+            return; // Prevent submission if errors are present
+        }
     
         Swal.fire({
-            title: 'Signing up...',
+            title: 'Submitting...',
             text: 'Please wait while we process your registration',
             allowOutsideClick: false,
             didOpen: () => Swal.showLoading(),
         });
     
         try {
-            const response = await axios.post(
-                `${import.meta.env.VITE_BACKEND_URL}/api/v1/signup`,
-                {
-                    name: formData.name,
-                    email: email,
-                    gender: formData.gender,
-                    dob: formData.dob,
-                    password: formData.password,
-                    cityName: formData.cityname,
-                    department: formData.department,
-                    yearOfPassing: formData.yearOfPassing,
-                    state: formData.state,
-                    collegeName: formData.collegeName,
-                    qualification: formData.qualification,
-                    age: formData.age ? Number(formData.age) : calculateAge(formData.dob),
-                    collegeUSNNumber: formData.collegeUSNNumber,
-                    githubLink: formData.githubLink,
-                    arrears: formData.arrears,
-                    arrearsCount: formData.arrears ? Number(arrearsCount) : 0,  // ✅ Include arrears count
-                    resume: formData.resume,
-                    profilePic: formData.profilePic,
-                    tenthStandard: Number(formData.tenthStandard),
-                    tenthPassoutYear: formData.tenthPassoutYear,
-                    twelfthStandard: Number(formData.twelfthStandard),
-                    twelfthPassoutYear: formData.twelfthPassoutYear,
-                    highestGraduationPercentage: Number(formData.highestGraduationPercentage),
-                    studentSkills: selectedSkills,
-                    profileStatus:true
-                },
-                {
-                    headers: {
-                        "Content-Type": "multipart/form-data",
-                    },
-                }
-            );
-
-
-
-            localStorage.setItem("profileStatus", encryptData("true"));
-
-            if (formData.resume) {
+            const dataToSend = {
+                name: formData.name,
+                email: email,
+                gender: formData.gender,
+                dob: formData.dob,
+                cityName: formData.cityname,
+                department: formData.department,
+                yearOfPassing: formData.yearOfPassing,
+                state: formData.state,
+                collegeName: formData.collegeName,
+                qualification: formData.qualification,
+                age: formData.age ? Number(formData.age) : calculateAge(formData.dob),
+                collegeUSNNumber: formData.collegeUSNNumber,
+                githubLink: formData.githubLink,
+                arrears: formData.arrears,
+                arrearsCount: formData.arrears ? Number(arrearsCount) : 0,
+                tenthStandard: Number(formData.tenthStandard),
+                tenthPassoutYear: formData.tenthPassoutYear,
+                twelfthStandard: Number(formData.twelfthStandard),
+                twelfthPassoutYear: formData.twelfthPassoutYear,
+                highestGraduationPercentage: Number(formData.highestGraduationPercentage),
+                studentSkills: selectedSkills,
+                profileStatus: true
+            };
+    
+            // Only add password, profilePic, and resume if profileStatus is false
+            if (!profileStatus) {
+                dataToSend.password = formData.password;
+                dataToSend.profilePic = formData.profilePic;
+                dataToSend.resume = formData.resume;
+            }
+    
+            console.log("Data being sent to backend: ", dataToSend);
+    
+            const response = profileStatus
+                ? await axios.put(
+                    `${import.meta.env.VITE_BACKEND_URL}/api/v1/signup`,
+                    dataToSend,
+                    {
+                        headers: {
+                            "Content-Type": "multipart/form-data",
+                        },
+                    }
+                )
+                : await axios.post(
+                    `${import.meta.env.VITE_BACKEND_URL}/api/v1/signup`,
+                    dataToSend,
+                    {
+                        headers: {
+                            "Content-Type": "multipart/form-data",
+                        },
+                    }
+                );
+    
+            if (!profileStatus) {
+                localStorage.setItem("profileStatus", "true");
+            }
+    
+            if (formData.resume && !profileStatus) {
                 const resumeFormData = new FormData();
                 resumeFormData.append("resume", formData.resume);
-                resumeFormData.append("student_id", decryptData(localStorage.getItem("student_id"))); // ✅ Append student_id
-            
-            
+                resumeFormData.append("student_id", decryptData(localStorage.getItem("student_id")));
+    
                 try {
-                    const atsResponse = await axios.post(
+                    await axios.post(
                         `${import.meta.env.VITE_BACKEND_URL}/api/v1/atscheck`,
                         resumeFormData,
                         { headers: { "Content-Type": "multipart/form-data" } }
                     );
-            
                 } catch (error) {
-                    console.error("❌ Error sending resume to ATS API:", error);
+                    console.error("Error sending resume to ATS API:", error);
                 }
-            } else {
-                console.error("❌ Resume not found before sending to ATS API.");
             }
-            
-    
-
-            
     
             await fetchStudentsData();
             await fetchStudentDetails();
@@ -439,13 +491,19 @@ const [showCPassword, setShowCPassword] = useState(false);
             });
         }
     };
+    
+
+
+
+
+
     useEffect(() => {
         if (!studentDetails) return; // ⛔ Prevent errors when studentDetails is null
-       
-    
+
+
         setFormData({
             name: studentDetails.name || '',
-            dob: studentDetails.DOB|| '',
+            dob: studentDetails.DOB || '',
             age: studentDetails.age || '',
             gender: studentDetails.gender && ["Male", "Female"].includes(studentDetails.gender) ? studentDetails.gender : '',
             collegeUSNNumber: studentDetails.collegeUSNNumber || '',
@@ -461,106 +519,107 @@ const [showCPassword, setShowCPassword] = useState(false);
             yearOfPassing: studentDetails.yearOfPassing || '',
             collegeName: studentDetails.collegeName || '',
             tenthStandard: studentDetails.tenthStandard || '',
-            tenthPassoutYear: studentDetails.TenthPassoutYear || '', 
+            tenthPassoutYear: studentDetails.TenthPassoutYear || '',
             twelfthStandard: studentDetails.twelfthStandard || '',
             twelfthPassoutYear: studentDetails.TwelfthPassoutYear || '',
             profilePic: studentDetails.profilePic || null,
             resume: studentDetails.resume || null,
             highestGraduationPercentage: studentDetails.highestGraduationpercentage || ''
         });
-        
+
         setArrearsCount(studentDetails.ArrearsCount ? Number(studentDetails.ArrearsCount) : ''); // ✅ Update arrearsCount separately
 
         setSelectedSkills(studentDetails.studentSkills || []);
-    
+
     }, [studentDetails]);
-    
+
 
     return (
         <div className='student-profile-container '>
             <h1 style={{ color: "black" }} className='font-semibold text-3xl'>Student Profile</h1>
             <form onSubmit={handleSubmit} encType="multipart/form-data">
-            <div className="input-group">
-    {/* Name Field */}
-    <div className="form-group">
-        <label>Name <span style={{ color: 'red' }}>*</span></label>
-        <input
-            type="text"
-            name="name"
-            placeholder="Ex: Enter name"
-            value={formData.name}
-            onChange={handleChange}
-            required
-        />
-        {errors.name && <p className="error-message">{errors.name}</p>}
-    </div>
-
-    {/* Date of Birth Field */}
-    <div className="form-group">
-    <label>Date of Birth <span style={{ color: 'red' }}>*</span></label>
-    <input
-        type="date"
-        name="dob"
-        value={formData.dob}
-        onChange={handleDOBChange}
-        required
-    />
-    {/* Display calculated age */}
-    {formData.age && <p>Your age: {formData.age} years</p>}
-    {errors.age && <p className="error-message">{errors.age}</p>}
-</div>
-
-
- 
-</div>
-
-
-                
-<div className="input-group">
-    {/* Password Field */}
-    <div className="form-group">
-        <label>New Password <span style={{ color: 'red' }}>*</span></label>
-        <div className="password-wrapper">
-            <input
-                type={showPassword ? "text" : "password"}
-                name="password"
-                placeholder="Enter Password"
-                value={formData.password}
-                onChange={handleChange}
-                required
-            />
-            <FontAwesomeIcon 
-                icon={!showPassword ? faEyeSlash : faEye} 
-                className="password-icon"
-                onClick={togglePasswordVisibility}
-            />
-        </div>
-        {errors.password && <p className="error-message">{errors.password}</p>}
-    </div>
-
-    {/* Confirm Password Field */}
-    <div className="form-group">
-        <label>Confirm Password <span style={{ color: 'red' }}>*</span></label>
-        <div className="password-wrapper">
-            <input
-                type={showCPassword ? "text" : "password"}
-                name="cpassword"
-                placeholder="Confirm Password"
-                value={formData.cpassword}
-                onChange={handleChange}
-                required
-            />
-            <FontAwesomeIcon 
-                icon={!showCPassword ? faEyeSlash : faEye} 
-                className="password-icon"
-                onClick={toggleCPasswordVisibility}
-            />
-        </div>
-        {errors.cpassword && <p className="error-message">{errors.cpassword}</p>}
-    </div>
-</div>
                 <div className="input-group">
-                   
+                    {/* Name Field */}
+                    <div className="form-group">
+                        <label>Name <span style={{ color: 'red' }}>*</span></label>
+                        <input
+                            type="text"
+                            name="name"
+                            placeholder="Ex: Enter name"
+                            value={formData.name}
+                            onChange={handleChange}
+                            required
+                        />
+                        {errors.name && <p className="error-message">{errors.name}</p>}
+                    </div>
+
+                    {/* Date of Birth Field */}
+                    <div className="form-group">
+                        <label>Date of Birth <span style={{ color: 'red' }}>*</span></label>
+                        <input
+                            type="date"
+                            name="dob"
+                            value={formData.dob}
+                            onChange={handleDOBChange}
+                            required
+                        />
+                        {/* Display calculated age */}
+                        {formData.age && <p>Your age: {formData.age} years</p>}
+                        {errors.age && <p className="error-message">{errors.age}</p>}
+                    </div>
+
+
+
+                </div>
+
+
+
+                {!profileStatus && (
+                    <div className="input-group">
+                        <div className="form-group">
+                            <label>New Password <span style={{ color: 'red' }}>*</span></label>
+                            <div className="password-wrapper">
+                                <input
+                                    type={showPassword ? "text" : "password"}
+                                    name="password"
+                                    placeholder="Enter Password"
+                                    value={formData.password}
+                                    onChange={handleChange}
+                                    required
+                                />
+                                <FontAwesomeIcon
+                                    icon={!showPassword ? faEyeSlash : faEye}
+                                    className="password-icon"
+                                    onClick={togglePasswordVisibility}
+                                />
+                            </div>
+                            {errors.password && <p className="error-message">{errors.password}</p>}
+                        </div>
+
+                        <div className="form-group">
+                            <label>Confirm Password <span style={{ color: 'red' }}>*</span></label>
+                            <div className="password-wrapper">
+                                <input
+                                    type={showCPassword ? "text" : "password"}
+                                    name="cpassword"
+                                    placeholder="Confirm Password"
+                                    value={formData.cpassword}
+                                    onChange={handleChange}
+                                    required
+                                />
+                                <FontAwesomeIcon
+                                    icon={!showCPassword ? faEyeSlash : faEye}
+                                    className="password-icon"
+                                    onClick={toggleCPasswordVisibility}
+                                />
+                            </div>
+                            {errors.cpassword && <p className="error-message">{errors.cpassword}</p>}
+                        </div>
+                    </div>
+                )}
+
+                <div className="input-group">
+
                     <div className="form-group">
                         <label>Gender <span style={{ color: 'red' }}>*</span></label>
                         <div className="radio-group">
@@ -657,41 +716,39 @@ const [showCPassword, setShowCPassword] = useState(false);
                     </div>
                 </div>
                 <div className="input-group">
-                    
+
 
 
 
                     <div className="form-group">
-        <label>Department <span style={{ color: 'red' }}>*</span></label>
-        <select
-            name="department"
-            value={formData.department}
-            onChange={handleDepartmentChange}
-            required
-        >
-            <option value="">Select Department <span style={{ color: 'red' }}>*</span></option>
-            {departments.map((dept, index) => (
-                <option key={index} value={dept}>{dept}</option>
-            ))}
-            <option value="Others">Others</option>
-        </select>
-        {isOther && !isDepartmentAdded && ( 
-            <div>
-                <input
-                    type="text"
-                    placeholder="Enter new department"
-                    value={newDepartment}
-                    onChange={(e) => setNewDepartment(e.target.value)}
-                />
-                <button type="button" onClick={addDepartment}>
-                    Add Department
-                </button>
-            </div>
-        )}
-        {errors.department && <p className="error-message">{errors.department}</p>}
-    </div>
-
-
+                        <label>Department <span style={{ color: 'red' }}>*</span></label>
+                        <select
+                            name="department"
+                            value={formData.department}
+                            onChange={handleDepartmentChange}
+                            required
+                        >
+                            <option value="">Select Department <span style={{ color: 'red' }}>*</span></option>
+                            {departments.map((dept, index) => (
+                                <option key={index} value={dept}>{dept}</option>
+                            ))}
+                            <option value="Others">Others</option>
+                        </select>
+                        {isOther && !isDepartmentAdded && (
+                            <div>
+                                <input
+                                    type="text"
+                                    placeholder="Enter new department"
+                                    value={newDepartment}
+                                    onChange={(e) => setNewDepartment(e.target.value)}
+                                />
+                                <button type="button" onClick={addDepartment}>
+                                    Add Department
+                                </button>
+                            </div>
+                        )}
+                        {errors.department && <p className="error-message">{errors.department}</p>}
+                    </div>
 
 
 
@@ -708,96 +765,125 @@ const [showCPassword, setShowCPassword] = useState(false);
                         {errors.yearOfPassing && <p className="error-message">{errors.yearOfPassing}</p>}
                     </div>
                 </div>
-              {/* Academic Information */}
-<div className="input-group">
-    {/* 10th Details */}
-    <div className="form-group">
-        <label>10th Percentage <span style={{ color: 'red' }}>*</span></label>
-        <input
-            type="text"
-            name="tenthStandard"
-            placeholder="Ex: 92"
-            value={formData.tenthStandard}
-            onChange={handleChange}
-            required
-        />
-        {errors.tenthStandard && <p className="error-message">{errors.tenthStandard}</p>}
-    </div>
+                {/* Academic Information */}
+                <div className="input-group">
+                    {/* 10th Details */}
+                    <div className="form-group">
+                        <label>10th Percentage <span style={{ color: 'red' }}>*</span></label>
+                        <input
+                            type="text"
+                            name="tenthStandard"
+                            placeholder="Ex: 92"
+                            value={formData.tenthStandard}
+                            onChange={handleChange}
+                            required
+                        />
+                        {errors.tenthStandard && <p className="error-message">{errors.tenthStandard}</p>}
+                    </div>
 
-    <div className="form-group">
-        <label>10th Passout Year <span style={{ color: 'red' }}>*</span></label>
-        <input
-            type="text"
-            name="tenthPassoutYear"
-            placeholder="Ex: 2015"
-            value={formData.tenthPassoutYear}
-            onChange={handleChange}
-            required
-        />
-         {errors.tenthPassoutYear && <p className="error-message">{errors.tenthPassoutYear}</p>}
-    </div>
-</div>
-
-<div className="input-group">
-    {/* 12th / Intermediate Details */}
-    <div className="form-group">
-        <label>12th Percentage <span style={{ color: 'red' }}>*</span></label>
-        <input
-            type="text"
-            name="twelfthStandard"
-            placeholder="Ex: 92"
-            value={formData.twelfthStandard}
-            onChange={handleChange}
-            required
-        />
-        {errors.twelfthStandard && <p className="error-message">{errors.twelfthStandard}</p>}
-    </div>
-
-    <div className="form-group">
-        <label>12th Passout Year <span style={{ color: 'red' }}>*</span></label>
-        <input
-            type="text"
-            name="twelfthPassoutYear"
-            placeholder="Ex: 2017"
-            value={formData.twelfthPassoutYear}
-            onChange={handleChange}
-            required
-        />
-         {errors.twelfthPassoutYear && <p className="error-message">{errors.twelfthPassoutYear}</p>}
-    </div>
-</div>
-
-<div className="input-group">
-    {/* Graduation Details */}
-    <div className="form-group">
-        <label>Graduated College Name (PG/UG) <span style={{ color: 'red' }}>*</span></label>
-        <input
-            type="text"
-            name="collegeName"
-            placeholder="Ex: Codegnan"
-            value={formData.collegeName}
-            onChange={handleChange}
-            required
-        />
-        {errors.collegeName && <p className="error-message">{errors.collegeName}</p>}
-    </div>
-
-    <div className="form-group">
-        <label>Graduation Passout Year <span style={{ color: 'red' }}>*</span></label>
-        <input
-            type="text"
-            name="yearOfPassing"
-            placeholder="Ex: 2021"
-            value={formData.yearOfPassing}
-            onChange={handleChange}
-            required
-        />
-        {errors.yearOfPassing && <p className="error-message">{errors.yearOfPassing}</p>}
-    </div>
-</div>
+                    <div className="form-group">
+                        <label>10th Passout Year <span style={{ color: 'red' }}>*</span></label>
+                        <input
+                            type="text"
+                            name="tenthPassoutYear"
+                            placeholder="Ex: 2015"
+                            value={formData.tenthPassoutYear}
+                            onChange={handleChange}
+                            required
+                        />
+                        {errors.tenthPassoutYear && <p className="error-message">{errors.tenthPassoutYear}</p>}
+                    </div>
+                </div>
 
                 <div className="input-group">
-                  
+                    {/* 12th / Intermediate Details */}
+                    <div className="form-group">
+                        <label>12th Percentage <span style={{ color: 'red' }}>*</span></label>
+                        <input
+                            type="text"
+                            name="twelfthStandard"
+                            placeholder="Ex: 92"
+                            value={formData.twelfthStandard}
+                            onChange={handleChange}
+                            required
+                        />
+                        {errors.twelfthStandard && <p className="error-message">{errors.twelfthStandard}</p>}
+                    </div>
+
+                    <div className="form-group">
+                        <label>12th Passout Year <span style={{ color: 'red' }}>*</span></label>
+                        <input
+                            type="text"
+                            name="twelfthPassoutYear"
+                            placeholder="Ex: 2017"
+                            value={formData.twelfthPassoutYear}
+                            onChange={handleChange}
+                            required
+                        />
+                        {errors.twelfthPassoutYear && <p className="error-message">{errors.twelfthPassoutYear}</p>}
+                    </div>
+                </div>
+
+                <div className="input-group">
+                    {/* Graduation Details */}
+                    <div className="form-group">
+                        <label>Graduated College Name (PG/UG) <span style={{ color: 'red' }}>*</span></label>
+                        <input
+                            type="text"
+                            name="collegeName"
+                            placeholder="Ex: Codegnan"
+                            value={formData.collegeName}
+                            onChange={handleChange}
+                            required
+                        />
+                        {errors.collegeName && <p className="error-message">{errors.collegeName}</p>}
+                    </div>
+
+                    <div className="form-group">
+                        <label>Graduation Passout Year <span style={{ color: 'red' }}>*</span></label>
+                        <input
+                            type="text"
+                            name="yearOfPassing"
+                            placeholder="Ex: 2021"
+                            value={formData.yearOfPassing}
+                            onChange={handleChange}
+                            required
+                        />
+                        {errors.yearOfPassing && <p className="error-message">{errors.yearOfPassing}</p>}
+                    </div>
+                </div>
+
+
+                {!profileStatus && (
+                    <div className="input-group">
+                        <div className="form-group">
+                            <label>Profile Picture (10KB)<span style={{ color: 'red' }}>*</span></label>
+                            <input
+                                type="file"
+                                name="profilePic"
+                                accept=".jpg,.jpeg,.png,.gif"
+                                onChange={handleFileChange}
+                                required
+                            />
+                            {errors.profilePic && <p className="error-message">{errors.profilePic}</p>}
+                        </div>
+
+                        <div className="form-group">
+                            <label>Resume (100KB - pdf) <span style={{ color: 'red' }}>*</span></label>
+                            <input
+                                type="file"
+                                name="resume"
+                                accept=".pdf"
+                                onChange={handleFileChange}
+                                required
+                            />
+                            {errors.resume && <p className="error-message">{errors.resume}</p>}
+                        </div>
+                    </div>
+                )}
+
+
+                <div className="input-group">
                     <div className="form-group">
                         <label>Percentage(Highest Graduation) <span style={{ color: 'red' }}>*</span></label>
                         <input
@@ -810,35 +896,8 @@ const [showCPassword, setShowCPassword] = useState(false);
                         />
                         {errors.highestGraduationPercentage && <p className="error-message">{errors.highestGraduationPercentage}</p>}
                     </div>
-                </div>
-                <div className="input-group">
-                    <div className="form-group">
-                        <label>Profile Picture <span style={{ color: 'red' }}>*</span></label>
-                        <input
-                            type="file"
-                            name="profilePic"
-                            accept=".jpg,.jpeg,.png,.gif"
-                            onChange={handleFileChange}
-                            required
-                        />
-                        {errors.profilePic && <p className="error-message">{errors.profilePic}</p>}
-                    </div>
-                    <div className="form-group">
-                        <label>Resume (100KB - pdf) <span style={{ color: 'red' }}>*</span></label>
-                        <input
-                            type="file"
-                            name="resume"
-                            accept=".pdf"
-                            onChange={handleFileChange}
-                            required
-                        />
-                        {errors.resume && <p className="error-message">{errors.resume}</p>}
-                    </div>
-                </div>
-
-                <div className="input-group">
                     <div>
-                        <label>Skills: <span style={{ color: 'red' }}>*</span></label>
+                        <label className='form-group'>Skills: <span style={{ color: 'red' }}>*</span></label>
                         <select
                             id="skills"
                             name="skills"
@@ -877,33 +936,33 @@ const [showCPassword, setShowCPassword] = useState(false);
                         </div>
                     </div>
                     <div className="form-group">
-    <label>Arrears <span style={{ color: 'red' }}>*</span></label>
-    <div className="radio-group">
-        <div className="radio-option">
-            <input
-                type="radio"
-                id="arrearsYes"
-                name="arrears"
-                value="yes"
-                checked={formData.arrears === true}
-                onChange={handleArrearsChange}
-                required
-            />
-            <label htmlFor="arrearsYes">Yes</label>
-        </div>
-        <div className="radio-option">
-            <input
-                type="radio"
-                id="arrearsNo"
-                name="arrears"
-                value="no"
-                checked={formData.arrears === false}
-                onChange={handleArrearsChange}
-                required
-            />
-            <label htmlFor="arrearsNo">No</label>
-        </div>
-    </div>
+                        <label>Arrears <span style={{ color: 'red' }}>*</span></label>
+                        <div className="radio-group">
+                            <div className="radio-option">
+                                <input
+                                    type="radio"
+                                    id="arrearsYes"
+                                    name="arrears"
+                                    value="yes"
+                                    checked={formData.arrears === true}
+                                    onChange={handleArrearsChange}
+                                    required
+                                />
+                                <label htmlFor="arrearsYes">Yes</label>
+                            </div>
+                            <div className="radio-option">
+                                <input
+                                    type="radio"
+                                    id="arrearsNo"
+                                    name="arrears"
+                                    value="no"
+                                    checked={formData.arrears === false}
+                                    onChange={handleArrearsChange}
+                                    required
+                                />
+                                <label htmlFor="arrearsNo">No</label>
+                            </div>
+                        </div>
                     </div>
 
                     {/* Conditionally show input field for arrears count */}
