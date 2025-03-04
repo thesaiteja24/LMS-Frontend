@@ -38,12 +38,12 @@ export default function StudentLogin({ setIsAuthenticated }) {
         const userType = response.data.user.usertype;
         const encryptedId = encryptData(id);
         const encryptedEmail = encryptData(response.data.user.email);
-        const encryptedProfile = encryptData(response.data.user.Profile);
+        // const encryptedProfile = encryptData(response.data.user.Profile);
         const encryptedLocation = encryptData(response.data.Location);
         const encryptUserType = encryptData(userType);
 
         localStorage.setItem('id', encryptedId);
-        localStorage.setItem('profileStatus', encryptedProfile);
+        localStorage.setItem('profileStatus', response.data.user.Profile);
         localStorage.setItem('userType', encryptUserType);
         localStorage.setItem('email', encryptedEmail);
         localStorage.setItem('student_id', encryptedId);

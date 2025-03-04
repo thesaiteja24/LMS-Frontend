@@ -502,7 +502,7 @@ export default function App() {
            <Route
             path="/codeplayground"
             element={
-              <ProtectedRoute allowedRoles={["student_login_details"]}>
+              <ProtectedRoute allowedRoles={["student_login_details","Mentors"]}>
                 <CodePlayground />
               </ProtectedRoute>
             }

@@ -33,22 +33,17 @@ const languages = {
   },
 };
 
-// For normal languages: file extensions
 const fileExtensions = {
   Python: "py",
   JavaScript: "js",
   Java: "java",
-  // add more if needed
 };
 
-// "Web" option in the main dropdown
 const WEB_OPTION = "Web";
 
-// Web sub-languages for a single editor
 const WEB_SUBLANGS = ["HTML", "CSS", "JS"];
 
 function CodePlayground() {
-  // ======= States for normal languages =======
   const [languageKey, setLanguageKey] = useState("Python");
   const [code, setCode] = useState(languages["Python"].snippet);
   const [input, setInput] = useState("");
@@ -238,60 +233,71 @@ ${jsCode}
   };
 
   // Save code
-  const handleSaveFile = () => {
-    if (languageKey === WEB_OPTION) {
-      const webData = { htmlCode, cssCode, jsCode };
-      localStorage.setItem("savedWebCode", JSON.stringify(webData));
-      alert("Web code saved locally!");
-    } else {
-      localStorage.setItem("savedCode", code);
-      alert("Code saved locally!");
-    }
-  };
+  // const handleSaveFile = () => {
+  //   if (languageKey === WEB_OPTION) {
+  //     const webData = { htmlCode, cssCode, jsCode };
+  //     localStorage.setItem("savedWebCode", JSON.stringify(webData));
+  //     alert("Web code saved locally!");
+  //   } else {
+  //     localStorage.setItem("savedCode", code);
+  //     alert("Code saved locally!");
+  //   }
+  // };
 
   // Download code
-  const handleDownloadFile = () => {
-    if (languageKey === WEB_OPTION) {
-      const mergedHTML = `
-<!DOCTYPE html>
-<html>
-<head>
-<meta charset="UTF-8" />
-<title>Web Playground</title>
-<style>
-${cssCode}
-</style>
-</head>
-<body>
-${htmlCode}
-<script>
-${jsCode}
-</script>
-</body>
-</html>
-`;
-      const blob = new Blob([mergedHTML], { type: "text/html" });
-      const url = URL.createObjectURL(blob);
-      const link = document.createElement("a");
-      link.href = url;
-      link.download = "web_project.html";
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      URL.revokeObjectURL(url);
-    } else {
-      const ext = fileExtensions[languageKey] || "txt";
-      const blob = new Blob([code], { type: "text/plain" });
-      const url = URL.createObjectURL(blob);
-      const link = document.createElement("a");
-      link.href = url;
-      link.download = `${languageKey}_code.${ext}`;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      URL.revokeObjectURL(url);
-    }
-  };
+// Download code as separate HTML, CSS, and JS files
+const handleDownloadFile = () => {
+  if (languageKey === WEB_OPTION) {
+    // Create HTML, CSS, and JS blobs
+    const htmlBlob = new Blob([htmlCode], { type: "text/html" });
+    const cssBlob = new Blob([cssCode], { type: "text/css" });
+    const jsBlob = new Blob([jsCode], { type: "application/javascript" });
+
+    // Create object URLs for the blobs
+    const htmlUrl = URL.createObjectURL(htmlBlob);
+    const cssUrl = URL.createObjectURL(cssBlob);
+    const jsUrl = URL.createObjectURL(jsBlob);
+
+    // Create download links and trigger download for each file
+    const htmlLink = document.createElement("a");
+    htmlLink.href = htmlUrl;
+    htmlLink.download = "index.html";
+    document.body.appendChild(htmlLink);
+    htmlLink.click();
+    document.body.removeChild(htmlLink);
+
+    const cssLink = document.createElement("a");
+    cssLink.href = cssUrl;
+    cssLink.download = "styles.css";
+    document.body.appendChild(cssLink);
+    cssLink.click();
+    document.body.removeChild(cssLink);
+
+    const jsLink = document.createElement("a");
+    jsLink.href = jsUrl;
+    jsLink.download = "script.js";
+    document.body.appendChild(jsLink);
+    jsLink.click();
+    document.body.removeChild(jsLink);
+
+    // Clean up object URLs
+    URL.revokeObjectURL(htmlUrl);
+    URL.revokeObjectURL(cssUrl);
+    URL.revokeObjectURL(jsUrl);
+  } else {
+    // For non-web languages, download as a single file as before
+    const ext = fileExtensions[languageKey] || "txt";
+    const blob = new Blob([code], { type: "text/plain" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `${languageKey}_code.${ext}`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  }
+};
 
   // Draggable divider
   const handleMouseDown = (e) => {

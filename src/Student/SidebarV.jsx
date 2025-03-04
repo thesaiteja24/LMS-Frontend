@@ -44,9 +44,10 @@ export const SidebarV = ({ setIsAuthenticated }) => {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [isLoggedOut, setIsLoggedOut] = useState(false);
 
-  const userType = decryptData(localStorage.getItem("userType")) || "null";
-  const profileStatus = decryptData(localStorage.getItem("profileStatus"));
-
+  const userType = decryptData(localStorage.getItem("userType"));
+  const profileStatus = localStorage.getItem("profileStatus");
+  console.log(userType);
+ console.log(profileStatus);
   // 2) Navigation with check for "incomplete profile"
   const handleNavigation = (path) => {
     const restrictedPaths = [
@@ -54,6 +55,7 @@ export const SidebarV = ({ setIsAuthenticated }) => {
       "/courses",
       "/exam-dashboard",
       "/exam-repors",
+     "/exam-reports-dashboard",
       "/mock-interviews",
       "/leave-request-page",
     ];
@@ -216,11 +218,11 @@ export const SidebarV = ({ setIsAuthenticated }) => {
             path: "/upload-questions",
             icon: IoMdCloudUpload,
           },
-          // {
-          //   label: "Reports",
-          //   path: "/mentor-reports",
-          //   icon: TbReportAnalytics,
-          // },
+          {
+            label: "Code Playground",
+            path: "/codeplayground",
+            icon: FaCode,
+          },
           { label: "Logout", action: handleLogout, icon: FaSignOutAlt },
         ];
       case "Manager":
