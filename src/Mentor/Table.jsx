@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
-import './CurriculumTable.css'
+import "./CurriculumTable.css";
+import Swal from "sweetalert2";
 
-export const Tabel = ({ subject, batch, mentorId }) => {
+export const Table = ({ subject, batch, mentorId }) => {
   const [tableData, setTableData] = useState({});
   const [editedData, setEditedData] = useState({});
   const [loading, setLoading] = useState(false);
@@ -15,7 +16,7 @@ export const Tabel = ({ subject, batch, mentorId }) => {
     }
   }, [subject, batch, mentorId]);
 
-  const fetchCurriculumTable = async () => {  
+  const fetchCurriculumTable = async () => {
     try {
       setLoading(true);
       const url = `${
@@ -71,6 +72,13 @@ export const Tabel = ({ subject, batch, mentorId }) => {
       console.log("Submitted row payload:", payload);
       console.log("Response:", response.data);
       toast.success(response.data.message || "Row updated successfully.");
+      if (response.data.warning) {
+        Swal.fire({
+          icon: "warning",
+          title: "Warning",
+          text: response.data.warning,
+        });
+      }
     } catch (error) {
       console.error("Error submitting row:", error.response);
       toast.error(
@@ -87,7 +95,7 @@ export const Tabel = ({ subject, batch, mentorId }) => {
     <div className="bg-white w-full max-w-[1200px] h-auto p-6 flex flex-col justify-center">
       {loading && <p className="mt-4 text-center">Loading...</p>}
       {Object.keys(editedData).length > 0 ? (
-      <div className="max-h-[500px] overflow-y-auto scrollbar-custom">
+        <div className="max-h-[500px] overflow-y-auto scrollbar-custom">
           <div className="max-h-[500px] overflow-y-auto scrollbar-thin scrollbar-thumb-[#0C1BAA] scrollbar-track-[#F5F5F5]">
             <table className="w-full border-collapse">
               <thead className="sticky top-0 bg-[#0C1BAA] text-white text-left text-[16px] font-medium">

@@ -2,9 +2,8 @@ import React, { useState, useEffect } from "react";
 import axios from "axios"; // Import axios for API calls
 import CurriculumTable from "./CurriculumTable";
 import { useStudentsMentorData } from "../contexts/MentorStudentsContext";
-import { Tabel } from "./Tabel";
-import { decryptData } from '../../cryptoUtils.jsx';
-
+import { Table } from "./Table.jsx";
+import { decryptData } from "../../cryptoUtils.jsx";
 
 const Course = () => {
   const [selectedSubject, setSelectedSubject] = useState("");
@@ -12,8 +11,7 @@ const Course = () => {
   const [availableSubjects, setAvailableSubjects] = useState([]);
   const [filteredBatches, setFilteredBatches] = useState([]);
   const mentorId = decryptData(localStorage.getItem("id"));
-  const { scheduleData, fetchMentorStudents } =
-    useStudentsMentorData();
+  const { scheduleData, fetchMentorStudents } = useStudentsMentorData();
   const location = decryptData(localStorage.getItem("location"));
   const [selectedBatch, setSelectedBatch] = useState(""); // Add this at the top
 
@@ -142,7 +140,7 @@ const Course = () => {
         {/* Curriculum Table Section */}
         <div className="bg-white rounded-md mt-6 min-h-[500px] flex items-center justify-center">
           <div>
-            <Tabel
+            <Table
               subject={selectedSubject}
               batch={selectedBatch}
               mentorId={mentorId}
