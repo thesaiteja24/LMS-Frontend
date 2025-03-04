@@ -4,8 +4,7 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { decryptData } from '../../../cryptoUtils.jsx'
-
+import { decryptData } from "../../../cryptoUtils.jsx";
 
 export const ManagerExamDashboard = () => {
   const navigate = useNavigate();
@@ -35,6 +34,28 @@ export const ManagerExamDashboard = () => {
     }
   }, [batches, locationFilter, localStorageLocation]);
 
+  const checkDailyExamStatus = async (batch) => {
+    try {
+      const date = new Date().toISOString().slice(0, 10);
+      const response = await axios.get(
+        `${import.meta.env.VITE_BACKEND_URL}/api/v1/check-exam-status`,
+        {
+          params: {
+            date: date,
+            examType: "Daily-Exam",
+          },
+        }
+      );
+      if (response.data.status) {
+        toast.warning(response.data.message);
+      } else {
+        handleDailyClick(batch);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   // Fetch exam details for the selected batch
   const handleDailyClick = async (batch) => {
     try {
@@ -55,9 +76,9 @@ export const ManagerExamDashboard = () => {
       console.log(data);
 
       // Navigate to the exam creation page with the fetched data
-      // navigate("/set-exam", {
-      //   state: { examData: data, batch: batch },
-      // });
+      navigate("/set-exam", {
+        state: { examData: data, batch: batch },
+      });
     } catch (error) {
       console.error("Error fetching exam details:", error);
       toast.error(
@@ -117,7 +138,7 @@ export const ManagerExamDashboard = () => {
             </div>
             <div className="flex flex-row">
               <button
-                onClick={() => handleDailyClick(batch)}
+                onClick={() => checkDailyExamStatus(batch)}
                 className="relative inline-flex items-center justify-center p-0.5 mb-2 me-2 overflow-hidden text-sm font-medium text-gray-900 rounded-lg group bg-gradient-to-br from-red-400 to-blue-600 group-hover:from-red-400 group-hover:to-blue-600 hover:text-white focus:ring-red-200 dark:focus:ring-red-800"
               >
                 <span className=" relative px-2 py-0.5 transition-all ease-in duration-75 bg-white rounded-md group-hover:bg-transparent group-hover:dark:bg-transparent">
