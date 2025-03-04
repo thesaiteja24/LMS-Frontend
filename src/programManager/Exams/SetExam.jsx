@@ -1,28 +1,42 @@
 import React, { useState, useEffect } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPen, faTrash } from "@fortawesome/free-solid-svg-icons";
-import { useNavigate } from "react-router-dom";
-import { decryptData } from '../../../cryptoUtils.jsx';
-
+import { decryptData } from "../../../cryptoUtils.jsx";
 
 export const SetExam = () => {
   const navigate = useNavigate();
   const location = useLocation();
+
+  // Data passed from ManagerExamDashboard (adjust if needed)
+  // The new response might look like:
+  //  {
+  //    Python: {
+  //      topics: "...",
+  //      subtopics: { titles: [...], tags: [...] },
+  //      date: "2025-03-04",
+  //      breakdown: {
+  //        mcq: { easy: 10, medium: 1, hard: 0 },
+  //        code: { easy: 29, medium: 0, hard: 0 }
+  //      }
+  //    },
+  //    Java: {
+  //      ...
+  //    }
+  //  }
+  const { examData, batch, type } = location.state || {};
+
+  // Manager info, if needed by your API
   const managerId = decryptData(localStorage.getItem("Manager"));
   const managerLocation = decryptData(localStorage.getItem("location"));
-  const { examData, batch, type } = location.state || {}; // Data from ManagerExamDashboard
-  const [creatingExam, setCreatingExam] = useState(false);
 
-  // **🔹 New State Variables**
-  const [dayOrder, setDayOrder] = useState("");
-  const [availableDayOrders, setAvailableDayOrders] = useState([]);
-  const [availableSubjects, setAvailableSubjects] = useState([]);
-  const [subject, setSubject] = useState("");
+  // Keep track of which subject is chosen
+  const [selectedSubject, setSelectedSubject] = useState("");
 
+  // These track how many questions the user chooses for MCQ & Coding
   const [selectedMCQs, setSelectedMCQs] = useState({
     easy: 0,
     medium: 0,
@@ -34,6 +48,7 @@ export const SetExam = () => {
     hard: 0,
   });
 
+  // For displaying available totals from examData[subject].breakdown
   const [totalMCQs, setTotalMCQs] = useState({ easy: 0, medium: 0, hard: 0 });
   const [totalCoding, setTotalCoding] = useState({
     easy: 0,
@@ -41,343 +56,194 @@ export const SetExam = () => {
     hard: 0,
   });
 
-  const [examTopics, setExamTopics] = useState([]);
-  const [examQuestions, setExamQuestions] = useState([]); // Stores questions for multiple subjects
+  // Topics & subtopics come from examData[subject]
+  const [displayTopics, setDisplayTopics] = useState([]);
+  const [displaySubtopics, setDisplaySubtopics] = useState([]);
 
-  // Keep date/time in state but do NOT reset them when editing
+  // Summaries of all chosen subjects (if user picks multiple)
+  const [examSubjects, setExamSubjects] = useState([]);
+
+  // For scheduling
   const [startDate, setStartDate] = useState("");
   const [startTime, setStartTime] = useState("");
+  const [creatingExam, setCreatingExam] = useState(false);
 
-  const [isEditing, setIsEditing] = useState(false);
+  // Expand/collapse time constraint details in UI
   const [isTimeCollapsed, setIsTimeCollapsed] = useState(true);
 
-  const totalMCQCount = totalMCQs.easy + totalMCQs.medium + totalMCQs.hard;
-  const totalCodingCount =
-    totalCoding.easy + totalCoding.medium + totalCoding.hard;
-
-  // **🔹 Extract unique Day Orders from examData & Filter by valid day orders**
+  // We’ll gather the list of subjects from the examData keys.
+  const [subjectList, setSubjectList] = useState([]);
   useEffect(() => {
-    const batchValue = batch?.Batch || "";
-    const fetchValidDayOrders = async () => {
-      try {
-        const response = await axios.get(
-          `${
-            import.meta.env.VITE_BACKEND_URL
-          }/api/v1/validate-daily-dayorder?batch=${batchValue}&managerId=${managerId}&managerLocation=${managerLocation}`
-        );
-
-        if (examData?.data) {
-          // Collect all dayOrders from the examData
-          const uniqueDayOrders = [
-            ...new Set(
-              Object.values(examData.data).flatMap((subjects) =>
-                subjects.map((item) => item.dayOrder)
-              )
-            ),
-          ];
-
-          // If API call is successful, filter day orders
-          if (response.data.success) {
-            const validDayOrders = response.data.dayOrders;
-            // dayOrders that are already used up by some logic on the server
-            const filteredDayOrders = uniqueDayOrders.filter(
-              (order) => !validDayOrders.includes(order)
-            );
-            setAvailableDayOrders(filteredDayOrders);
-          } else {
-            // If API fails, keep all unique day orders
-            setAvailableDayOrders(uniqueDayOrders);
-          }
-        }
-      } catch (error) {
-        console.error("Error fetching valid day orders:", error);
-        // If API request fails, retain all available day orders
-        if (examData?.data) {
-          const uniqueDayOrders = [
-            ...new Set(
-              Object.values(examData.data).flatMap((subjects) =>
-                subjects.map((item) => item.dayOrder)
-              )
-            ),
-          ];
-          setAvailableDayOrders(uniqueDayOrders);
-        }
-      }
-    };
-
-    fetchValidDayOrders();
-  }, [examData, batch, managerId, managerLocation]);
-
-  // **🔹 Handle Day Order Change**
-  const handleDayOrderChange = (e) => {
-    const selectedOrder = e.target.value;
-    setDayOrder(selectedOrder);
-    setSubject(""); // Reset subject each time we pick a new day order
-
-    if (examData?.data) {
-      // Step 1: Get all subjects that belong to this day order
-      let filteredSubjects = Object.keys(examData.data).filter((sub) =>
-        examData.data[sub].some((item) => item.dayOrder === selectedOrder)
-      );
-
-      // Step 2: Exclude subjects that are already used for this dayOrder
-      // (unless we are editing that specific subject)
-      if (!isEditing) {
-        const usedSubjectsForSelectedOrder = examQuestions
-          .filter((q) => q.dayOrder === selectedOrder)
-          .map((q) => q.subject);
-
-        filteredSubjects = filteredSubjects.filter(
-          (sub) => !usedSubjectsForSelectedOrder.includes(sub)
-        );
-      }
-
-      setAvailableSubjects(filteredSubjects);
+    if (examData) {
+      // examData is an object whose keys are subject names
+      setSubjectList(Object.keys(examData));
     }
-  };
+  }, [examData]);
 
-  // **🔹 Handle Subject Change**
-  const handleSubjectChange = (e) => {
-    const newSubject = e.target.value;
-    setSubject(newSubject);
-
-    if (examData?.data?.[newSubject]) {
-      const subjectData = examData.data[newSubject].find(
-        (item) => item.dayOrder === dayOrder
-      );
-      if (subjectData) {
-        setTotalMCQs(subjectData.MCQ_Stats || { easy: 0, medium: 0, hard: 0 });
-        setTotalCoding(
-          subjectData.Coding_Stats || { easy: 0, medium: 0, hard: 0 }
-        );
-        setExamTopics([
-          ...subjectData.subTopics,
-          ...subjectData.previousSubTopics,
-        ]);
+  // When the user selects a subject, grab its breakdown & subtopics
+  useEffect(() => {
+    if (selectedSubject && examData?.[selectedSubject]) {
+      const breakdown = examData[selectedSubject].breakdown;
+      if (breakdown) {
+        setTotalMCQs(breakdown.mcq || { easy: 0, medium: 0, hard: 0 });
+        setTotalCoding(breakdown.code || { easy: 0, medium: 0, hard: 0 });
       } else {
         setTotalMCQs({ easy: 0, medium: 0, hard: 0 });
         setTotalCoding({ easy: 0, medium: 0, hard: 0 });
-        setExamTopics([]);
       }
+
+      const { topics, subtopics } = examData[selectedSubject];
+      setDisplayTopics(topics ? topics.split(",") : []); // If topics is a comma-separated string
+      setDisplaySubtopics(subtopics?.titles || []);
     } else {
       setTotalMCQs({ easy: 0, medium: 0, hard: 0 });
       setTotalCoding({ easy: 0, medium: 0, hard: 0 });
-      setExamTopics([]);
+      setDisplayTopics([]);
+      setDisplaySubtopics([]);
     }
-  };
 
-  // **🔹 Handle MCQ Input Change**
+    // Reset chosen counts each time we pick a new subject
+    setSelectedMCQs({ easy: 0, medium: 0, hard: 0 });
+    setSelectedCoding({ easy: 0, medium: 0, hard: 0 });
+  }, [selectedSubject, examData]);
+
+  // Handling user-chosen question counts
   const handleMCQInputChange = (e) => {
     const { name, value } = e.target;
     const parsedValue = parseInt(value, 10);
-
-    // Ensure it's between 0 and the total available
     const safeValue = Math.min(
       Math.max(0, isNaN(parsedValue) ? 0 : parsedValue),
-      totalMCQs[name]
+      totalMCQs[name] || 0
     );
-
     setSelectedMCQs({
       ...selectedMCQs,
       [name]: safeValue,
     });
   };
 
-  // **🔹 Handle Coding Input Change**
   const handleCodingInputChange = (e) => {
     const { name, value } = e.target;
     const parsedValue = parseInt(value, 10);
-
-    // Ensure it's between 0 and the total available
     const safeValue = Math.min(
       Math.max(0, isNaN(parsedValue) ? 0 : parsedValue),
-      totalCoding[name]
+      totalCoding[name] || 0
     );
-
     setSelectedCoding({
       ...selectedCoding,
       [name]: safeValue,
     });
   };
 
-  // **🔹 Set or Update Questions for Exam**
-  const handleSetQuestions = () => {
-    if (!subject || !dayOrder) {
-      toast.error("Please select a subject and day order.");
+  // Add or update the chosen subject in the examSubjects array
+  const handleSetSubject = () => {
+    if (!selectedSubject) {
+      toast.error("Please select a subject first.");
       return;
     }
 
-    const existingIndex = examQuestions.findIndex(
-      (q) => q.subject === subject && q.dayOrder === dayOrder
+    const existingIndex = examSubjects.findIndex(
+      (item) => item.subject === selectedSubject
     );
-    const subjectData = examData?.data?.[subject]?.find(
-      (s) => s.dayOrder === dayOrder
-    );
-    const tags = subjectData?.Tags || [];
 
-    // Calculate MCQ and Coding time constraints
-    const mcqTime =
-      (selectedMCQs.easy + selectedMCQs.medium + selectedMCQs.hard) * 1;
+    const tags = examData[selectedSubject]?.tags || [];
+    // Calculate total time if you have specific rules
+    // For example, 1 min per MCQ, 5/10/15 mins for easy/medium/hard coding:
+    const mcqTime = selectedMCQs.easy + selectedMCQs.medium + selectedMCQs.hard;
     const codingTime =
       selectedCoding.easy * 5 +
       selectedCoding.medium * 10 +
       selectedCoding.hard * 15;
     const totalTime = mcqTime + codingTime;
 
-    const newSubjectData = {
-      subject,
-      dayOrder,
-      selectedMCQs,
-      selectedCoding,
-      Tags: tags,
-      timeConstraints: {
-        MCQs: {
-          easy: selectedMCQs.easy,
-          medium: selectedMCQs.medium,
-          hard: selectedMCQs.hard,
-          total: mcqTime,
-        },
-        Coding: {
-          easy: selectedCoding.easy * 5,
-          medium: selectedCoding.medium * 10,
-          hard: selectedCoding.hard * 15,
-          total: codingTime,
-        },
-        totalTime,
-      },
+    const newEntry = {
+      subject: selectedSubject,
+      tags,
+      selectedMCQs: { ...selectedMCQs },
+      selectedCoding: { ...selectedCoding },
+      totalTime,
+      // If you want to store subtopics or tags, do so here as well
     };
 
-    if (existingIndex !== -1) {
+    if (existingIndex >= 0) {
       // Update existing
-      setExamQuestions((prev) =>
-        prev.map((q, idx) => (idx === existingIndex ? newSubjectData : q))
+      setExamSubjects((prev) =>
+        prev.map((item, idx) => (idx === existingIndex ? newEntry : item))
       );
-      toast.success(`Updated questions for ${subject} - ${dayOrder}!`);
+      toast.success(`Updated questions for ${selectedSubject}.`);
     } else {
-      // Add new
-      setExamQuestions((prev) => [...prev, newSubjectData]);
-      toast.success(`Questions set for ${subject} - ${dayOrder}!`);
+      // Add as new
+      setExamSubjects((prev) => [...prev, newEntry]);
+      toast.success(`Questions set for ${selectedSubject}.`);
     }
-
-    resetFormAfterSet();
   };
 
-  // **🔹 Create Exam**
+  // Handle removing a subject
+  const handleDeleteSubject = (subjectName) => {
+    setExamSubjects((prev) =>
+      prev.filter((item) => item.subject !== subjectName)
+    );
+    toast.success(`Deleted questions for ${subjectName}.`);
+  };
+
+  // Optionally, let them edit – in this simpler structure, “editing” just means re-selecting the subject
+  const handleEditSubject = (subjectName) => {
+    // Pre-fill the fields for editing
+    const found = examSubjects.find((item) => item.subject === subjectName);
+    if (found) {
+      setSelectedSubject(found.subject);
+      setSelectedMCQs(found.selectedMCQs);
+      setSelectedCoding(found.selectedCoding);
+    }
+  };
+
+  // Submit final data
   const handleCreateExam = async () => {
-    if (!startDate || !startTime || examQuestions.length === 0) {
-      toast.error("Please complete all exam details.");
+    if (examSubjects.length === 0 || !startDate || !startTime) {
+      toast.error("Please select at least one subject and enter date/time.");
       return;
     }
 
-    setCreatingExam(true); // Disable button and show loading text
+    setCreatingExam(true);
 
-    const newExam = {
+    // Gather total exam time
+    const totalExamTime = examSubjects.reduce(
+      (sum, item) => sum + item.totalTime,
+      0
+    );
+    console.log("Exam Data", examData);
+    const type = "Daily-Exam";
+    const newExamPayload = {
+      type: type,
       batch: batch?.Batch,
-      subjects: examQuestions,
-      totalExamTime: examQuestions.reduce(
-        (sum, subject) => sum + subject.timeConstraints.totalTime,
-        0
-      ),
-      dayOrder,
+      subjects: examSubjects,
+      totalExamTime,
       startDate,
       startTime,
       managerId,
       managerLocation,
-      type,
     };
-
+    console.log(newExamPayload);
     try {
-      await axios.post(
+      const response = await axios.post(
         `${import.meta.env.VITE_BACKEND_URL}/api/v1/generate-exam-paper`,
-        newExam
+        newExamPayload
       );
-      toast.success("Exam Created Successfully!", {
-        onClose: () => navigate("/create-exam"),
-      });
+      toast.success(response.data.message);
+      navigate("/create-exam");
     } catch (error) {
-      toast.error(error.response?.data?.message || "An error occurred!", {
-        onClose: () => navigate("/create-exam"),
-      });
-    } finally {
-      setCreatingExam(false); // Re-enable button after request
-    }
-  };
-
-  // **Reset only the selection fields** (subject, MCQ, coding, etc.)
-  // but do NOT reset startDate or startTime so user doesn't lose them.
-  const resetFormAfterSet = () => {
-    setSubject("");
-    setSelectedMCQs({ easy: 0, medium: 0, hard: 0 });
-    setSelectedCoding({ easy: 0, medium: 0, hard: 0 });
-    setTotalMCQs({ easy: 0, medium: 0, hard: 0 });
-    setTotalCoding({ easy: 0, medium: 0, hard: 0 });
-    setExamTopics([]);
-    setIsEditing(false);
-  };
-
-  // Cancel editing
-  const handleCancelEdit = () => {
-    // Only reset the form fields; keep the date/time
-    resetFormAfterSet();
-  };
-
-  // **🔹 Edit previously-set Questions**
-  const handleEditQuestions = (subjectToEdit, dayOrderToEdit) => {
-    setDayOrder(dayOrderToEdit);
-    setSubject(subjectToEdit);
-    setIsEditing(true);
-
-    // Pre-fill the fields for the user
-    const existingSubject = examQuestions.find(
-      (q) => q.subject === subjectToEdit && q.dayOrder === dayOrderToEdit
-    );
-
-    if (existingSubject) {
-      setSelectedMCQs(existingSubject.selectedMCQs);
-      setSelectedCoding(existingSubject.selectedCoding);
-
-      // Also load topic details from examData if needed
-      const subjectData = examData?.data?.[subjectToEdit]?.find(
-        (s) => s.dayOrder === dayOrderToEdit
+      console.error(error);
+      toast.error(
+        error.response?.data?.message || "Failed to create exam. Try again."
       );
-      if (subjectData) {
-        setTotalMCQs(subjectData.MCQ_Stats || { easy: 0, medium: 0, hard: 0 });
-        setTotalCoding(
-          subjectData.Coding_Stats || { easy: 0, medium: 0, hard: 0 }
-        );
-        setExamTopics([
-          ...subjectData.subTopics,
-          ...subjectData.previousSubTopics,
-        ]);
-      }
+    } finally {
+      setCreatingExam(false);
     }
-  };
-
-  // **🔹 Delete a subject's questions**
-  const handleDeleteQuestion = (subjectToDelete, dayOrderToDelete) => {
-    setExamQuestions((prev) =>
-      prev.filter(
-        (q) =>
-          !(q.subject === subjectToDelete && q.dayOrder === dayOrderToDelete)
-      )
-    );
-    toast.success(
-      `Deleted questions for ${subjectToDelete} - ${dayOrderToDelete}`
-    );
-  };
-
-  const handleStartDateChange = (e) => {
-    setStartDate(e.target.value);
-  };
-
-  const handleStartTimeChange = (e) => {
-    setStartTime(e.target.value);
   };
 
   return (
     <div className="min-h-screen bg-gradient-to-r from-blue-100 to-purple-100 flex items-center justify-center p-6">
       <div className="flex flex-col lg:flex-row lg:w-[90%] mx-auto gap-6 justify-center">
-        {/* Left Panel - Setting up questions */}
+        {/* Left Panel - Setting up one subject at a time */}
         <div className="bg-white p-8 rounded-lg shadow-lg w-full lg:w-[60%]">
           <h2 className="text-3xl font-bold text-center mb-8 text-gray-800">
             Set Questions for{" "}
@@ -386,101 +252,64 @@ export const SetExam = () => {
             </span>
           </h2>
 
-          {/* Day Order Selection */}
+          {/* Subject Selection */}
           <div className="mb-6">
             <label className="block text-lg font-semibold text-gray-700 mb-2">
-              Select Day Order:
+              Select Subject:
             </label>
             <select
-              value={dayOrder}
-              onChange={handleDayOrderChange}
-              disabled={isEditing} // Disable while editing
-              className={`w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 ${
-                isEditing ? "bg-gray-200 cursor-not-allowed" : ""
-              }`}
+              value={selectedSubject}
+              onChange={(e) => setSelectedSubject(e.target.value)}
+              className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
             >
-              <option value="">-- Select Day Order --</option>
-              {availableDayOrders.map((order) => (
-                <option key={order} value={order}>
-                  {order}
+              <option value="">-- Select Subject --</option>
+              {subjectList.map((subKey) => (
+                <option key={subKey} value={subKey}>
+                  {subKey}
                 </option>
               ))}
             </select>
           </div>
 
-          {/* Subject Selection */}
-          {dayOrder && (
-            <div className="mb-6">
-              <label className="block text-lg font-semibold text-gray-700 mb-2">
-                Select Subject:
-              </label>
-              <select
-                value={subject}
-                onChange={handleSubjectChange}
-                disabled={isEditing} // Disable while editing
-                className={`w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 ${
-                  isEditing ? "bg-gray-200 cursor-not-allowed" : ""
-                }`}
-              >
-                <option value="">-- Select Subject --</option>
-                {availableSubjects.map((sub) => (
-                  <option key={sub} value={sub}>
-                    {sub.charAt(0).toUpperCase() + sub.slice(1)}
-                  </option>
-                ))}
-              </select>
-            </div>
+          {/* Topics display */}
+          {selectedSubject && (
+            <>
+              <div className="mb-6">
+                <h3 className="text-2xl font-semibold text-gray-800 mb-2">
+                  Topics
+                </h3>
+                {displayTopics.length ? (
+                  <ul className="list-disc ml-5 text-gray-700">
+                    {displayTopics.map((topic, idx) => (
+                      <li key={idx}>{topic.trim()}</li>
+                    ))}
+                  </ul>
+                ) : (
+                  <p className="text-gray-500">No topics available.</p>
+                )}
+              </div>
+            </>
           )}
 
-          {/* Exam Topics */}
-          {dayOrder && subject && (
-            <div className="mb-6">
-              <h3 className="text-2xl font-semibold text-gray-800 mb-4">
-                Exam Topics
-              </h3>
-              {examTopics.length > 0 ? (
-                <div className="flex flex-wrap gap-2">
-                  {examTopics.map((topic, index) => (
-                    <span
-                      key={index}
-                      className="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-sm"
-                    >
-                      {topic}
-                    </span>
-                  ))}
-                </div>
-              ) : (
-                <p className="text-gray-500">
-                  No topics available for this subject.
-                </p>
-              )}
-            </div>
-          )}
-          <>
-            {/* Error Messages */}
-            {subject && totalMCQCount === 0 && totalCodingCount === 0 && (
-              <p className="text-center text-red-500 font-bold mb-4">
-                No questions available for this subject.
-              </p>
-            )}
-
-            {/* MCQ Questions */}
-            {subject && totalMCQCount > 0 && (
+          {/* Question Breakdown */}
+          {selectedSubject && (
+            <>
+              {/* MCQ */}
               <div className="mb-6">
                 <h3 className="text-2xl font-semibold text-gray-800 mb-4">
                   MCQ Questions
                 </h3>
+                {/* If totalMCQs.* > 0, display an input */}
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
                   {["easy", "medium", "hard"].map((level) => {
-                    if (totalMCQs[level] > 0) {
+                    const total = totalMCQs[level] || 0;
+                    if (total > 0) {
                       return (
                         <div key={level} className="flex flex-col">
                           <label className="mb-2 font-medium text-gray-600">
-                            {level.charAt(0).toUpperCase() + level.slice(1)}
+                            {level.charAt(0).toUpperCase() + level.slice(1)}{" "}
+                            (Total: {total})
                           </label>
-                          <span className="text-sm text-gray-500">
-                            Total: {totalMCQs[level]}
-                          </span>
                           <input
                             type="number"
                             name={level}
@@ -492,7 +321,7 @@ export const SetExam = () => {
                             onChange={handleMCQInputChange}
                             placeholder="Enter count"
                             min="0"
-                            max={totalMCQs[level]} // Prevent entering higher values
+                            max={total}
                             className="p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                           />
                         </div>
@@ -502,31 +331,22 @@ export const SetExam = () => {
                   })}
                 </div>
               </div>
-            )}
 
-            {subject && totalMCQCount === 0 && totalCodingCount > 0 && (
-              <p className="text-center text-red-500 font-bold mb-4">
-                No MCQ questions available.
-              </p>
-            )}
-
-            {/* Coding Questions */}
-            {subject && totalCodingCount > 0 && (
+              {/* Coding */}
               <div className="mb-6">
                 <h3 className="text-2xl font-semibold text-gray-800 mb-4">
                   Coding Questions
                 </h3>
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
                   {["easy", "medium", "hard"].map((level) => {
-                    if (totalCoding[level] > 0) {
+                    const total = totalCoding[level] || 0;
+                    if (total > 0) {
                       return (
                         <div key={level} className="flex flex-col">
                           <label className="mb-2 font-medium text-gray-600">
-                            {level.charAt(0).toUpperCase() + level.slice(1)}
+                            {level.charAt(0).toUpperCase() + level.slice(1)}{" "}
+                            (Total: {total})
                           </label>
-                          <span className="text-sm text-gray-500">
-                            Total: {totalCoding[level]}
-                          </span>
                           <input
                             type="number"
                             name={level}
@@ -538,7 +358,7 @@ export const SetExam = () => {
                             onChange={handleCodingInputChange}
                             placeholder="Enter count"
                             min="0"
-                            max={totalCoding[level]} // Prevent entering higher values
+                            max={total}
                             className="p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                           />
                         </div>
@@ -548,40 +368,21 @@ export const SetExam = () => {
                   })}
                 </div>
               </div>
-            )}
 
-            {subject && totalCodingCount === 0 && totalMCQCount > 0 && (
-              <p className="text-center text-red-500 font-bold mb-4">
-                No coding questions available.
-              </p>
-            )}
-          </>
-          {/* Set Questions / Update Questions Button */}
-          {(totalMCQs.easy + totalMCQs.medium + totalMCQs.hard > 0 ||
-            totalCoding.easy + totalCoding.medium + totalCoding.hard > 0) && (
-            <>
-              <button
-                onClick={handleSetQuestions}
-                className={`mt-4 px-6 py-3 text-white rounded-lg ${
-                  creatingExam
-                    ? "bg-gray-500 cursor-not-allowed"
-                    : "bg-blue-600 hover:bg-blue-700"
-                }`}
-                disabled={creatingExam}
-              >
-                {creatingExam ? "Creating Exam..." : "Set Questions"}
-              </button>
-
-              {isEditing && (
+              {/* Button to "Set" (or update) the chosen subject’s question counts */}
+              {(totalMCQs.easy + totalMCQs.medium + totalMCQs.hard > 0 ||
+                totalCoding.easy + totalCoding.medium + totalCoding.hard >
+                  0) && (
                 <button
-                  onClick={handleCancelEdit}
-                  className={`mt-4 mx-4 px-6 py-3 text-white rounded-lg ${
+                  onClick={handleSetSubject}
+                  className={`mt-4 px-6 py-3 text-white rounded-lg ${
                     creatingExam
                       ? "bg-gray-500 cursor-not-allowed"
                       : "bg-blue-600 hover:bg-blue-700"
                   }`}
+                  disabled={creatingExam}
                 >
-                  Cancel Editing
+                  {creatingExam ? "Creating Exam..." : "Set Questions"}
                 </button>
               )}
             </>
@@ -589,98 +390,90 @@ export const SetExam = () => {
         </div>
 
         {/* Right Panel - Summary & Creation */}
-        {examQuestions.length > 0 && (
+        {examSubjects.length > 0 && (
           <div className="bg-white p-6 rounded-lg shadow-md w-full lg:w-[40%]">
             <h3 className="text-2xl font-semibold text-gray-800 mb-4">
               Exam Summary (Total Time:{" "}
-              {examQuestions.reduce(
-                (sum, subject) => sum + subject.timeConstraints.totalTime,
-                0
-              )}{" "}
-              mins)
+              {examSubjects.reduce((sum, s) => sum + s.totalTime, 0)} mins)
             </h3>
             <ul className="space-y-3">
-              {examQuestions.map((exam, index) => (
-                <li
-                  key={index}
-                  className="p-4 border rounded-lg bg-gray-100 shadow-md flex flex-col space-y-2"
-                >
-                  <div className="flex items-start justify-between">
-                    <div>
-                      <p className="text-xl font-semibold text-gray-800">
-                        {exam.subject.charAt(0).toUpperCase() +
-                          exam.subject.slice(1)}{" "}
-                        -{" "}
-                        <span className="text-blue-500">
-                          {exam.dayOrder.charAt(0).toUpperCase() +
-                            exam.dayOrder.slice(1)}
-                        </span>
+              {examSubjects.map((item, index) => {
+                const { subject, selectedMCQs, selectedCoding, totalTime } =
+                  item;
+                return (
+                  <li
+                    key={index}
+                    className="p-4 border rounded-lg bg-gray-100 shadow-md flex flex-col space-y-2"
+                  >
+                    <div className="flex items-start justify-between">
+                      <div>
+                        <p className="text-xl font-semibold text-gray-800">
+                          {subject.charAt(0).toUpperCase() + subject.slice(1)}
+                        </p>
+                      </div>
+                      <div className="flex space-x-4">
+                        {/* Edit Button */}
+                        <button
+                          onClick={() => handleEditSubject(subject)}
+                          className="text-blue-600 hover:text-blue-800"
+                        >
+                          <FontAwesomeIcon icon={faPen} />
+                        </button>
+                        {/* Delete Button */}
+                        <button
+                          onClick={() => handleDeleteSubject(subject)}
+                          className="text-red-600 hover:text-red-800"
+                        >
+                          <FontAwesomeIcon icon={faTrash} />
+                        </button>
+                      </div>
+                    </div>
+
+                    <div className="grid grid-row gap-1 text-gray-700">
+                      <p>
+                        <strong>MCQs:</strong> Easy ({selectedMCQs.easy}),
+                        Medium ({selectedMCQs.medium}), Hard (
+                        {selectedMCQs.hard})
+                      </p>
+                      <p>
+                        <strong>Coding:</strong> Easy ({selectedCoding.easy}),
+                        Medium ({selectedCoding.medium}), Hard (
+                        {selectedCoding.hard})
                       </p>
                     </div>
-                    <div className="flex space-x-4">
-                      {/* Edit Button */}
-                      <button
-                        onClick={() =>
-                          handleEditQuestions(exam.subject, exam.dayOrder)
-                        }
-                        className="text-blue-600 hover:text-blue-800"
+
+                    <div className="bg-blue-50 p-3 rounded-lg mt-2 text-sm text-blue-800">
+                      <div
+                        className="flex justify-between items-center cursor-pointer"
+                        onClick={() => setIsTimeCollapsed(!isTimeCollapsed)}
                       >
-                        <FontAwesomeIcon icon={faPen} />
-                      </button>
-
-                      {/* Delete Button */}
-                      <button
-                        onClick={() =>
-                          handleDeleteQuestion(exam.subject, exam.dayOrder)
-                        }
-                        className="text-red-600 hover:text-red-800"
-                      >
-                        <FontAwesomeIcon icon={faTrash} />
-                      </button>
+                        <span className="font-semibold">
+                          ⏳ Time Constraints: {totalTime} mins
+                        </span>
+                        <span>{isTimeCollapsed ? "▼" : "▲"}</span>
+                      </div>
+                      {!isTimeCollapsed && (
+                        <ul className="mt-1 space-y-1">
+                          <li>
+                            <strong>MCQ Time:</strong>{" "}
+                            {selectedMCQs.easy +
+                              selectedMCQs.medium +
+                              selectedMCQs.hard}{" "}
+                            mins (assuming 1 min each MCQ)
+                          </li>
+                          <li>
+                            <strong>Coding Time:</strong>{" "}
+                            {selectedCoding.easy * 5 +
+                              selectedCoding.medium * 10 +
+                              selectedCoding.hard * 15}{" "}
+                            mins
+                          </li>
+                        </ul>
+                      )}
                     </div>
-                  </div>
-
-                  <div className="grid grid-row gap-1 text-gray-700">
-                    <p>
-                      <strong>MCQs:</strong> Easy ({exam.selectedMCQs.easy}),{" "}
-                      Medium ({exam.selectedMCQs.medium}), Hard (
-                      {exam.selectedMCQs.hard})
-                    </p>
-                    <p>
-                      <strong>Coding:</strong> Easy ({exam.selectedCoding.easy}
-                      ), Medium ({exam.selectedCoding.medium}), Hard (
-                      {exam.selectedCoding.hard})
-                    </p>
-                  </div>
-
-                  {/* Time Constraints Display */}
-                  <div className="bg-blue-50 p-3 rounded-lg mt-2 text-sm text-blue-800">
-                    <div
-                      className="flex justify-between items-center cursor-pointer"
-                      onClick={() => setIsTimeCollapsed(!isTimeCollapsed)}
-                    >
-                      <span className="font-semibold">
-                        ⏳ Time Constraints: {exam.timeConstraints.totalTime}{" "}
-                        mins
-                      </span>
-                      <span>{isTimeCollapsed ? "▼" : "▲"}</span>
-                    </div>
-
-                    {!isTimeCollapsed && (
-                      <ul className="mt-1 space-y-1">
-                        <li>
-                          <strong>MCQs Time:</strong>{" "}
-                          {exam.timeConstraints.MCQs.total} mins
-                        </li>
-                        <li>
-                          <strong>Coding Time:</strong>{" "}
-                          {exam.timeConstraints.Coding.total} mins
-                        </li>
-                      </ul>
-                    )}
-                  </div>
-                </li>
-              ))}
+                  </li>
+                );
+              })}
             </ul>
 
             {/* Date and Time Selection */}
@@ -691,8 +484,8 @@ export const SetExam = () => {
               <input
                 type="date"
                 value={startDate}
-                onChange={handleStartDateChange}
-                min={new Date().toISOString().split("T")[0]} // Prevents past dates
+                onChange={(e) => setStartDate(e.target.value)}
+                min={new Date().toISOString().split("T")[0]}
                 className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
               />
             </div>
@@ -704,12 +497,8 @@ export const SetExam = () => {
               <input
                 type="time"
                 value={startTime}
-                onChange={handleStartTimeChange}
-                min={
-                  startDate === new Date().toISOString().split("T")[0]
-                    ? new Date().toTimeString().slice(0, 5)
-                    : ""
-                } // Restricts past time if today
+                onChange={(e) => setStartTime(e.target.value)}
+                // Optionally restrict past times if startDate = today
                 className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
               />
             </div>
