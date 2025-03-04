@@ -5,6 +5,8 @@ import Swal from "sweetalert2";
 import OnlineCompiler from "./OnlineCompiler";
 import MCQComponent from "./MCQComponent";
 import { useDaily } from "../../../contexts/DailyContext";
+import { decryptData } from '../../cryptoUtils.jsx';
+
 
 const ExamPage = () => {
   const { state } = useLocation();
@@ -16,7 +18,7 @@ const ExamPage = () => {
   const [timer, setTimer] = useState(3600); // 1-hour timer
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const studentId = localStorage.getItem("student_id");
+  const studentId = decryptData(localStorage.getItem("student_id"));
   const { dailyExam,fetchDailyExamDetails} = useDaily();
 
     useEffect(() => {

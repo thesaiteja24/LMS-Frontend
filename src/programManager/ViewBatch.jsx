@@ -12,6 +12,8 @@ import {
   FaVideo
 } from "react-icons/fa";
 import axios from "axios";
+import { decryptData } from '../../cryptoUtils.jsx';
+
 
 const ViewBatch = () => {
   const { batches, loading, fetchBatches } = useUniqueBatches();
@@ -21,7 +23,7 @@ const ViewBatch = () => {
   const [editedData, setEditedData] = useState({});
   const [isSaving, setIsSaving] = useState(false);
 
-  const localStorageLocation = localStorage.getItem("location");
+  const localStorageLocation = decryptData(localStorage.getItem("location"));
   const locations = ["all", "vijayawada", "hyderabad", "bangalore"];
 
   useEffect(() => {

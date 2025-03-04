@@ -1,5 +1,7 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from "react";
 import axios from "axios";
+import { decryptData } from '../../cryptoUtils.jsx';
+
 
 const DailyContext = createContext();
 
@@ -8,7 +10,7 @@ export const useDaily = () => useContext(DailyContext);
 export const DailyProvider = ({ children }) => {
   const [studentDetails, setStudentDetails] = useState(null);
   const [dailyExam, setDailyExam] = useState(null);
-  const studentId = localStorage.getItem("student_id");
+  const studentId = decryptData(localStorage.getItem("student_id"));
   const updateStudentDetails = (details) => {
     setStudentDetails(details);
   };

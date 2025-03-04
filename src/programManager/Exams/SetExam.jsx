@@ -6,12 +6,14 @@ import "react-toastify/dist/ReactToastify.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPen, faTrash } from "@fortawesome/free-solid-svg-icons";
 import { useNavigate } from "react-router-dom";
+import { decryptData } from '../../../cryptoUtils.jsx';
+
 
 export const SetExam = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const managerId = localStorage.getItem("Manager");
-  const managerLocation = localStorage.getItem("location");
+  const managerId = decryptData(localStorage.getItem("Manager"));
+  const managerLocation = decryptData(localStorage.getItem("location"));
   const { examData, batch, type } = location.state || {}; // Data from ManagerExamDashboard
   const [creatingExam, setCreatingExam] = useState(false);
 

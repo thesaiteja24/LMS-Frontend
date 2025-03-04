@@ -65,9 +65,12 @@ import { Dashboard } from "./programManager/Performance/Dashboard.jsx";
 import DailyPerformance from "./programManager/Performance/DailyPerformance.jsx";
 import { classNames } from "@react-pdf-viewer/core";
 import { ExamReportsDashboard } from "./Student/ExamReportsDashboard.jsx";
+import CodePlayground from "./Student/Codeplayground.jsx";
+import { decryptData } from '../cryptoUtils.jsx';
+
 
 const ProtectedRoute = ({ children, allowedRoles }) => {
-  const userType = localStorage.getItem("userType");
+  const userType = decryptData(localStorage.getItem("userType"));
 
   if (!userType) {
     return <Navigate to="/" replace />;
@@ -82,14 +85,14 @@ const ProtectedRoute = ({ children, allowedRoles }) => {
 
 export default function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(
-    !!localStorage.getItem("userType")
+    !!decryptData(localStorage.getItem("userType"))
   );
   // const navigate = useNavigate();
 
   useEffect(() => {
     // Listen for changes in localStorage
     const checkAuth = () => {
-      setIsAuthenticated(!!localStorage.getItem("userType"));
+      setIsAuthenticated(!!decryptData(localStorage.getItem("userType")));
     };
 
     window.addEventListener("storage", checkAuth);
@@ -142,7 +145,7 @@ export default function App() {
                       Manager: "/manager-dashboard",
                       superAdmin: "/admin-dashboard",
                       super: "/admin-dashboard",
-                    }[localStorage.getItem("userType")] || "/not-found"
+                    }[decryptData(localStorage.getItem("userType"))] || "/not-found"
                   }
                   replace
                 />
@@ -165,7 +168,7 @@ export default function App() {
                       Manager: "/manager-dashboard",
                       superAdmin: "/admin-dashboard",
                       super: "/admin-dashboard",
-                    }[localStorage.getItem("userType")] || "/not-found"
+                    }[decryptData(localStorage.getItem("userType"))] || "/not-found"
                   }
                   replace
                 />
@@ -188,7 +191,7 @@ export default function App() {
                       Manager: "/manager-dashboard",
                       superAdmin: "/admin-dashboard",
                       super: "/admin-dashboard",
-                    }[localStorage.getItem("userType")] || "/not-found"
+                    }[decryptData(localStorage.getItem("userType"))] || "/not-found"
                   }
                   replace
                 />
@@ -211,7 +214,7 @@ export default function App() {
                       Manager: "/manager-dashboard",
                       superAdmin: "/reports",
                       super: "/admin-dashboard",
-                    }[localStorage.getItem("userType")] || "/not-found"
+                    }[decryptData(localStorage.getItem("userType"))] || "/not-found"
                   }
                   replace
                 />
@@ -234,7 +237,7 @@ export default function App() {
                       Manager: "/manager-dashboard",
                       superAdmin: "/reports",
                       super: "/admin-dashboard",
-                    }[localStorage.getItem("userType")] || "/not-found"
+                    }[decryptData(localStorage.getItem("userType"))] || "/not-found"
                   }
                   replace
                 />
@@ -493,6 +496,14 @@ export default function App() {
                 <ExamProvider>
                   <ExamDashboard />
                 </ExamProvider>
+              </ProtectedRoute>
+            }
+          />
+           <Route
+            path="/codeplayground"
+            element={
+              <ProtectedRoute allowedRoles={["student_login_details"]}>
+                <CodePlayground />
               </ProtectedRoute>
             }
           />

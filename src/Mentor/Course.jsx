@@ -3,16 +3,18 @@ import axios from "axios"; // Import axios for API calls
 import CurriculumTable from "./CurriculumTable";
 import { useStudentsMentorData } from "../contexts/MentorStudentsContext";
 import { Tabel } from "./Tabel";
+import { decryptData } from '../../cryptoUtils.jsx';
+
 
 const Course = () => {
   const [selectedSubject, setSelectedSubject] = useState("");
   const [syllabus, setSyllabus] = useState([]);
   const [availableSubjects, setAvailableSubjects] = useState([]);
   const [filteredBatches, setFilteredBatches] = useState([]);
-  const mentorId = localStorage.getItem("id");
-  const { classes, mentorData, scheduleData, fetchMentorStudents } =
+  const mentorId = decryptData(localStorage.getItem("id"));
+  const { scheduleData, fetchMentorStudents } =
     useStudentsMentorData();
-  const location = localStorage.getItem("location");
+  const location = decryptData(localStorage.getItem("location"));
   const [selectedBatch, setSelectedBatch] = useState(""); // Add this at the top
 
   useEffect(() => {
@@ -66,7 +68,7 @@ const Course = () => {
   }, [selectedSubject, selectedBatch, location]);
 
   return (
-    <div className="bg-[#F5F5F5] flex flex-col justify-start items-center">
+    <div className="bg-[#F5F5F5] flex flex-col justify-start items-center px-4 sm:px-6 md:px-8 lg:px-16 xl:px-32">
       {/* Heading - Mentor Curriculum */}
       <h1 className="text-[#19216f] font-poppins font-semibold text-[32px] leading-[48px] text-center">
         Mentor Curriculum
@@ -78,14 +80,14 @@ const Course = () => {
       {/* Main White Container */}
       <div className="bg-white w-full max-w-[1200px] h-auto shadow-md rounded-md mt-6 p-6 flex flex-col justify-center">
         {/* Subject & Batch Selection */}
-        <div className="w-full flex justify-between items-center px-8">
+        <div className="w-full flex flex-col sm:flex-row justify-between items-center px-8 space-y-4 sm:space-y-0">
           {/* Select Subject */}
-          <div className="flex items-center w-1/2">
+          <div className="flex items-center w-full sm:w-1/2">
             <label className="text-[#19216f] font-poppins font-semibold text-[24px] leading-[36px] w-[200px]">
               Select a Subject
             </label>
             <select
-              className="w-[263px] h-[46px] bg-white border border-gray-300 rounded-[2px] px-3 shadow-md focus:ring-2 focus:ring-blue-500"
+              className="w-full sm:w-[263px] h-[46px] bg-white border border-gray-300 rounded-[2px] px-3 shadow-md focus:ring-2 focus:ring-blue-500"
               onChange={(e) => setSelectedSubject(e.target.value)}
               value={selectedSubject}
             >
@@ -101,12 +103,12 @@ const Course = () => {
           </div>
 
           {/* Select Batch - Always Visible */}
-          <div className="flex items-center w-1/2">
+          <div className="flex items-center w-full sm:w-1/2">
             <label className="text-[#19216f] font-poppins font-semibold text-[24px] leading-[36px] w-[200px]">
               Select a Batch
             </label>
             <select
-              className={`w-[263px] h-[46px] border rounded-[2px] px-3 shadow-md focus:ring-2 focus:ring-blue-500
+              className={`w-full sm:w-[263px] h-[46px] border rounded-[2px] px-3 shadow-md focus:ring-2 focus:ring-blue-500
                 ${
                   selectedSubject
                     ? "bg-white border-gray-300 text-black"

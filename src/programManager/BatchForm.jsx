@@ -11,6 +11,7 @@ import {
 import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 import axios from "axios";
+import { decryptData } from '../../cryptoUtils.jsx';
 
 const techStacks = {
   vijayawada: ["Python Full Stack (PFS)", "Java Full Stack (JFS)"],
@@ -30,11 +31,10 @@ const BatchForm = () => {
     StartDate: "",
     EndDate: "",
     Status: "",
-    GoogleMeetLink: "",
   });
 
   const [duration, setDuration] = useState(null); // Store calculated duration
-  const location = localStorage.getItem("location") || "Vijayawada"; // Default to Vijayawada
+  const location = decryptData(localStorage.getItem("location")); // Default to Vijayawada
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false); // Loading state
   const { fetchBatches } = useUniqueBatches();
@@ -60,25 +60,12 @@ const BatchForm = () => {
     }
   };
 
-  const isValidGoogleMeetLink = (link) => {
-    const regex = /^(https:\/\/meet\.google\.com\/)[a-zA-Z0-9-]+$/;
-    return regex.test(link);
-  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
 
-    if (!isValidGoogleMeetLink(formData.GoogleMeetLink.trim())) {
-      Swal.fire({
-        title: "Invalid Google Meet Link!",
-        text: "Please enter a valid Google Meet link (e.g., https://meet.google.com/xyz-abc-def)",
-        icon: "error",
-        confirmButtonText: "OK",
-      });
-      setIsLoading(false);
-      return;
-    }
+
     
 
     const payload = {
@@ -88,7 +75,6 @@ const BatchForm = () => {
       EndDate: formData.EndDate,
       Duration: duration, // Calculated duration in days
       Status: formData.Status,
-      GoogleMeetLink: formData.GoogleMeetLink,
       location,
     };
 
@@ -112,7 +98,6 @@ const BatchForm = () => {
         StartDate: "",
         EndDate: "",
         Status: "",
-        GoogleMeetLink: "",
       });
       setDuration(null);
     } catch (err) {
@@ -207,7 +192,7 @@ const BatchForm = () => {
                 id="StartDate"
                 value={formData.StartDate}
                 onChange={handleInputChange}
-                min={new Date().toISOString().split("T")[0]} // Sets the minimum date to today
+                // Sets the minimum date to today
                 className="mt-1 cursor-pointer block w-full p-3 rounded-md border border-gray-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-yellow-500"
               />
             </div>
@@ -266,21 +251,7 @@ const BatchForm = () => {
               </select>
             </div>
           </div>
-          <div>
-              <label htmlFor="GoogleMeetLink" className="block text-sm font-medium text-gray-700">
-                <FaVideo className="inline mr-2 text-blue-500" />
-                Google Meet Link
-              </label>
-              <input
-                type="text"
-                name="GoogleMeetLink"
-                id="GoogleMeetLink"
-                value={formData.GoogleMeetLink}
-                onChange={handleInputChange}
-                placeholder="Enter Google Meet Link"
-                className="mt-1 block w-full p-3 rounded-md border border-gray-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
-            </div>
+          
 
           
           

@@ -68,12 +68,14 @@ const Table = ({ data, onEditRow }) => {
       batch.EndTime,
       batch.StartDate,
       batch.EndDate,
-    ].some((value) => value.toString().toLowerCase().includes(filter));
-
-    const roomFilterMatch = batch.RoomNo.toString().toLowerCase().includes(roomFilter);
-
+    ].some((value) => (value ? value.toString().toLowerCase() : "").includes(filter));
+  
+    const roomFilterMatch = (batch.RoomNo ? batch.RoomNo.toString().toLowerCase() : "").includes(roomFilter);
+  
     return globalFilterMatch && roomFilterMatch;
   });
+  
+  
 
   return (
     <div className="flex justify-center items-center">

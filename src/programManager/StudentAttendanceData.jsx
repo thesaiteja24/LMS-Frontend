@@ -2,6 +2,8 @@ import React, { useState, useEffect, useCallback } from "react";
 import * as XLSX from "xlsx";
 import axios from "axios";
 import { useUniqueBatches } from "../contexts/UniqueBatchesContext";
+import { decryptData } from '../../cryptoUtils.jsx';
+
 
 /** Convert "YY-MM-DD" => "YYYY-MM-DD". Example: "25-02-17" => "2025-02-17" */
 function convertDateYYMMDDtoYYYYMMDD(shortDate) {
@@ -80,7 +82,7 @@ const StudentAttendanceData = () => {
   const [uniqueDates, setUniqueDates] = useState([]);
 
   useEffect(() => {
-    const location = localStorage.getItem("location");
+    const location = decryptData(localStorage.getItem("location"));
     if (location) setSelectedLocation(location);
   }, []);
 

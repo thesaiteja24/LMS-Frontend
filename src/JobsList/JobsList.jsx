@@ -5,6 +5,7 @@ import JobDeadline from './JobDeadline';
 import Swal from 'sweetalert2/dist/sweetalert2.min.js';  
 import { useJobs } from '../contexts/JobsContext';
 import { useStudent } from "../contexts/StudentProfileContext";
+import { decryptData } from '../../cryptoUtils.jsx';
 
 
 const JobsList = () => {
@@ -12,7 +13,7 @@ const JobsList = () => {
     const [selectedJob, setSelectedJob] = useState(null); 
     const [isModalOpen, setIsModalOpen] = useState(false); 
     const { studentDetails,fetchStudentDetails } = useStudent();
-    const student_id = localStorage.getItem('student_id')
+    const student_id = decryptData(localStorage.getItem('student_id'))
 
      useEffect(() => {
         fetchJobs();

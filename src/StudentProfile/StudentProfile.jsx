@@ -5,12 +5,13 @@ import './StudentProfile.css';
 import {useStudentsData} from '../contexts/StudentsListContext';
 import { useEdit } from '../contexts/EditContext';
 import { useStudent } from '../contexts/StudentProfileContext';
+import { decryptData } from '../../cryptoUtils.jsx';
 
 
 
 const StudentProfile = () => {
     const {fetchStudentsData} = useStudentsData()
-    const email=localStorage.getItem("email")
+    const email=decryptData(localStorage.getItem("email"))
     const {edit, setEdit } = useEdit();
       const {  fetchStudentDetails } = useStudent();
     

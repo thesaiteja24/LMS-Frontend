@@ -8,6 +8,8 @@ import { read, utils } from "xlsx";
 import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
 import Select from "react-select";
+import { decryptData } from '../../../cryptoUtils.jsx'
+
 
 
 import {
@@ -65,7 +67,7 @@ export default function ProgramManagerSignup() {
   const [excelData, setExcelData] = useState([]);
   const [loading, setLoading] = useState(false);
   const [useExcel, setUseExcel] = useState(false);
-  const location = localStorage.getItem('location');
+  const location = decryptData(localStorage.getItem('location'));
   const phoneRegex = /^[9876]\d{9}$/;
 
   const handleChange = (e) => {

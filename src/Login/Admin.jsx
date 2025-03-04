@@ -3,7 +3,9 @@ import { useNavigate } from 'react-router-dom';
 import Swal from 'sweetalert2/dist/sweetalert2.min.js';  
 import { Eye, EyeOff } from 'lucide-react';
 import axios from 'axios';
+import { encryptData } from '../../cryptoUtils.jsx'; // Import encryption method
 import '../Login/StudentLogin.css';
+
 
 export default function SuperAdmin() {
   const [username, setUsername] = useState('');
@@ -24,8 +26,8 @@ export default function SuperAdmin() {
         { username, password }
       );
       if (response.status === 200) {
-        localStorage.setItem('userType', response.data.userType);
-        localStorage.setItem('location','all')
+        localStorage.setItem('userType', encryptData(response.data.userType));
+        localStorage.setItem('location',encryptData('all'))
         navigate('/admin-dashboard'); // Navigate to the relevant dashboard
       }
     } catch (error) {

@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import axios from "axios";
 import AttendanceModal from '../StudentSearch/AttendanceModal'
+import { decryptData } from '../../cryptoUtils.jsx';
 
 const StudentLocationWise = () => {
   const [studentId, setStudentId] = useState("");
@@ -14,7 +15,7 @@ const StudentLocationWise = () => {
   const [isAttendanceModalOpen, setIsAttendanceModalOpen] = useState(false);
   const [isEligibleModalOpen, setIsEligibleModalOpen] = useState(false);
   
-  const location = localStorage.getItem('location');
+  const location = decryptData(localStorage.getItem('location'));
   const handleSearch = async () => {
     const id = studentId.toUpperCase();
     try {

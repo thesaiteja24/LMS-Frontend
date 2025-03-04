@@ -2,14 +2,15 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useStudentsMentorData } from "../../../contexts/MentorStudentsContext";
 import { useNavigate } from "react-router-dom";
-
+import { decryptData } from '../../cryptoUtils.jsx';
+ 
 export const WeeklyQuestionBank = () => {
   const navigate = useNavigate();
   const [selectedBatch, setSelectedBatch] = useState("");
   const [scheduleData, setScheduleData] = useState([]);
   const { scheduleData: mentorScheduleData } = useStudentsMentorData();
-  const location = localStorage.getItem("location");
-  const mentorId = localStorage.getItem("Mentors");
+  const location = decryptData(localStorage.getItem("location"));
+  const mentorId = decryptData(localStorage.getItem("Mentors"));
 
   // Endpoint to fetch the exam syllabus data
   const API_ENDPOINT = `${import.meta.env.VITE_BACKEND_URL}/api/v1/fetch-daily-exam-syllabus`;

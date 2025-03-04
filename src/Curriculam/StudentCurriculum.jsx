@@ -11,16 +11,16 @@ const SubjectMappings = {
 };
 
 const Subjects = [
-  { name: "Python", description: "Learn Python programming from basics to advanced.", image: "/python.jpg" },
-  { name: "Java", description: "Master Java programming concepts with practical examples.", image: "/java.png" },
-  { name: "AdvancedJava", description: "Deep dive into advanced Java programming concepts.", image: "/advancejava.jpg" },
-  { name: "Frontend", description: "Build dynamic and responsive UI using modern frontend technologies.", image: "/frontend.jpg" },
-  { name: "MySQL", description: "Learn database management and SQL queries with MySQL.", image: "/mysql.jpg" },
-  { name: "Flask", description: "Master web development using the Flask framework in Python.", image: "/flask.jpg" },
-  { name: "SoftSkills", description: "Enhance your communication and teamwork skills.", image: "/softskills.jpg" },
-  { name: "Aptitude", description: "Sharpen your logical reasoning and problem-solving skills.", image: "/Aptitude.png" },
-  { name: "Data Science", description: "Explore data science concepts and tools to derive insights.", image: "/datascience.jpg" },
-  { name: "Data Analytics", description: "Learn how to analyze data and make data-driven decisions.", image: "/dataanalytics.jpg" },
+  { name: "Python", description: "Learn Python programming from basics to advanced.", image: "/course_logos/python.svg" },
+  { name: "Java", description: "Master Java programming concepts with practical examples.", image: "/course_logos/java.svg" },
+  { name: "AdvancedJava", description: "Deep dive into advanced Java programming concepts.", image: "/course_logos/advancedjava.svg" },
+  { name: "Frontend", description: "Build dynamic and responsive UI using modern frontend technologies.", image: "/course_logos/frontend.svg" },
+  { name: "MySQL", description: "Learn database management and SQL queries with MySQL.", image: "/course_logos/sql.svg" },
+  { name: "Flask", description: "Master web development using the Flask framework in Python.", image: "/course_logos/flask.svg" },
+  { name: "SoftSkills", description: "Enhance your communication and teamwork skills.", image: "/course_logos/softskills.svg" },
+  { name: "Aptitude", description: "Sharpen your logical reasoning and problem-solving skills.", image: "/course_logos/Aptitude.svg" },
+  { name: "Data Science", description: "Explore data science concepts and tools to derive insights.", image: "/course_logos/datascience.svg" },
+  { name: "Data Analytics", description: "Learn how to analyze data and make data-driven decisions.", image: "/course_logos/dataanalytics.svg" },
 ];
 
 const StudentCurriculum = () => {
@@ -47,7 +47,7 @@ const StudentCurriculum = () => {
         <h1 className="text-5xl font-bold text-center">Student Curriculum</h1>
         <p className="text-2xl text-center">Explore your learning modules and resources</p>
       </div>
-      <div className="bg-[#19216f] rounded-lg p-3 lg:p-20 lg:pb-10 md:p-10 .env py-20 w-full max-w-[100%]  mt-4 pt-15">
+      <div className="bg-[#1426A3] rounded-lg p-3 lg:p-20 lg:pb-10 md:p-10 .env py-20 w-full max-w-[100%]  mt-4 pt-15">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4  md:grid-cols-3 gap-y-20 gap-10"> {/* Increased gap from 6 to 8 */}
           {filteredSubjects.map((subject, index) => (
             <div
@@ -69,7 +69,7 @@ const StudentCurriculum = () => {
                   ))}
                 </div>
                 <h2 className="text-xl font-bold text-gray-800">{subject.name}</h2>
-                <button className="mt-4  bg-[#19216f] text-white py-2 px-4 rounded-md shadow-md hover:bg-blue-700 w-full">
+                <button className="mt-4  bg-[#1426A3] text-white py-2 px-4 rounded-md shadow-md hover:bg-blue-700 w-full">
                   Know More....
                 </button>
               </div>
