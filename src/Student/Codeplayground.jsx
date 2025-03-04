@@ -191,7 +191,7 @@ ${jsCode}
 
     try {
       const response = await fetch(
-        `${import.meta.env.VITE_BACKEND_URL}/api/v1/runcode`,
+        `http://127.0.0.1:3001/api/v1/runcode`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
