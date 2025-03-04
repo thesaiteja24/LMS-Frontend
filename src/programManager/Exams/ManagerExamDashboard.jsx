@@ -35,22 +35,27 @@ export const ManagerExamDashboard = () => {
 
   // Fetch exam details for the selected batch
   const handleDailyClick = async (batch) => {
-    const type = "Daily-Exam";
     try {
-      // API call to fetch exam details for the batch
+      const date = new Date().toISOString().slice(0, 10);
+
       const response = await axios.get(
-        `${import.meta.env.VITE_BACKEND_URL}/api/v1/get-daily-exam-details`,
+        `${import.meta.env.VITE_BACKEND_URL}/api/v1/get-day-exam-data`,
         {
-          params: { batch: batch.Batch }, // Pass batch as query parameter
+          params: {
+            batch: batch.Batch,
+            location: batch.location, // Adjust based on your batch object keys.
+            date,
+          },
         }
       );
 
       const data = response.data;
+      console.log(data);
 
       // Navigate to the exam creation page with the fetched data
-      navigate("/set-exam", {
-        state: { examData: data, batch: batch, type },
-      });
+      // navigate("/set-exam", {
+      //   state: { examData: data, batch: batch },
+      // });
     } catch (error) {
       console.error("Error fetching exam details:", error);
       toast.error(
@@ -117,21 +122,7 @@ export const ManagerExamDashboard = () => {
                   Daily Exam
                 </span>
               </button>
-              <button className="relative inline-flex items-center justify-center p-0.5 mb-2 me-2 overflow-hidden text-sm font-medium text-gray-900 rounded-lg group bg-gradient-to-br from-red-400 to-blue-600 group-hover:from-red-400 group-hover:to-blue-600 hover:text-white focus:ring-red-200 dark:focus:ring-red-800">
-                <span className="relative px-2 py-0.5 transition-all ease-in duration-75 bg-white rounded-md group-hover:bg-transparent group-hover:dark:bg-transparent">
-                  Weekly Exam
-                </span>
-              </button>
-              <button className="relative inline-flex items-center justify-center p-0.5 mb-2 me-2 overflow-hidden text-sm font-medium text-gray-900 rounded-lg group bg-gradient-to-br from-red-400 to-blue-600 group-hover:from-red-400 group-hover:to-blue-600 hover:text-white focus:ring-red-200 dark:focus:ring-red-800">
-                <span className="relative px-2 py-0.5 transition-all ease-in duration-75 bg-white rounded-md group-hover:bg-transparent group-hover:dark:bg-transparent">
-                  Monthly Exam
-                </span>
-              </button>
-              <button className="relative inline-flex items-center justify-center p-0.5 mb-2 me-2 overflow-hidden text-sm font-medium text-gray-900 rounded-lg group bg-gradient-to-br from-red-400 to-blue-600 group-hover:from-red-400 group-hover:to-blue-600 hover:text-white focus:ring-red-200 dark:focus:ring-red-800">
-                <span className="relative px-2 py-0.5 transition-all ease-in duration-75 bg-white rounded-md group-hover:bg-transparent group-hover:dark:bg-transparent">
-                  Grand Test
-                </span>
-              </button>
+              {/* Other buttons... */}
             </div>
           </div>
         ))}
