@@ -24,7 +24,7 @@ const ExamDashboard = () => {
 
   const location = decryptData(localStorage.getItem("location"));
   const studentId = decryptData(localStorage.getItem("student_id"));
-  const Id = decryptData(localStorage.getItem("_id"));
+  const Id = decryptData(localStorage.getItem("id"));
   const batch = studentDetails?.BatchNo;
   const navigate = useNavigate();
 
@@ -90,6 +90,7 @@ const ExamDashboard = () => {
   // 3. Show the instructions modal before starting the exam
   const handleShowInstructions = (exam) => {
     setSelectedExam(exam);
+    console.log(exam);
     setShowInstructions(true);
   };
 
@@ -97,24 +98,23 @@ const ExamDashboard = () => {
   const handleStartExam = async () => {
     if (!selectedExam) return;
 
-    // Use "Exam Name" as the examId and extract a day order (if applicable)
-    const examName = selectedExam["Exam Name"];
-    const examId = examName;
-    const type = "Daily-Exam";
-    // Extract day order by splitting the exam name (e.g. "Daily-Exam-1" -> "1")
-    const dayOrder = examName.split("-").pop();
-
+    const examId = selectedExam.examId;
+    const collectionName = selectedExam["examName"]
+      .split("-")
+      .slice(0, -1)
+      .join("-");
+    console.log(examId, collectionName);
     try {
       if (document.documentElement.requestFullscreen) {
         await document.documentElement.requestFullscreen();
       }
-
       const response = await axios.post(
         `${import.meta.env.VITE_BACKEND_URL}/api/v1/startexam`,
-        { examId, batch, studentId, location, type, dayOrder }
+        { examId, collectionName }
       );
 
       if (response.data.success) {
+        console.log(response);
         localStorage.setItem("examData", JSON.stringify(response.data));
         setExamData(response.data);
         navigate("/conduct-exam");
@@ -155,11 +155,11 @@ const ExamDashboard = () => {
           <div className="flex flex-row ">
             {active.map((exam) => (
               <Card
-                key={exam["Exam Name"]}
+                key={exam["examId"]}
                 className="cursor-pointer hover:shadow-lg"
               >
                 <CardHeader>
-                  <CardTitle>Exam: {exam["Exam Name"]}</CardTitle>
+                  <CardTitle>Exam: {exam["examName"]}</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className="flex flex-col space-y-3 p-7 bg-white shadow-md rounded-lg">
@@ -237,9 +237,9 @@ const ExamDashboard = () => {
           </h3>
           <div className="flex flex-row gap-8">
             {upcoming.map((exam) => (
-              <Card key={exam["Exam Name"]}>
+              <Card key={exam["examId"]}>
                 <CardHeader>
-                  <CardTitle>Exam: {exam["Exam Name"]}</CardTitle>
+                  <CardTitle>Exam: {exam["examName"]}</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className="flex flex-col space-y-3 p-7 bg-white shadow-md rounded-lg">
@@ -306,9 +306,9 @@ const ExamDashboard = () => {
           </h3>
           <div className="flex flex-row gap-8">
             {finished.map((exam) => (
-              <Card key={exam["Exam Name"]}>
+              <Card key={exam["examId"]}>
                 <CardHeader>
-                  <CardTitle>Exam: {exam["Exam Name"]}</CardTitle>
+                  <CardTitle>Exam: {exam["examName"]}</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className="flex flex-col space-y-3 p-7 bg-white shadow-md rounded-lg">
