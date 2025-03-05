@@ -204,7 +204,9 @@ const CurriculumManagement = () => {
   };
 
   const handleExcelUpload = async (e) => {
+    const fileInput = document.getElementById("excelUpload"); // Get file input
     const file = e.target.files[0];
+  
     if (!file) {
       Swal.fire({
         icon: "warning",
@@ -222,10 +224,79 @@ const CurriculumManagement = () => {
         text: "Only Excel or CSV files are supported.",
         icon: "error",
       });
+      fileInput.value = ""; // Reset file input
       return;
     }
   
     try {
+      const processExcelData = (rows, headers) => {
+        let errors = []; // Store validation errors
+        let extractedData = [];
+        let expectedDayOrder = 1; // Track expected incrementing order
+  
+        rows.slice(1).forEach((row, index) => {
+          const rowNum = index + 2; // Excel row starts from 2
+          const subject = row[headers.indexOf("subject")]?.toString().trim();
+          let rawDayOrder = row[headers.indexOf("dayorder")]?.toString().trim();
+  
+          // Reject raw numbers (e.g., "1", "2", "3") directly
+          if (/^\d+$/.test(rawDayOrder)) {
+            errors.push(`❌ Row ${rowNum}: Invalid Day Order "${rawDayOrder}". It should be in format "Day-1", "Day-2", etc.`);
+          }
+  
+          // Ensure valid "Day-" format
+          if (!/^Day-\d+$/.test(rawDayOrder)) {
+            errors.push(`❌ Row ${rowNum}: Invalid Day Order "${rawDayOrder}". Use format "Day-1", "Day-2", etc.`);
+          } else {
+            // Extract number part from "Day-X" and ensure order follows sequential pattern
+            const dayNumber = parseInt(rawDayOrder.replace("Day-", ""), 10);
+            
+            if (dayNumber !== expectedDayOrder) {
+              errors.push(
+                `❌ Row ${rowNum}: Incorrect sequence. Expected "Day-${expectedDayOrder}", but found "${rawDayOrder}".`
+              );
+            } else {
+              expectedDayOrder++; // Increment for next row
+            }
+          }
+  
+          // Validate Subject
+          if (!subjects.includes(subject)) {
+            errors.push(`❌ Row ${rowNum}: Invalid Subject "${subject}". Allowed: ${subjects.join(", ")}`);
+          }
+  
+          // If no errors, add to extracted data
+          if (errors.length === 0) {
+            extractedData.push({
+              subject,
+              dayOrder: rawDayOrder,
+              topic: row[headers.indexOf("topic")]?.toString() || "",
+              subTopics: row[headers.indexOf("subtopics")]
+                ? row[headers.indexOf("subtopics")].split(",").map((item) => item.trim())
+                : [],
+            });
+          }
+        });
+  
+        // Show error messages and reset file input if errors exist
+        if (errors.length > 0) {
+          Swal.fire({
+            title: "Data Validation Errors",
+            html: `<div style="text-align: left; max-height: 300px; overflow-y: auto;">${errors.join("<br>")}</div>`,
+            icon: "error",
+          });
+          fileInput.value = ""; // Reset file input
+          return;
+        }
+  
+        setExcelData(extractedData);
+        Swal.fire({
+          title: "File Uploaded Successfully",
+          text: `${extractedData.length} rows processed.`,
+          icon: "success",
+        });
+      };
+  
       if (fileExtension === "csv") {
         const reader = new FileReader();
         reader.onload = (event) => {
@@ -236,29 +307,15 @@ const CurriculumManagement = () => {
           });
   
           if (parsedData.data.length > 0) {
-            const formattedData = parsedData.data.map((row) => ({
-              subject: row["subject"] || "",
-              dayOrder: row["dayOrder"] || "",
-              topic: row["topic"] || "",
-              // topicsToCover: row["topicsToCover"]
-              //   ? row["topicsToCover"].split(",").map((item) => item.trim())
-              //   : [],
-              subTopics: row["subTopics"]
-                ? row["subTopics"].split(",").map((item) => item.trim())
-                : [],
-            }));
-            setExcelData(formattedData);
-            Swal.fire({
-              icon: "success",
-              title: "File Uploaded Successfully",
-              text: `${formattedData.length} rows processed. Try to submit.`,
-            });
+            const headers = Object.keys(parsedData.data[0]).map((h) => h.toLowerCase().trim());
+            processExcelData(parsedData.data.map(Object.values), headers);
           } else {
             Swal.fire({
               title: "Invalid CSV File",
               text: "The file is empty or missing headers.",
               icon: "error",
             });
+            fileInput.value = ""; // Reset file input
           }
         };
         reader.readAsText(file);
@@ -271,32 +328,16 @@ const CurriculumManagement = () => {
           const sheet = workbook.Sheets[sheetName];
           const rows = XLSX.utils.sheet_to_json(sheet, { header: 1 });
   
-  
           if (rows.length > 1) {
             const headers = rows[0].map((header) => header?.toLowerCase().trim() || "");
-  
-            const formattedData = rows.slice(1).map((row) => ({
-              subject: row[headers.indexOf("subject")]?.toString() || "",
-              dayOrder: row[headers.indexOf("dayorder")]?.toString() || "",
-              topic: row[headers.indexOf("topic")]?.toString() || "",
-
-              subTopics: row[headers.indexOf("subtopics")]
-                ? row[headers.indexOf("subtopics")].split(",").map((item) => item.trim())
-                : [],
-            }));
-  
-            setExcelData(formattedData);
-            Swal.fire({
-              title: "File Uploaded Successfully",
-              text: `${formattedData.length} rows processed.`,
-              icon: "success",
-            });
+            processExcelData(rows, headers);
           } else {
             Swal.fire({
               title: "Invalid Excel File",
               text: "The file is empty or missing headers.",
               icon: "error",
             });
+            fileInput.value = ""; // Reset file input
           }
         };
         reader.readAsArrayBuffer(file);
@@ -307,8 +348,12 @@ const CurriculumManagement = () => {
         title: "Error",
         text: `An error occurred: ${error.message}`,
       });
+      fileInput.value = ""; // Reset file input
     }
   };
+  
+  
+  
   
   
   const handleSubmitExcel = async () => {

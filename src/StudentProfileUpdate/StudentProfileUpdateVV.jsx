@@ -556,8 +556,8 @@ export default function StudentProfileUpdateVV() {
 
     {/* Card 3: ATS Resume Score */}
     <div className="bg-[#19216f] text-white  shadow-md p-5 flex flex-col items-center justify-center w-full md:w-1/3 md:rounded-l-none md:rounded-r-md">
-      <span className="font-semibold text-2xl">ATS Resume Score</span>
-      <span className="text-xl font-bold">
+      <span className="font-semibold text-xl">ATS Resume Score</span>
+      <span className="text-md font-bold">
         {resumeScore !== null ? `${resumeScore}/100` : "Check Your resume Score"}
       </span>
     </div>
