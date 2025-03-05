@@ -22,11 +22,12 @@ export const ExamProvider = ({ children }) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const studentName = studentDetails?.name || "Student Name";
-  const studentExamId = examData?.exam.studentExamId;
+  // Updated: use examId in place of studentExamId if not available
+  const studentExamId = examData?.exam.studentExamId || examData?.exam.examId;
   const totalExamTime = examData?.exam.totalExamTime;
 
-  // Calculate totalScore
-  const totalScore = examData?.exam.subjects.reduce((acc, subject) => {
+  // Calculate totalScore using examData.exam.paper
+  const totalScore = examData?.exam.paper.reduce((acc, subject) => {
     const mcqScore = subject.MCQs
       ? subject.MCQs.reduce((sum, q) => sum + q.Score, 0)
       : 0;
@@ -44,13 +45,13 @@ export const ExamProvider = ({ children }) => {
     }
   }, []);
 
-  // Extract MCQs and Coding questions for all subjects
+  // Extract MCQs and Coding questions for all subjects from examData.exam.paper
   useEffect(() => {
     if (!examData) return;
 
     const extractedMCQs = [];
     const extractedCoding = [];
-    examData.exam.subjects.forEach((subject) => {
+    examData.exam.paper.forEach((subject) => {
       if (subject.MCQs?.length > 0) {
         extractedMCQs.push(
           ...subject.MCQs.map((q) => ({
@@ -72,7 +73,8 @@ export const ExamProvider = ({ children }) => {
         );
       }
     });
-    setExamType(examData.exam.type);
+    // Updated: use examName as exam type
+    setExamType(examData.exam.examName);
     setMcqQuestions(extractedMCQs);
     setCodingQuestions(extractedCoding);
   }, [examData]);
@@ -168,15 +170,15 @@ export const ExamProvider = ({ children }) => {
     if (!examData) {
       console.error("No exam data available");
       toast.error("No exam data available");
-      // Allow future submissions if no data was found,
-      // or keep locked if you want no more attempts
       setIsSubmitting(false);
       return;
     }
 
+    const exam = examData.exam.examName.split("-").slice(0, -1).join("-");
+    // Adjust payload keys as necessary.
     const payload = {
       examId: examData.exam.examId,
-      studentExamId: examData.exam.studentExamId,
+      exam: exam,
     };
 
     // Collect MCQ answers
@@ -213,7 +215,6 @@ export const ExamProvider = ({ children }) => {
       if (response.data.success) {
         toast.success("Exam submitted successfully!");
         localStorage.setItem("Analysis", JSON.stringify(response.data));
-        // Navigate to Exam Dashboard & pass response as state
         navigate("/exam-analysis");
 
         localStorage.setItem("warnCount", 0);
@@ -224,14 +225,10 @@ export const ExamProvider = ({ children }) => {
     } catch (error) {
       toast.error("Error during exam submission: " + error.message);
       console.error("Error during exam submission:", error);
-
-      // Optionally navigate to a result/error page
       navigate("/exam-analysis", { state: { error: error.message } });
-
       localStorage.setItem("warnCount", 0);
     } finally {
-      // If you want to allow only one submission total, keep isSubmitting = true
-      // Otherwise, set it back to false if multiple attempts are permitted
+      // Optionally allow multiple submissions if needed:
       // setIsSubmitting(false);
     }
   };
