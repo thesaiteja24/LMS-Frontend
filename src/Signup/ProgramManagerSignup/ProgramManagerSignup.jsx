@@ -449,7 +449,7 @@ export default function ProgramManagerSignup() {
               Parent Phone Number
             </label>
             <div className="flex items-center border border-gray-300 rounded-md p-2">
-            <FaPhone className="text-black mr-2" />
+            <FaWhatsapp  className="text-green-600 mr-2 text-2xl" />
 
               <Select
                 options={countryCodes}

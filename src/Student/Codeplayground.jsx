@@ -191,7 +191,7 @@ ${jsCode}
 
     try {
       const response = await fetch(
-        `http://127.0.0.1:3001/api/v1/runcode`,
+        `${import.meta.env.VITE_BACKEND_URL}/api/v1/runcode`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -232,20 +232,6 @@ ${jsCode}
     }
   };
 
-  // Save code
-  // const handleSaveFile = () => {
-  //   if (languageKey === WEB_OPTION) {
-  //     const webData = { htmlCode, cssCode, jsCode };
-  //     localStorage.setItem("savedWebCode", JSON.stringify(webData));
-  //     alert("Web code saved locally!");
-  //   } else {
-  //     localStorage.setItem("savedCode", code);
-  //     alert("Code saved locally!");
-  //   }
-  // };
-
-  // Download code
-// Download code as separate HTML, CSS, and JS files
 const handleDownloadFile = () => {
   if (languageKey === WEB_OPTION) {
     // Create HTML, CSS, and JS blobs
