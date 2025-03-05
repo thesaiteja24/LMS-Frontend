@@ -1,26 +1,26 @@
-import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { Eye, EyeOff } from 'lucide-react';
-import axios from 'axios';
-import { encryptData } from '../../cryptoUtils.jsx'; // Import encryption method
-import './StudentLogin.css';
-import Swal from 'sweetalert2/dist/sweetalert2.min.js';
-import Footer from '../Footer/Footer';
+import React, { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { Eye, EyeOff } from "lucide-react";
+import axios from "axios";
+import { encryptData } from "../../cryptoUtils.jsx"; // Import encryption method
+import "./StudentLogin.css";
+import Swal from "sweetalert2/dist/sweetalert2.min.js";
+import Footer from "../Footer/Footer";
 
 export default function StudentLogin({ setIsAuthenticated }) {
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
-  
+
   const navigate = useNavigate();
-  
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
 
     try {
-      const isEmail = username.includes('@');
+      const isEmail = username.includes("@");
       const payload = isEmail
         ? { email: username.toLowerCase(), password }
         : { studentId: username, password };
@@ -32,7 +32,7 @@ export default function StudentLogin({ setIsAuthenticated }) {
 
       if (response.status === 200) {
         setIsAuthenticated(true);
-        
+
         // Encrypt and store sensitive data in localStorage
         const id = response.data.id;
         const userType = response.data.user.usertype;
@@ -49,46 +49,47 @@ export default function StudentLogin({ setIsAuthenticated }) {
         localStorage.setItem('student_id', encryptedId);
         localStorage.setItem('location', encryptedLocation);
         localStorage.setItem(`${userType}`, encryptedId);
+        localStorage.setItem("_id", encryptData(response.data._id));
 
         const userRoutes = {
-          student_login_details: '/student-profile',
-          Mentors: '/mentor-dashboard',
-          BDE_data: '/jobs-dashboard',
-          Manager: '/viewbatch',
-          super: '/admin-dashboard',
-          superAdmin: '/reports',
+          student_login_details: "/student-profile",
+          Mentors: "/mentor-dashboard",
+          BDE_data: "/jobs-dashboard",
+          Manager: "/viewbatch",
+          super: "/admin-dashboard",
+          superAdmin: "/reports",
         };
-        const redirectTo = userRoutes[userType] || '/not-found';
+        const redirectTo = userRoutes[userType] || "/not-found";
         navigate(redirectTo);
 
         Swal.fire({
-          title: 'Login Successful',
-          icon: 'success',
+          title: "Login Successful",
+          icon: "success",
         });
       }
     } catch (error) {
-      console.error('Login failed:', error);
+      console.error("Login failed:", error);
 
-      if (error.code === 'ERR_NETWORK' || error.message === 'Network Error') {
+      if (error.code === "ERR_NETWORK" || error.message === "Network Error") {
         Swal.fire({
-          icon: 'error',
-          title: 'Network Error',
-          text: 'Please check your internet connection and try again.',
+          icon: "error",
+          title: "Network Error",
+          text: "Please check your internet connection and try again.",
         });
       } else if (error.response?.status === 404) {
         Swal.fire({
-          icon: 'error',
-          title: 'User not found. Please check your details.',
+          icon: "error",
+          title: "User not found. Please check your details.",
         });
       } else if (error.response?.status === 400) {
         Swal.fire({
-          icon: 'error',
-          title: 'Invalid credentials. Please try again.',
+          icon: "error",
+          title: "Invalid credentials. Please try again.",
         });
       } else {
         Swal.fire({
-          icon: 'error',
-          title: 'An unexpected error occurred. Please try later.',
+          icon: "error",
+          title: "An unexpected error occurred. Please try later.",
         });
       }
     } finally {
@@ -145,7 +146,7 @@ export default function StudentLogin({ setIsAuthenticated }) {
                   </label>
                   <div className="relative">
                     <input
-                      type={showPassword ? 'text' : 'password'}
+                      type={showPassword ? "text" : "password"}
                       id="password"
                       className="block w-full p-1 text-lg border rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 border-gray-300"
                       placeholder="Enter Password"
@@ -176,12 +177,13 @@ export default function StudentLogin({ setIsAuthenticated }) {
                   type="submit"
                   className={`w-full py-2 px-4 mt-0 text-2xl font-medium text-white rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 ${
                     loading
-                      ? 'bg-gray-500 cursor-not-allowed'
-                      : 'bg-[#0737EE] hover:bg-blue-700'
+                      ? "bg-gray-500 cursor-not-allowed"
+                      : "bg-[#0737EE] hover:bg-blue-700"
                   }`}
                   disabled={loading} // Disable button during loading
                 >
-                  {loading ? 'Loading...' : 'Login'} {/* Change button text during loading */}
+                  {loading ? "Loading..." : "Login"}{" "}
+                  {/* Change button text during loading */}
                 </button>
               </form>
             </div>

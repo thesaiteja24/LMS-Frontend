@@ -73,7 +73,7 @@ const TestCaseTabs = ({ testCases }) => {
               </p>
             )}
 
-            <div className="flex flex-col sm:flex-row gap-5">
+            <div className="flex flex-col sm:flex-row gap-5 overflow-x-scroll">
               <div>
                 <strong>Expected Output:</strong>
                 <pre className="bg-gray-800 p-2 rounded mt-1">
