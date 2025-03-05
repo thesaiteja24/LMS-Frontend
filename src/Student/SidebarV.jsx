@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
 import Swal from "sweetalert2";
 import {
   FaBars,
@@ -38,7 +37,7 @@ export const SidebarV = ({ setIsAuthenticated }) => {
   const navigate = useNavigate();
 
   // --- 1) Use our context to get student info + pic
-  const { studentDetails, loading, profilePicture } = useStudent();
+  const { studentDetails,  profilePicture } = useStudent();
 
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isCollapsed, setIsCollapsed] = useState(false);
@@ -46,8 +45,7 @@ export const SidebarV = ({ setIsAuthenticated }) => {
 
   const userType = decryptData(localStorage.getItem("userType"));
   const profileStatus = localStorage.getItem("profileStatus");
-  console.log(userType);
- console.log(profileStatus);
+
   // 2) Navigation with check for "incomplete profile"
   const handleNavigation = (path) => {
     const restrictedPaths = [
