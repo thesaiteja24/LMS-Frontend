@@ -289,18 +289,13 @@ const ExamDashboard = () => {
                       startTime={exam.startTime}
                       totalExamTime={exam.totalExamTime}
                     />
-                  </td>
-                </tr>
-              </tbody>
-            </table>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
           </div>
-
-              </CardContent>
-            </Card>
-          ))}
         </div>
-      </div>
-    )}
+      )}
 
       {/* ==================== FINISHED EXAMS ==================== */}
       {finished.length > 0 && (
@@ -374,14 +369,14 @@ const ExamDashboard = () => {
         </div>
       )}
 
-    {/* ==================== INSTRUCTIONS MODAL ==================== */}
-    {showInstructions && (
-      <InstructionsModal
-        onClose={() => setShowInstructions(false)}
-        onAgree={handleStartExam}
-      />
-    )}
-  </div>
+      {/* ==================== INSTRUCTIONS MODAL ==================== */}
+      {showInstructions && (
+        <InstructionsModal
+          onClose={() => setShowInstructions(false)}
+          onAgree={handleStartExam}
+        />
+      )}
+    </div>
   );
 };
 
