@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios"; // Import axios for API calls
-import CurriculumTable from "./CurriculumTable";
 import { useStudentsMentorData } from "../contexts/MentorStudentsContext";
 import { Table } from "./Table.jsx";
 import { decryptData } from "../../cryptoUtils.jsx";
@@ -139,15 +138,14 @@ const Course = () => {
 
         {/* Curriculum Table Section */}
         <div className="w-full max-w-7xl mx-auto mt-6 bg-white rounded-md min-h-[500px] p-4 md:p-6">
-  <div className="overflow-x-auto flex items-center justify-center h-full">
-    <Tabel
-      subject={selectedSubject}
-      batch={selectedBatch}
-      mentorId={mentorId}
-    />
-  </div>
-</div>
-
+          <div className="overflow-x-auto flex items-center justify-center h-full">
+            <Table
+              subject={selectedSubject}
+              batch={selectedBatch}
+              mentorId={mentorId}
+            />
+          </div>
+        </div>
       </div>
     </div>
   );
