@@ -8,31 +8,27 @@ import { useNavigate } from "react-router-dom";
 import { ExamContext } from "./ExamContext";
 import ExamCountdownTimer from "./ExamCountDownTimer";
 import InstructionsModal from "./InstructionsModal"; // <-- Import Modal
-import { decryptData } from '../../../../../cryptoUtils.jsx'
-
+import { decryptData } from "../../../../../cryptoUtils.jsx";
 
 const ExamDashboard = () => {
   const { setExamData } = useContext(ExamContext);
   const { studentDetails, loading: studentLoading } = useStudent();
 
   const [exams, setExams] = useState([]);
-  // Keep track of completed exam IDs (use a Set for quick lookup)
-  const [completedExams, setCompletedExams] = useState(new Set());
   const [loading, setLoading] = useState(true);
-  const [statusLoading, setStatusLoading] = useState(true);
   const [error, setError] = useState("");
 
   // When user clicks "Start Exam," we need to store the exam data and show the modal
   const [selectedExam, setSelectedExam] = useState(null);
   const [showInstructions, setShowInstructions] = useState(false);
 
-  // These values might come from localStorage or your context
   const location = decryptData(localStorage.getItem("location"));
   const studentId = decryptData(localStorage.getItem("student_id"));
+  const Id = decryptData(localStorage.getItem("_id"));
   const batch = studentDetails?.BatchNo;
   const navigate = useNavigate();
 
-  // 1. Fetch all available exams for the given batch/location
+  // 1. Fetch all available exams for the given batch/location using the new response structure
   useEffect(() => {
     const fetchExams = async () => {
       try {
@@ -40,10 +36,15 @@ const ExamDashboard = () => {
         const response = await axios.get(
           `${
             import.meta.env.VITE_BACKEND_URL
-          }/api/v1/get-available-exams?batch=${batch}&location=${location}`
+          }/api/v1/get-available-exams?studentId=${Id}`
         );
-        if (response.data.success) {
-          setExams(response.data.exams);
+        // Expect exams under the "Daily-Exam" key
+        if (
+          response.data.success &&
+          response.data.exams &&
+          response.data.exams["Daily-Exam"]
+        ) {
+          setExams(response.data.exams["Daily-Exam"]);
         } else {
           setError(response.data.message || "No exams found.");
         }
@@ -57,34 +58,9 @@ const ExamDashboard = () => {
     if (batch && location) {
       fetchExams();
     }
-  }, [batch, location]);
+  }, [batch, location, Id]);
 
-  // 2. Fetch the user’s exam status to mark which exam(s) have been completed
-  useEffect(() => {
-    const fetchExamStatus = async () => {
-      try {
-        setStatusLoading(true);
-        const response = await axios.get(
-          `${
-            import.meta.env.VITE_BACKEND_URL
-          }/api/v1/exam-status?studentId=${studentId}&batch=${batch}&location=${location}`
-        );
-        if (response.data.success && response.data.completedExamIds) {
-          setCompletedExams(new Set(response.data.completedExamIds));
-        }
-      } catch (err) {
-        console.error("Error fetching exam status:", err);
-      } finally {
-        setStatusLoading(false);
-      }
-    };
-
-    if (studentId && batch && location) {
-      fetchExamStatus();
-    }
-  }, [studentId, batch, location]);
-
-  // 3. Categorize exams as active, upcoming, or finished
+  // 2. Categorize exams as active, upcoming, or finished using the exam's startDate, startTime, and totalExamTime
   const categorizeExams = () => {
     const now = new Date();
     const active = [];
@@ -92,7 +68,6 @@ const ExamDashboard = () => {
     const finished = [];
 
     exams.forEach((exam) => {
-      // Convert the exam date/time to a JS Date object
       const examStart = new Date(`${exam.startDate}T${exam.startTime}`);
       const examEnd = new Date(
         examStart.getTime() + exam.totalExamTime * 60000
@@ -112,35 +87,36 @@ const ExamDashboard = () => {
 
   const { active, upcoming, finished } = categorizeExams();
 
-  // 4. Show the instructions modal before starting the exam
+  // 3. Show the instructions modal before starting the exam
   const handleShowInstructions = (exam) => {
     setSelectedExam(exam);
     setShowInstructions(true);
   };
 
-  // 5. After agreeing to the instructions, start the exam
+  // 4. After agreeing to the instructions, start the exam
   const handleStartExam = async () => {
     if (!selectedExam) return;
-    const { examId, type, dayOrder } = selectedExam;
+
+    // Use "Exam Name" as the examId and extract a day order (if applicable)
+    const examName = selectedExam["Exam Name"];
+    const examId = examName;
+    const type = "Daily-Exam";
+    // Extract day order by splitting the exam name (e.g. "Daily-Exam-1" -> "1")
+    const dayOrder = examName.split("-").pop();
 
     try {
-      // Request fullscreen mode for the exam
       if (document.documentElement.requestFullscreen) {
         await document.documentElement.requestFullscreen();
       }
 
-      // Hit your "start exam" endpoint
       const response = await axios.post(
         `${import.meta.env.VITE_BACKEND_URL}/api/v1/startexam`,
         { examId, batch, studentId, location, type, dayOrder }
       );
 
       if (response.data.success) {
-        // Save exam data to local storage/context
         localStorage.setItem("examData", JSON.stringify(response.data));
         setExamData(response.data);
-
-        // Navigate user to the exam page
         navigate("/conduct-exam");
       } else {
         console.error("Failed to start exam:", response.data.message);
@@ -150,8 +126,8 @@ const ExamDashboard = () => {
     }
   };
 
-  // Loading states
-  if (loading || studentLoading || statusLoading) {
+  // Loading and error states
+  if (loading || studentLoading) {
     return (
       <div className="flex items-center justify-center">
         <Loader className="animate-spin" />
@@ -159,7 +135,6 @@ const ExamDashboard = () => {
     );
   }
 
-  // Error state
   if (error) {
     return (
       <div className="text-3xl text-center">
@@ -180,11 +155,11 @@ const ExamDashboard = () => {
           <div className="flex flex-row ">
             {active.map((exam) => (
               <Card
-                key={exam.examId}
+                key={exam["Exam Name"]}
                 className="cursor-pointer hover:shadow-lg"
               >
                 <CardHeader>
-                  <CardTitle>Day Order : {exam.dayOrder}</CardTitle>
+                  <CardTitle>Exam: {exam["Exam Name"]}</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className="flex flex-col space-y-3 p-7 bg-white shadow-md rounded-lg">
@@ -221,11 +196,9 @@ const ExamDashboard = () => {
                         <span className="text-gray-600">
                           : {exam.startDate}
                         </span>
-
                         <span className="text-gray-600">
                           : {exam.startTime}
                         </span>
-
                         <span className="text-gray-600">
                           : {exam.totalExamTime} mins
                         </span>
@@ -234,16 +207,16 @@ const ExamDashboard = () => {
                     <button
                       type="button"
                       onClick={() => handleShowInstructions(exam)}
-                      disabled={completedExams.has(exam.examId)}
+                      disabled={exam["attempt-status"]}
                       className={`focus:outline-none text-white font-semibold text-xl rounded-lg px-5 py-2.5
                         ${
-                          completedExams.has(exam.examId)
+                          exam["attempt-status"]
                             ? "bg-gray-400 cursor-not-allowed"
                             : "bg-[#19216F] hover:bg-[#0f22b4]"
                         }
                       `}
                     >
-                      {completedExams.has(exam.examId)
+                      {exam["attempt-status"]
                         ? "Already Attempted"
                         : "Start Exam"}
                     </button>
@@ -264,15 +237,15 @@ const ExamDashboard = () => {
           </h3>
           <div className="flex flex-row gap-8">
             {upcoming.map((exam) => (
-              <Card key={exam.examId}>
+              <Card key={exam["Exam Name"]}>
                 <CardHeader>
-                  <CardTitle>Day Order : {exam.dayOrder}</CardTitle>
+                  <CardTitle>Exam: {exam["Exam Name"]}</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className="flex flex-col space-y-3 p-7 bg-white shadow-md rounded-lg">
                     <div className="flex flex-row justify-evenly">
-                      <div>
-                        <div className="flex items-center gap-2">
+                      <div className="flex flex-col gap-4">
+                        <div className="flex gap-2">
                           <img
                             src="ExamModule/Date.png"
                             alt="Date"
@@ -280,7 +253,7 @@ const ExamDashboard = () => {
                           />
                           <strong className="text-gray-700">Start Date</strong>
                         </div>
-                        <div className="flex items-center gap-2">
+                        <div className="flex gap-2">
                           <img
                             src="ExamModule/Watch.png"
                             alt="Clock"
@@ -288,7 +261,7 @@ const ExamDashboard = () => {
                           />
                           <strong className="text-gray-700">Start Time</strong>
                         </div>
-                        <div className="flex items-center gap-2">
+                        <div className="flex gap-2">
                           <img
                             src="ExamModule/Sand-clock.png"
                             alt="Duration"
@@ -333,9 +306,9 @@ const ExamDashboard = () => {
           </h3>
           <div className="flex flex-row gap-8">
             {finished.map((exam) => (
-              <Card key={exam.examId}>
+              <Card key={exam["Exam Name"]}>
                 <CardHeader>
-                  <CardTitle>Day Order : {exam.dayOrder}</CardTitle>
+                  <CardTitle>Exam: {exam["Exam Name"]}</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className="flex flex-col space-y-3 p-7 bg-white shadow-md rounded-lg">
@@ -383,7 +356,7 @@ const ExamDashboard = () => {
                         </span>
                         <img
                           src="ExamModule/Exam-Completed.png"
-                          alt="Date"
+                          alt="Completed"
                           className="w-10 h-8 ml-2"
                         />
                       </div>
