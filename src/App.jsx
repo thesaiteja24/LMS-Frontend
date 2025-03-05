@@ -53,7 +53,6 @@ import EnquiryForm from "./RequestForm/EnquiryForm.jsx";
 import SubjectDetails from "./Curriculam/SubjectDetails.jsx";
 import { ManagerExamDashboard } from "./programManager/Exams/ManagerExamDashboard.jsx";
 import { SetExam } from "./programManager/Exams/SetExam.jsx";
-import ExamSecurityWrapper from "./Student/Exams_module/students/ExamModule/ExamSecurityWrapper.jsx";
 import { ExamAnalysis } from "./Student/Exams_module/students/ExamAnalysis/ExamAnalysis";
 import { DailyQuestionBank } from "./Mentor/ManageExams/QuestionBanks/DailyQuestionBank.jsx";
 import UploadQuestions from "./Mentor/ManageExams/UploadQuestions.jsx";
@@ -513,9 +512,8 @@ export default function App() {
             element={
               <ProtectedRoute allowedRoles={["student_login_details"]}>
                 <ExamProvider>
-                  <ExamSecurityWrapper>
                     <Parent />
-                  </ExamSecurityWrapper>
+                 
                 </ExamProvider>
               </ProtectedRoute>
             }

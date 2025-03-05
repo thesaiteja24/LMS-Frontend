@@ -80,11 +80,7 @@ const CurriculumManagement = () => {
     fetchCurriculumData();
   }, [fetchCurriculumData]);
 
-  // const handleAddTopicToList = (newTopic) => {
-  //   if (newTopic.trim() !== "") {
-  //     setTopicsToCover((prevTopics) => [...prevTopics, newTopic]);
-  //   }
-  // };
+
 
   const handleFilterChange = (subject) => {
     setFilterSubject(subject);
@@ -190,7 +186,6 @@ const CurriculumManagement = () => {
     "SoftSkills",
     "Aptitude",
     "Java",
-    // "CoreJava",
     "AdvancedJava",
     "DataScience",
     "DataAnalytics"
@@ -284,9 +279,7 @@ const CurriculumManagement = () => {
               subject: row[headers.indexOf("subject")]?.toString() || "",
               dayOrder: row[headers.indexOf("dayorder")]?.toString() || "",
               topic: row[headers.indexOf("topic")]?.toString() || "",
-              // topicsToCover: row[headers.indexOf("topicstocover")]
-              //   ? row[headers.indexOf("topicstocover")].split(",").map((item) => item.trim())
-              //   : [],
+
               subTopics: row[headers.indexOf("subtopics")]
                 ? row[headers.indexOf("subtopics")].split(",").map((item) => item.trim())
                 : [],
@@ -464,35 +457,7 @@ const CurriculumManagement = () => {
         </div>
 
           
-          {/* <div className="flex-2 min-w-[250px]">
-            <label htmlFor="topicsToCover" className="block text-sm font-medium text-gray-700 mb-2">
-              Topics to Cover:
-            </label>
-            <input
-              id="topicsToCover"
-              type="text"
-              placeholder="Topics to Cover (Press Enter)"
-              onKeyDown={(e) => {
-                if (e.key === "Enter" && e.target.value.trim()) {
-                  handleAddTopicToList(e.target.value.trim());
-                  e.target.value = "";
-                }
-              }}
-              className="w-full p-3 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500"
-            />
-          </div> */}
-          {/* {topicsToCover.length > 0 && (
-          <div className="mt-4">
-            <h4 className="text-lg font-semibold text-gray-600 mb-2">Topics to Cover:</h4>
-            <ul className="list-disc list-inside text-gray-800">
-              {topicsToCover.map((item, index) => (
-                <li key={index} className="mb-1">
-                  {item}
-                </li>
-              ))}
-            </ul>
-          </div>
-        )} */}
+    
 
         {subTopics.length > 0 && (
         <div className="mt-4">
@@ -571,13 +536,7 @@ const CurriculumManagement = () => {
                 ))}
               </ul>
             </td>
-            {/* <td className="py-3 px-4 border">
-              <ul className="list-disc list-inside">
-                {(data.TopicsToCover || []).map((item, idx) => (
-                  <li key={idx}>{item}</li>
-                ))}
-              </ul>
-            </td> */}
+            
           </tr>
         ))}
       </tbody>
@@ -590,8 +549,7 @@ const CurriculumManagement = () => {
       </>):(<div className="bg-white shadow-md rounded-lg p-6 mb-4">
          
                   <div className="flex justify-center gap-4 mb-4 text-center items-center">
-                    <span className="text-red-600"> Demo template for uploade Excel File
-                    </span>
+
                     <button
                       className="flex items-center gap-2 px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600"
                       onClick={handleDownloadTemplate}
