@@ -4,8 +4,8 @@ import axios from "axios";
 import Swal from "sweetalert2";
 
 const Table = ({ data, onEditRow }) => {
-  const [filter, setFilter] = useState(""); // Global filter for all columns
-  const [roomFilter, setRoomFilter] = useState(""); // Filter by RoomNo
+  const [filter, setFilter] = useState(""); 
+  const [roomFilter, setRoomFilter] = useState(""); 
   const [editedData, setEditedData] = useState([]);
 
   useEffect(() => {
@@ -25,7 +25,6 @@ const Table = ({ data, onEditRow }) => {
     const id = rowToDelete.id;
   
     try {
-      // Confirm delete action
       const result = await Swal.fire({
         title: "Are you sure?",
         text: "You won't be able to revert this!",
@@ -37,21 +36,17 @@ const Table = ({ data, onEditRow }) => {
       });
   
       if (result.isConfirmed) {
-        // Using Axios to delete the row
         const response = await axios.delete(`${import.meta.env.VITE_BACKEND_URL}/api/v1/schedule`, {
           params: { id },
         });
   
         if (response.status !== 200) throw new Error("Failed to delete row.");
   
-        // Update state after successful deletion
         setEditedData((prevData) => prevData.filter((_, idx) => idx !== index));
   
-        // Show success message
         Swal.fire("Deleted!", "The row has been deleted.", "success");
       }
     } catch (error) {
-      // Show error message
       Swal.fire("Error", error.message || "Failed to delete the row. Please try again.", "error");
       console.error("Error deleting row:", error.message);
     }

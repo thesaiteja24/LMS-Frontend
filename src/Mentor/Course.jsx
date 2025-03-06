@@ -66,19 +66,14 @@ const Course = () => {
 
   return (
     <div className="bg-[#F5F5F5] flex flex-col justify-start items-center px-4 sm:px-6 md:px-8 lg:px-16 xl:px-32">
-      {/* Heading - Mentor Curriculum */}
       <h1 className="text-[#19216f] font-poppins font-semibold text-[32px] leading-[48px] text-center">
         Mentor Curriculum
       </h1>
 
-      {/* Top Divider */}
       <div className="w-full max-w-[1200px] border-t border-[#D1D1D1] mt-4"></div>
 
-      {/* Main White Container */}
       <div className="bg-white w-full max-w-full h-auto shadow-md rounded-md mt-6 p-6 flex flex-col justify-center">
-        {/* Subject & Batch Selection */}
         <div className="w-full flex flex-col sm:flex-row justify-between items-center px-8 space-y-4 sm:space-y-0">
-          {/* Select Subject */}
           <div className="flex items-center w-full sm:w-1/2">
             <label className="text-[#19216f] font-poppins font-semibold text-[24px] leading-[36px] w-[200px]">
               Select a Subject
@@ -99,7 +94,6 @@ const Course = () => {
             </select>
           </div>
 
-          {/* Select Batch - Always Visible */}
           <div className="flex items-center w-full sm:w-1/2">
             <label className="text-[#19216f] font-poppins font-semibold text-[24px] leading-[36px] w-[200px]">
               Select a Batch
@@ -113,7 +107,7 @@ const Course = () => {
                 }`}
               value={selectedBatch}
               onChange={(e) => setSelectedBatch(e.target.value)}
-              disabled={!selectedSubject} // Disabled if no subject is selected
+              disabled={!selectedSubject} 
             >
               <option value="" disabled>
                 Choose a batch
@@ -133,10 +127,8 @@ const Course = () => {
           </div>
         </div>
 
-        {/* Divider Inside the White Container */}
         <div className="w-full max-w-[1528px] border-t border-[#303C60] mt-6 mx-auto"></div>
 
-        {/* Curriculum Table Section */}
         <div className="w-full max-w-7xl mx-auto mt-6 bg-white rounded-md min-h-[500px] p-4 md:p-6">
           <div className="overflow-x-auto flex items-center justify-center h-full">
             <Table
