@@ -221,6 +221,11 @@ export const SidebarV = ({ setIsAuthenticated }) => {
             icon: FaCode,
           },
           {
+            label: "Test Case Compiler",
+            path: "/testcasecompiler",
+            icon: FaCode,
+          },
+          {
             label: "Students Performance",
             path: "/students-performance-mentor",
             icon: FaChartLine,
