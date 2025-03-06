@@ -221,6 +221,11 @@ export const SidebarV = ({ setIsAuthenticated }) => {
             path: "/codeplayground",
             icon: FaCode,
           },
+          {
+            label: "Test Case Compiler",
+            path: "/testcasecompiler",
+            icon: FaCode,
+          },
           { label: "Logout", action: handleLogout, icon: FaSignOutAlt },
         ];
       case "Manager":

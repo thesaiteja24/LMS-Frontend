@@ -138,7 +138,7 @@ export const ManagerExamDashboard = () => {
             </div>
             <div className="flex flex-row">
               <button
-                onClick={() => checkDailyExamStatus(batch)}
+                onClick={() => handleDailyClick(batch)}
                 className="relative inline-flex items-center justify-center p-0.5 mb-2 me-2 overflow-hidden text-sm font-medium text-gray-900 rounded-lg group bg-gradient-to-br from-red-400 to-blue-600 group-hover:from-red-400 group-hover:to-blue-600 hover:text-white focus:ring-red-200 dark:focus:ring-red-800"
               >
                 <span className=" relative px-2 py-0.5 transition-all ease-in duration-75 bg-white rounded-md group-hover:bg-transparent group-hover:dark:bg-transparent">

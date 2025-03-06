@@ -272,19 +272,19 @@ const StudentLocationWise = () => {
               Skills
             </th>
             <td className="border px-4 py-3">
-              {studentData.studentSkills && studentData.studentSkills.length > 0 ? (
-                studentData.studentSkills.map((skill, index) => (
-                  <span
-                    key={index}
-                    className="inline-block px-2 py-1 bg-indigo-100 text-indigo-800 text-xs font-semibold rounded-full mr-2"
-                  >
-                    {skill}
-                  </span>
-                ))
-              ) : (
-                "N/A"
-              )}
-            </td>
+            {Array.isArray(studentData?.studentSkills) && studentData.studentSkills.length > 0 ? (
+              studentData.studentSkills.map((skill, index) => (
+                <span
+                  key={index}
+                  className="inline-block px-2 py-1 bg-indigo-100 text-indigo-800 text-xs font-semibold rounded-full mr-2"
+                >
+                  {skill}
+                </span>
+              ))
+            ) : (
+              "N/A"
+            )}
+          </td>
           </tr>
 
           {/* GitHub Link */}
