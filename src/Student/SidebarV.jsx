@@ -222,7 +222,7 @@ export const SidebarV = ({ setIsAuthenticated }) => {
           },
           {
             label: "Students Performance",
-            path: "/student-performance-mentor",
+            path: "/students-performance-mentor",
             icon: FaChartLine,
           },
           { label: "Logout", action: handleLogout, icon: FaSignOutAlt },

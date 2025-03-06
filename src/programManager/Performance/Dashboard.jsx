@@ -36,13 +36,13 @@ export const Dashboard = () => {
 
   // Fetch exam details for the selected batch and navigate to DailyPerformance
   const handleDailyClick = async (batch) => {
+    console.log("batch:", batch.Batch, "location:", localStorageLocation);
     try {
       const response = await axios.get(
-        `${import.meta.env.VITE_BACKEND_URL}/api/v1/exam-details`,
+        `${import.meta.env.VITE_BACKEND_URL}/api/v1/daily-exam-performance`,
         {
           params: {
             batch: batch.Batch,
-            type: "Daily-Exam",
             location: localStorageLocation,
           },
         }
