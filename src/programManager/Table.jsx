@@ -132,6 +132,7 @@ const Table = ({ data, onEditRow }) => {
                       <FaEdit /> Edit
                     </button>
                     <button
+                      
                       className="bg-red-500 text-white px-4 py-1 rounded flex items-center gap-2"
                       onClick={() => handleDeleteClick(idx)}
                     >
