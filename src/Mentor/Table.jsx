@@ -185,10 +185,15 @@ export const Table = ({ subject, batch, mentorId }) => {
                       <td className="px-6 py-4">
                         {!rowComplete && (
                           <button
+                            disabled={loading}
                             onClick={() => handleRowSubmit(id)}
-                            className="w-[100px] h-[36px] text-white text-base font-semibold rounded-md transition bg-[#0C1BAA] hover:bg-blue-900"
+                            className={`w-[100px] h-[36px] text-white text-base font-semibold rounded-md transition ${
+                              !loading
+                                ? "bg-[#0C1BAA] hover:bg-blue-900"
+                                : "bg-gray-400 cursor-not-allowed"
+                            }`}
                           >
-                            Submit
+                            {!loading ? "Submit" : "Submitting"}
                           </button>
                         )}
                       </td>

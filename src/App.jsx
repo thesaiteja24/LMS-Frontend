@@ -45,7 +45,6 @@ import LiveClasses from "./programManager/LiveClasses.jsx";
 import InstructorCompletion from "./programManager/InstructorCompletion.jsx";
 import StudentLocationWise from "./programManager/StudentLocationWise.jsx";
 import LeaveRequestPage from "./StudentProfile/LeaveRequestPage.jsx";
-import MentorExamDashboard from "./Mentor/MentorExamDashboard.jsx";
 import ExamDashboard from "./Student/Exams_module/students/ExamModule/ExamDashboard.jsx";
 import MentorBatches from "./Mentor/MentorBatches.jsx";
 import LogoWrapper from "./Mentor/LogoWrapper.jsx";
@@ -54,8 +53,7 @@ import SubjectDetails from "./Curriculam/SubjectDetails.jsx";
 import { ManagerExamDashboard } from "./programManager/Exams/ManagerExamDashboard.jsx";
 import { SetExam } from "./programManager/Exams/SetExam.jsx";
 import { ExamAnalysis } from "./Student/Exams_module/students/ExamAnalysis/ExamAnalysis";
-import { DailyQuestionBank } from "./Mentor/ManageExams/QuestionBanks/DailyQuestionBank.jsx";
-import UploadQuestions from "./Mentor/ManageExams/UploadQuestions.jsx";
+import UploadQuestions from "./Mentor/UploadQuestions.jsx";
 import { Parent } from "./Student/Exams_module/students/ExamModule/Parent.jsx";
 import { useLocation } from "react-router-dom";
 import { ExamProvider } from "./Student/Exams_module/students/ExamModule/ExamContext.jsx";
@@ -145,7 +143,8 @@ export default function App() {
                       Manager: "/manager-dashboard",
                       superAdmin: "/admin-dashboard",
                       super: "/admin-dashboard",
-                    }[decryptData(localStorage.getItem("userType"))] || "/not-found"
+                    }[decryptData(localStorage.getItem("userType"))] ||
+                    "/not-found"
                   }
                   replace
                 />
@@ -168,7 +167,8 @@ export default function App() {
                       Manager: "/manager-dashboard",
                       superAdmin: "/admin-dashboard",
                       super: "/admin-dashboard",
-                    }[decryptData(localStorage.getItem("userType"))] || "/not-found"
+                    }[decryptData(localStorage.getItem("userType"))] ||
+                    "/not-found"
                   }
                   replace
                 />
@@ -191,7 +191,8 @@ export default function App() {
                       Manager: "/manager-dashboard",
                       superAdmin: "/admin-dashboard",
                       super: "/admin-dashboard",
-                    }[decryptData(localStorage.getItem("userType"))] || "/not-found"
+                    }[decryptData(localStorage.getItem("userType"))] ||
+                    "/not-found"
                   }
                   replace
                 />
@@ -214,7 +215,8 @@ export default function App() {
                       Manager: "/manager-dashboard",
                       superAdmin: "/reports",
                       super: "/admin-dashboard",
-                    }[decryptData(localStorage.getItem("userType"))] || "/not-found"
+                    }[decryptData(localStorage.getItem("userType"))] ||
+                    "/not-found"
                   }
                   replace
                 />
@@ -237,7 +239,8 @@ export default function App() {
                       Manager: "/manager-dashboard",
                       superAdmin: "/reports",
                       super: "/admin-dashboard",
-                    }[decryptData(localStorage.getItem("userType"))] || "/not-found"
+                    }[decryptData(localStorage.getItem("userType"))] ||
+                    "/not-found"
                   }
                   replace
                 />
@@ -386,6 +389,15 @@ export default function App() {
           />
 
           <Route
+            path="/mentor-student-reports"
+            element={
+              <ProtectedRoute allowedRoles={["Mentors"]}>
+                <AttendanceTable />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
             path="/studentattendance"
             element={
               <ProtectedRoute
@@ -499,10 +511,12 @@ export default function App() {
               </ProtectedRoute>
             }
           />
-           <Route
+          <Route
             path="/codeplayground"
             element={
-              <ProtectedRoute allowedRoles={["student_login_details","Mentors"]}>
+              <ProtectedRoute
+                allowedRoles={["student_login_details", "Mentors"]}
+              >
                 <CodePlayground />
               </ProtectedRoute>
             }
@@ -513,8 +527,7 @@ export default function App() {
             element={
               <ProtectedRoute allowedRoles={["student_login_details"]}>
                 <ExamProvider>
-                    <Parent />
-                 
+                  <Parent />
                 </ExamProvider>
               </ProtectedRoute>
             }
@@ -606,35 +619,12 @@ export default function App() {
             }
           />
 
-          {/* mentor online exams scheduling */}
-
-          <Route
-            path="/mentor-exam-dashboard"
-            element={
-              <ProtectedRoute allowedRoles={["Mentors"]}>
-                <MentorExamDashboard />
-              </ProtectedRoute>
-            }
-          />
-
           <Route
             path="/upload-questions"
             element={
               <ProtectedRoute allowedRoles={["Mentors"]}>
                 <LogoWrapper>
                   <UploadQuestions />
-                </LogoWrapper>
-              </ProtectedRoute>
-            }
-          />
-
-          {/* Exam Creating Routes */}
-          <Route
-            path="/daily-exams"
-            element={
-              <ProtectedRoute allowedRoles={["Mentors"]}>
-                <LogoWrapper>
-                  <DailyQuestionBank />
                 </LogoWrapper>
               </ProtectedRoute>
             }
@@ -667,7 +657,7 @@ export default function App() {
             }
           />
           <Route
-            path="/students-performance"
+            path="/students-performance-manager"
             element={
               <ProtectedRoute allowedRoles={["Manager", "super", "superAdmin"]}>
                 <Dashboard />
@@ -675,7 +665,7 @@ export default function App() {
             }
           />
           <Route
-            path="/students-performance/daily"
+            path="/students-performance-manager/daily"
             element={
               <ProtectedRoute allowedRoles={["Manager", "super", "superAdmin"]}>
                 <DailyPerformance />

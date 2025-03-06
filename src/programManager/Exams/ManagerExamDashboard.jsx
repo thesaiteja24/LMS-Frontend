@@ -43,15 +43,16 @@ export const ManagerExamDashboard = () => {
           params: {
             date: date,
             examType: "Daily-Exam",
+            batch: batch.Batch,
+            location: batch.location,
           },
         }
       );
-      if (response.data.status) {
-        toast.warning(response.data.message);
-      } else {
-        handleDailyClick(batch);
-      }
+      handleDailyClick(batch);
     } catch (error) {
+      if (error.status == 409) {
+        toast.warning(error.response?.data.message);
+      }
       console.log(error);
     }
   };
