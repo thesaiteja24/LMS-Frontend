@@ -7,8 +7,7 @@ import {
   FaClipboardList,
   FaEnvelopeOpenText,
 } from "react-icons/fa";
-import { decryptData } from '../../cryptoUtils.jsx';
-
+import { decryptData } from "../../cryptoUtils.jsx";
 
 const ProgramManagerDashboard = () => {
   const navigate = useNavigate();
@@ -86,7 +85,7 @@ const ProgramManagerDashboard = () => {
           {location !== "all" && (
             <div
               className="bg-white p-8 rounded-lg shadow-lg flex items-center space-x-4 cursor-pointer hover:shadow-2xl transform transition-transform hover:scale-105"
-              onClick={() => handleNavigation("/students-performance")}
+              onClick={() => handleNavigation("/students-performance-manager")}
             >
               <FaTasks className="text-red-600 text-5xl" />
               <div>

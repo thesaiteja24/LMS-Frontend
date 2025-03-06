@@ -20,7 +20,7 @@ import {
   FaBookOpen,
   FaTachometerAlt,
   FaChartLine,
-  FaCode 
+  FaCode,
 } from "react-icons/fa";
 import { IoMdCloudUpload } from "react-icons/io";
 import { TbReportAnalytics } from "react-icons/tb";
@@ -29,15 +29,14 @@ import { MdOutlineRequestQuote } from "react-icons/md";
 import { useLocation, useNavigate } from "react-router-dom";
 import classNames from "classnames";
 import { useStudent } from "../contexts/StudentProfileContext";
-import { decryptData } from '../../cryptoUtils.jsx';
-
+import { decryptData } from "../../cryptoUtils.jsx";
 
 export const SidebarV = ({ setIsAuthenticated }) => {
   const location = useLocation();
   const navigate = useNavigate();
 
   // --- 1) Use our context to get student info + pic
-  const { studentDetails,  profilePicture } = useStudent();
+  const { studentDetails, profilePicture } = useStudent();
 
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isCollapsed, setIsCollapsed] = useState(false);
@@ -53,7 +52,7 @@ export const SidebarV = ({ setIsAuthenticated }) => {
       "/courses",
       "/exam-dashboard",
       "/exam-repors",
-     "/exam-reports-dashboard",
+      "/exam-reports-dashboard",
       "/mock-interviews",
       "/leave-request-page",
     ];
@@ -221,6 +220,11 @@ export const SidebarV = ({ setIsAuthenticated }) => {
             path: "/codeplayground",
             icon: FaCode,
           },
+          {
+            label: "Students Performance",
+            path: "/students-performance-mentor",
+            icon: FaChartLine,
+          },
           { label: "Logout", action: handleLogout, icon: FaSignOutAlt },
         ];
       case "Manager":
@@ -255,8 +259,8 @@ export const SidebarV = ({ setIsAuthenticated }) => {
           { label: "Create Batch", path: "/createbatch", icon: FaPlusSquare },
           { label: "Scheduling Exam", path: "/create-exam", icon: PiExam },
           {
-            label: "Students Perfomance",
-            path: "/students-performance",
+            label: "Students performance",
+            path: "/students-performance-manager",
             icon: FaChartLine,
           },
           { label: "Logout", action: handleLogout, icon: FaSignOutAlt },
@@ -270,7 +274,8 @@ export const SidebarV = ({ setIsAuthenticated }) => {
   const menuItems = allMenuItems.filter((item) => item.label !== "Logout");
   const logoutItem = allMenuItems.find((item) => item.label === "Logout");
 
-  const isLoggedIn = !!decryptData(localStorage.getItem("userType")) && !isLoggedOut;
+  const isLoggedIn =
+    !!decryptData(localStorage.getItem("userType")) && !isLoggedOut;
   if (!isLoggedIn) {
     // Not logged in => show top bar with login button
     return (

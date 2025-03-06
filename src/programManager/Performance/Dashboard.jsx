@@ -4,8 +4,7 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { decryptData } from '../../../cryptoUtils.jsx';
-
+import { decryptData } from "../../../cryptoUtils.jsx";
 
 export const Dashboard = () => {
   const navigate = useNavigate();
@@ -37,20 +36,20 @@ export const Dashboard = () => {
 
   // Fetch exam details for the selected batch and navigate to DailyPerformance
   const handleDailyClick = async (batch) => {
+    console.log("batch:", batch.Batch, "location:", localStorageLocation);
     try {
       const response = await axios.get(
-        `${import.meta.env.VITE_BACKEND_URL}/api/v1/exam-details`,
+        `${import.meta.env.VITE_BACKEND_URL}/api/v1/daily-exam-performance`,
         {
           params: {
             batch: batch.Batch,
-            type: "Daily-Exam",
             location: localStorageLocation,
           },
         }
       );
       const data = response.data;
       console.log(data);
-      navigate("/students-performance/daily", { state: data });
+      navigate("/students-performance-manager/daily", { state: data });
     } catch (error) {
       console.error("Error fetching exam details:", error);
       toast.error("No Reports are available at this moment");
