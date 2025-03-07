@@ -1,28 +1,12 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import StudentCard from "./StudentCard";
-
-// Helper function to parse day-1, day-2, etc. into numeric values for sorting.
-function parseDayOrder(dayOrder) {
-  // If it's "N/A" or not in the format "day-N", return -1 so that it sorts last.
-  if (!dayOrder?.startsWith("day-")) {
-    return -1;
-  }
-  // Extract the number after "day-" and convert to integer.
-  return parseInt(dayOrder.slice(4), 10);
-}
 
 const DailyPerformance = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const data = location.state;
-  console.log("data:", data);
-  // Two pieces of local state for our two filters:
-  const [dayFilter, setDayFilter] = useState("all"); // "all", "day-1", "day-2", etc.
-  const [scoreOrder, setScoreOrder] = useState("none");
-  // "none" = no sorting by score, "asc" = ascending, "desc" = descending
 
-  // Redirect if no data or no results array is present
+  // Redirect if no data or no results are present.
   useEffect(() => {
     if (!data || !data.results) {
       navigate("/exam-dashboard");
@@ -31,84 +15,246 @@ const DailyPerformance = () => {
 
   if (!data || !data.results) return null;
 
-  // 1) First, filter by dayOrder if the user picked one (other than "all").
-  let filteredData = data.results;
-  if (dayFilter !== "all") {
-    filteredData = filteredData.filter(
-      (item) => item.student.dayOrder === dayFilter
-    );
-  }
+  // Extract unique exam names from the data.
+  const uniqueExamNames = useMemo(() => {
+    const names = new Set();
+    data.results.forEach((item) => {
+      names.add(item.exam.examName);
+    });
+    return Array.from(names);
+  }, [data.results]);
 
-  // 2) Sort by dayOrder in descending order by default
-  //    (i.e. day-3 > day-2 > day-1 > N/A).
-  filteredData.sort((a, b) => {
-    return (
-      parseDayOrder(b.student.dayOrder) - parseDayOrder(a.student.dayOrder)
-    );
+  // State for the searchable exam name dropdown filter.
+  const [examNameQuery, setExamNameQuery] = useState("");
+  const [examNameFilter, setExamNameFilter] = useState(""); // applied filter
+
+  // State for sort order based on overall marks.
+  const [scoreSort, setScoreSort] = useState("none"); // "none", "highest", "lowest"
+
+  // Compute filtered data based on exam name filter.
+  let filteredData = data.results.filter((item) => {
+    if (
+      examNameFilter &&
+      !item.exam.examName.toLowerCase().includes(examNameFilter.toLowerCase())
+    ) {
+      return false;
+    }
+    return true;
   });
 
-  // 3) If the user chose to sort by score asc or desc, apply that next.
-  if (scoreOrder !== "none") {
-    filteredData.sort((a, b) => {
-      const scoreA = a.student.totalScore || 0;
-      const scoreB = b.student.totalScore || 0;
-      if (scoreOrder === "asc") {
-        return scoreA - scoreB;
-      } else {
-        return scoreB - scoreA;
-      }
-    });
+  // Sort filtered data based on overall score if required.
+  if (scoreSort === "highest") {
+    filteredData.sort(
+      (a, b) =>
+        (b.exam.analysis.totalScore || 0) - (a.exam.analysis.totalScore || 0)
+    );
+  } else if (scoreSort === "lowest") {
+    filteredData.sort(
+      (a, b) =>
+        (a.exam.analysis.totalScore || 0) - (b.exam.analysis.totalScore || 0)
+    );
   }
 
-  // Render
+  // Filter the exam name dropdown options based on the query.
+  const examNameOptions = uniqueExamNames.filter((name) =>
+    name.toLowerCase().includes(examNameQuery.toLowerCase())
+  );
+
+  // Compute subject-wise marks analysis for an exam.
+  // We assume the questions are ordered as per exam.subjects.
+  const getSubjectWiseAnalysis = (exam) => {
+    const details = exam.analysis.details || [];
+    let cumulativeIndex = 0;
+    return exam.subjects.map((subject) => {
+      // Calculate total questions for this subject.
+      const codingCount =
+        (subject.selectedCoding.easy || 0) +
+        (subject.selectedCoding.medium || 0) +
+        (subject.selectedCoding.hard || 0);
+      const mcqCount =
+        (subject.selectedMCQs.easy || 0) +
+        (subject.selectedMCQs.medium || 0) +
+        (subject.selectedMCQs.hard || 0);
+      const subjectTotal = codingCount + mcqCount;
+
+      // Slice the details for this subject.
+      const subjectDetails = details.slice(
+        cumulativeIndex,
+        cumulativeIndex + subjectTotal
+      );
+      const scoreObtained = subjectDetails.reduce(
+        (sum, q) => sum + (q.scoreAwarded || 0),
+        0
+      );
+
+      // Update cumulative index for next subject.
+      cumulativeIndex += subjectTotal;
+
+      return {
+        subject: subject.subject,
+        scoreObtained,
+        totalQuestions: subjectTotal,
+      };
+    });
+  };
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-100 to-purple-200 py-8 px-4">
-      <h1 className="text-4xl font-extrabold text-center text-gray-800 mb-10">
-        Student Performance
+    <div className="min-h-screen bg-gray-100 p-4">
+      <h1 className="text-3xl font-bold text-center mb-6">
+        Exam Performance Dashboard
       </h1>
 
-      {/* --- Filters --- */}
-      <div className="flex items-center justify-center space-x-4 mb-8">
-        {/* Day Order Filter */}
-        <div>
-          <label className="font-semibold mr-2 text-gray-700">
-            Filter by Day Order:
+      {/* Filters Section */}
+      <div className="mb-6 flex flex-col sm:flex-row items-center justify-center gap-6">
+        {/* Searchable Exam Name Dropdown */}
+        <div className="relative">
+          <label className="font-medium text-gray-700 block mb-1">
+            Exam Name
           </label>
-          <select
-            className="border rounded-md p-1"
-            value={dayFilter}
-            onChange={(e) => setDayFilter(e.target.value)}
-          >
-            <option value="all">All</option>
-            <option value="day-1">day-1</option>
-            <option value="day-2">day-2</option>
-            <option value="day-3">day-3</option>
-            {/* Add more if needed */}
-          </select>
+          <input
+            type="text"
+            value={examNameQuery}
+            onChange={(e) => {
+              setExamNameQuery(e.target.value);
+              if (e.target.value === "") {
+                setExamNameFilter("");
+              }
+            }}
+            placeholder="Search exam name..."
+            className="border rounded px-2 py-1"
+          />
+          {/* Dropdown Options */}
+          {examNameQuery && examNameOptions.length > 0 && (
+            <ul className="absolute z-10 bg-white border rounded w-full max-h-40 overflow-y-auto">
+              {examNameOptions.map((name) => (
+                <li
+                  key={name}
+                  className="px-2 py-1 hover:bg-gray-200 cursor-pointer"
+                  onClick={() => {
+                    setExamNameFilter(name);
+                    setExamNameQuery(name);
+                  }}
+                >
+                  {name}
+                </li>
+              ))}
+            </ul>
+          )}
+          {examNameFilter && (
+            <div className="mt-1 text-sm text-green-700">
+              Filter applied: {examNameFilter}{" "}
+              <button
+                onClick={() => {
+                  setExamNameFilter("");
+                  setExamNameQuery("");
+                }}
+                className="underline"
+              >
+                Clear
+              </button>
+            </div>
+          )}
         </div>
 
-        {/* Score Sort Order */}
-        <div>
-          <label className="font-semibold mr-2 text-gray-700">
-            Sort by Score:
+        {/* Sort by Score Filter */}
+        <div className="flex flex-col">
+          <label className="font-medium text-gray-700 mb-1">
+            Sort by Score
           </label>
           <select
-            className="border rounded-md p-1"
-            value={scoreOrder}
-            onChange={(e) => setScoreOrder(e.target.value)}
+            value={scoreSort}
+            onChange={(e) => setScoreSort(e.target.value)}
+            className="border rounded px-2 py-1"
           >
             <option value="none">None</option>
-            <option value="asc">Ascending</option>
-            <option value="desc">Descending</option>
+            <option value="highest">Highest Score</option>
+            <option value="lowest">Lowest Score</option>
           </select>
         </div>
       </div>
 
-      {/* --- Student Cards --- */}
-      <div className="grid gap-6 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-        {filteredData.map((result) => (
-          <StudentCard key={result.student.id} student={result.student} />
-        ))}
+      {/* Table */}
+      <div className="overflow-x-auto">
+        <table className="min-w-full border border-gray-300">
+          <thead className="bg-gray-200">
+            <tr>
+              <th className="border border-gray-300 px-4 py-2 text-left">
+                Student ID
+              </th>
+              <th className="border border-gray-300 px-4 py-2 text-left">
+                Name
+              </th>
+              <th className="border border-gray-300 px-4 py-2 text-left">
+                Phone
+              </th>
+              <th className="border border-gray-300 px-4 py-2 text-left">
+                Exam Name
+              </th>
+              <th className="border border-gray-300 px-4 py-2 text-left">
+                Attempt Status
+              </th>
+              <th className="border border-gray-300 px-4 py-2 text-left">
+                Marks Overall
+              </th>
+              <th className="border border-gray-300 px-4 py-2 text-left">
+                Subject-wise Analysis
+              </th>
+              <th className="border border-gray-300 px-4 py-2 text-left">
+                Additional Info
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            {filteredData.map((item, index) => {
+              const { student, exam } = item;
+              const subjectAnalysis = getSubjectWiseAnalysis(exam);
+              return (
+                <tr
+                  key={student.id}
+                  className={index % 2 === 0 ? "bg-white" : "bg-gray-50"}
+                >
+                  <td className="border border-gray-300 px-4 py-2">
+                    {student.studentId}
+                  </td>
+                  <td className="border border-gray-300 px-4 py-2">
+                    {student.name}
+                  </td>
+                  <td className="border border-gray-300 px-4 py-2">
+                    {student.phNumber}
+                  </td>
+                  <td className="border border-gray-300 px-4 py-2">
+                    {exam.examName}
+                  </td>
+                  <td className="border border-gray-300 px-4 py-2">
+                    {exam["attempt-status"] ? "Attempted" : "Not Attempted"}
+                  </td>
+                  <td className="border border-gray-300 px-4 py-2">
+                    {exam.analysis.totalScore}
+                  </td>
+                  <td className="border border-gray-300 px-4 py-2">
+                    {subjectAnalysis.map((subj, idx) => (
+                      <div key={idx}>
+                        <strong>{subj.subject}:</strong> {subj.scoreObtained} /{" "}
+                        {subj.totalQuestions}
+                      </div>
+                    ))}
+                  </td>
+                  <td className="border border-gray-300 px-4 py-2">
+                    <div>
+                      <strong>Date:</strong> {exam.startDate}
+                    </div>
+                    <div>
+                      <strong>Time:</strong> {exam.startTime}
+                    </div>
+                    <div>
+                      <strong>Total Time:</strong> {exam.totalExamTime} mins
+                    </div>
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
       </div>
     </div>
   );
