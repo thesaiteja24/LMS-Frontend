@@ -27,20 +27,16 @@ const ExamContent = () => {
   const navigate = useNavigate();
   const submitted = useRef(false); // Prevent multiple submissions
 
-  // ✅ Safe submission function ensuring completion before navigation
   const safeSubmit = async () => {
     if (!submitted.current) {
       submitted.current = true;
 
       try {
-        console.log("🔄 Auto-submitting exam... Fetching latest answers.");
         
         await new Promise((resolve) => setTimeout(resolve, 100)); // ⏳ Small delay to ensure state updates
         await handleSubmit(); // ✅ Ensure submission is completed before navigating
         
-        console.log("✅ Exam successfully submitted. Navigating to Exam Dashboard.");
       } catch (error) {
-        console.error("❌ Error during auto-submission:", error);
         toast.error("Exam submission failed! Please try again.");
         submitted.current = false; // Allow retry if submission fails
       }
@@ -179,23 +175,23 @@ const ExamContent = () => {
   
 
   return (
-    <div className="min-h-screen h-full parent bg-[#E1EFFF] flex flex-col justify-between overflow-hidden">
+    <div className="min-h-screen h-full parent bg-[#F8F8F8] flex flex-col justify-between overflow-hidden">
       <div>
         <div className="stuent-n-exam-details">
-          <div className="flex flex-row justify-evenly">
-            <div className="flex flex-row justify-evenly items-center test-details bg-white w-3/4 mt-2 ml-2 mr-0.5 MCQ_Stats rounded-2xl text-center p-0.5 text-2xl shadow-[0px_4px_12px_0px_rgba(3,104,255,0.15)]">
+          <div className="flex flex-row justify-evenly gap-1 px-4">
+            <div className="flex flex-row justify-evenly items-center test-details bg-white w-3/4 mt-2 ml-2 mr-0.5 MCQ_Stats rounded-md text-center p-0.5 text-2xl shadow-[0px_4px_12px_0px_rgba(3,104,255,0.15)]">
               <span>
                 <img className="w-44" src="ExamModule/Logo.png" alt="" />
               </span>
               <span className="flex flex-row gap-4 items-center">
-                <img src="ExamModule/Exam.png" alt="" /> <span>{examType}</span>
+                <img src="ExamModule/Exam.png" alt="" /> <span className="font-bold text-[#132EE0]">{examType}</span>
               </span>
               <span>
-                <span className="text-[#19216F] font-semibold">Marks:</span>
+                <span className="text-[#132EE0] font-semibold">Marks:</span>
                 <span>{totalScore}</span>
               </span>
             </div>
-            <div className="p-2 student-details flex flex-row justify-evenly items-center bg-white w-full mt-2 mr-2 ml-0.5 MCQ_Stats rounded-2xl text-center text-2xl shadow-[0px_4px_12px_0px_rgba(3,104,255,0.15)]">
+            <div className="p-2 student-details flex flex-row justify-evenly items-center bg-white w-full mt-2 mr-2 ml-0.5 MCQ_Stats rounded-md text-center text-2xl shadow-[0px_4px_12px_0px_rgba(3,104,255,0.15)]">
               {profilePicture ? (
                 <img
                   src={profilePicture}
@@ -206,7 +202,7 @@ const ExamContent = () => {
                 <FaUserCircle className="w-20 bg-gray-100 rounded-full flex items-center justify-center text-blue-500 text-5xl" />
               )}
               <div className="flex flex-col justify-start items-start">
-                <div>{studentName}</div>
+                <h1 className="text-3xl">{studentName}</h1>
                 <div className="text-sm">
                   <b>Exam Id: &nbsp;</b>
                   {studentExamId}
@@ -229,7 +225,7 @@ const ExamContent = () => {
             </div>
           </div>
         </div>
-        <div className="mcq-n-coding-section flex flex-col h-full mt-2">
+        <div className="mcq-n-coding-section flex flex-col h-full mt-2 p-4">
           {!selectedMCQ && codingQuestions.length > 0 ? (
             <div className="flex flex-row gap-2">
               <DisplayCoding />
@@ -244,7 +240,7 @@ const ExamContent = () => {
         </div>
       </div>
       <div>
-        <div className="nav-n-legend flex flex-col items-center px-2">
+        <div className="nav-n-legend flex flex-col items-center px-4 ">
           <QNavigation />
           <ExamLegend />
         </div>

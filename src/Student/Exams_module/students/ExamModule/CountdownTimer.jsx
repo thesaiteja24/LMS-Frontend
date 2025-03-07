@@ -67,7 +67,7 @@ const CountdownTimer = () => {
         Time Left
       </div>
       <div className="p-4">
-        <div className="flex flex-row items-center justify-center space-x-6 p-4">
+        <div className="flex flex-row items-center justify-center space-x-6 p-2">
           <img src="ExamModule/clock.png" alt="Clock" className="w-12 h-12" />
           <div className="flex flex-col items-center">
             <span className="font-bold">{String(hours).padStart(2, "0")}</span>
