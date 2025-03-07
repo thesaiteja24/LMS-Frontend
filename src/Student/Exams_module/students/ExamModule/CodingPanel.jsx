@@ -33,11 +33,11 @@ export const CodingPanel = () => {
           {currentQuestion.Sample_Input}
         </p>
         <br />
-        <p>
+        <div>
           <strong>Sample Output:</strong>
           <br />
           <pre className="text-base p-1 m-1">{parsedSampleOutput}</pre>
-        </p>
+        </div>
       </div>
     </div>
   );

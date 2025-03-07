@@ -15,8 +15,8 @@ function parseDayOrder(dayOrder) {
 const DailyPerformance = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const data = location.state; // Payload from /api/v1/exam-details
-
+  const data = location.state;
+  console.log("data:", data);
   // Two pieces of local state for our two filters:
   const [dayFilter, setDayFilter] = useState("all"); // "all", "day-1", "day-2", etc.
   const [scoreOrder, setScoreOrder] = useState("none");

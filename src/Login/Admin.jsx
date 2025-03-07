@@ -1,70 +1,81 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import Swal from 'sweetalert2/dist/sweetalert2.min.js';  
-import { Eye, EyeOff } from 'lucide-react';
-import axios from 'axios';
-import { encryptData } from '../../cryptoUtils.jsx'; // Import encryption method
-import '../Login/StudentLogin.css';
-
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import Swal from "sweetalert2/dist/sweetalert2.min.js";
+import { Eye, EyeOff } from "lucide-react";
+import axios from "axios";
+import { encryptData } from "../../cryptoUtils.jsx"; // Import encryption method
+import "../Login/StudentLogin.css";
 
 export default function SuperAdmin() {
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
-  const [showPassword, setShowPassword] = useState(false); 
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
-    const [loading, setLoading] = useState(false);
-  
+  const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true); 
-
+    setLoading(true);
 
     try {
+      // Trim the email and password values
+      const trimmedEmail = username.trim();
+      const trimmedPassword = password.trim();
+
       const response = await axios.post(
         `${import.meta.env.VITE_BACKEND_URL}/api/v1/admin`,
-        { username, password }
+        { username: trimmedEmail, password: trimmedPassword }
       );
       if (response.status === 200) {
-        localStorage.setItem('userType', encryptData(response.data.userType));
-        localStorage.setItem('location',encryptData('all'))
-        navigate('/admin-dashboard'); // Navigate to the relevant dashboard
+        localStorage.setItem("userType", encryptData(response.data.userType));
+        localStorage.setItem("location", encryptData("all"));
+        navigate("/admin-dashboard"); // Navigate to the relevant dashboard
       }
     } catch (error) {
-      console.error('Login failed:', error);
+      console.error("Login failed:", error);
       if (error.response?.status === 404) {
         Swal.fire({
-          icon: 'error',
-          title: 'Login failed. User not found',
+          icon: "error",
+          title: "Login failed. User not found",
         });
       } else if (error.response?.status === 400) {
         Swal.fire({
-          icon: 'error',
-          title: 'Invalid credentials',
+          icon: "error",
+          title: "Invalid credentials",
         });
       } else {
         Swal.fire({
-          icon: 'error',
-          title: 'An unexpected error occurred',
+          icon: "error",
+          title: "An unexpected error occurred",
         });
       }
-    }finally {
-      setLoading(false); // ✅ Reset loading to false
+    } finally {
+      setLoading(false); // Reset loading to false
     }
   };
 
   return (
-    <div className="min-h-screen flex row items-center justify-center bg-cover bg-center px-4 sm:px-6 lg:px-8 student-login-container" >
+    <div className="min-h-screen flex row items-center justify-center bg-cover bg-center px-4 sm:px-6 lg:px-8 student-login-container">
       <div className="flex flex-col md:flex-row items-center justify-center w-full max-w-7xl space-y-8 md:space-y-0 md:space-x-8">
         <div className="flex justify-center items-center w-full md:w-1/2">
-          <img src="https://res.cloudinary.com/db2bpf0xw/image/upload/v1734849448/login-cartoon_znh33j.webp" alt="Cartoon logo" className="w-full max-w-lg" />
+          <img
+            src="https://res.cloudinary.com/db2bpf0xw/image/upload/v1734849448/login-cartoon_znh33j.webp"
+            alt="Cartoon logo"
+            className="w-full max-w-lg"
+          />
         </div>
         <div className="w-full md:w-1/3">
           <div className="bg-white shadow-lg rounded-lg p-8 border border-gray-200">
-            <h2 className="text-2xl md:text-3xl font-bold text-gray-800 text-center mb-2"> Admin Login</h2>
+            <h2 className="text-2xl md:text-3xl font-bold text-gray-800 text-center mb-2">
+              {" "}
+              Admin Login
+            </h2>
             <form onSubmit={handleSubmit} className="space-y-6">
               <div>
-                <label htmlFor="email" className="block text-sm font-medium text-black mb-1">
+                <label
+                  htmlFor="email"
+                  className="block text-sm font-medium text-black mb-1"
+                >
                   Email ID
                 </label>
                 <input
@@ -79,12 +90,15 @@ export default function SuperAdmin() {
               </div>
 
               <div>
-                <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
+                <label
+                  htmlFor="password"
+                  className="block text-sm font-medium text-gray-700 mb-1"
+                >
                   Password
                 </label>
                 <div className="relative">
                   <input
-                    type={showPassword ? 'text' : 'password'}
+                    type={showPassword ? "text" : "password"}
                     id="password"
                     className="block w-full p-1 text-md border rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 border-gray-300"
                     placeholder="Enter Password"
@@ -103,16 +117,17 @@ export default function SuperAdmin() {
               </div>
 
               <button
-                  type="submit"
-                  className={`w-full py-2 px-4 mt-0 text-2xl font-medium text-white rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 ${
-                    loading
-                      ? 'bg-gray-500 cursor-not-allowed'
-                      : 'bg-[#0737EE] hover:bg-blue-700'
-                  }`}
-                  disabled={loading} // Disable button during loading
-                >
-                  {loading ? 'Loading...' : 'Login'} {/* Change button text during loading */}
-                </button>
+                type="submit"
+                className={`w-full py-2 px-4 mt-0 text-2xl font-medium text-white rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 ${
+                  loading
+                    ? "bg-gray-500 cursor-not-allowed"
+                    : "bg-[#0737EE] hover:bg-blue-700"
+                }`}
+                disabled={loading} // Disable button during loading
+              >
+                {loading ? "Loading..." : "Login"}{" "}
+                {/* Change button text during loading */}
+              </button>
             </form>
           </div>
         </div>

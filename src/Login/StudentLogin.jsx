@@ -20,10 +20,14 @@ export default function StudentLogin({ setIsAuthenticated }) {
     setLoading(true);
 
     try {
-      const isEmail = username.includes("@");
+      // Trim the input values before processing
+      const trimmedUsername = username.trim();
+      const trimmedPassword = password.trim();
+
+      const isEmail = trimmedUsername.includes("@");
       const payload = isEmail
-        ? { email: username.toLowerCase(), password }
-        : { studentId: username, password };
+        ? { email: trimmedUsername.toLowerCase(), password: trimmedPassword }
+        : { studentId: trimmedUsername, password: trimmedPassword };
 
       const response = await axios.post(
         `${import.meta.env.VITE_BACKEND_URL}/api/v1/login`,
@@ -38,16 +42,15 @@ export default function StudentLogin({ setIsAuthenticated }) {
         const userType = response.data.user.usertype;
         const encryptedId = encryptData(id);
         const encryptedEmail = encryptData(response.data.user.email);
-        // const encryptedProfile = encryptData(response.data.user.Profile);
         const encryptedLocation = encryptData(response.data.Location);
         const encryptUserType = encryptData(userType);
 
-        localStorage.setItem('id', encryptedId);
-        localStorage.setItem('profileStatus', response.data.user.Profile);
-        localStorage.setItem('userType', encryptUserType);
-        localStorage.setItem('email', encryptedEmail);
-        localStorage.setItem('student_id', encryptedId);
-        localStorage.setItem('location', encryptedLocation);
+        localStorage.setItem("id", encryptedId);
+        localStorage.setItem("profileStatus", response.data.user.Profile);
+        localStorage.setItem("userType", encryptUserType);
+        localStorage.setItem("email", encryptedEmail);
+        localStorage.setItem("student_id", encryptedId);
+        localStorage.setItem("location", encryptedLocation);
         localStorage.setItem(`${userType}`, encryptedId);
         localStorage.setItem("_id", encryptData(response.data._id));
 
@@ -93,7 +96,7 @@ export default function StudentLogin({ setIsAuthenticated }) {
         });
       }
     } finally {
-      setLoading(false); // Reset loading to false
+      setLoading(false);
     }
   };
 
