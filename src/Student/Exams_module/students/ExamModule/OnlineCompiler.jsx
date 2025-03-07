@@ -17,7 +17,6 @@ const OnlineCompiler = () => {
   const question = onlineCompilerQuestion || { question_id: null };
   const questionId = question.question_id;
 
-  // Track language, code, custom input states
   const [language, setLanguage] = useState(
     existingData[questionId]?.language || "Java"
   );
@@ -28,16 +27,11 @@ const OnlineCompiler = () => {
   const [customInput, setCustomInput] = useState(
     existingData[questionId]?.customInput || ""
   );
-
-  // For normal test results (sample/hidden), we track pass/fail
   const [testCases, setTestCases] = useState([]);
   const [testCaseSummary, setTestCaseSummary] = useState(
     existingData[questionId]?.testCaseSummary || { passed: 0, failed: 0 }
   );
-
-  // For custom input results
   const [customTestCases, setCustomTestCases] = useState([]);
-
   const [loading, setLoading] = useState(false);
 
   const languageExtensions = {
@@ -45,7 +39,6 @@ const OnlineCompiler = () => {
     Java: java(),
   };
 
-  // Sync with existingData each time questionId changes
   useEffect(() => {
     if (questionId) {
       setLanguage(existingData[questionId]?.language || "Java");
@@ -57,14 +50,9 @@ const OnlineCompiler = () => {
       setTestCaseSummary(
         existingData[questionId]?.testCaseSummary || { passed: 0, failed: 0 }
       );
-
-      // If you saved them previously, you could restore testCases/customTestCases here
-      // setTestCases(existingData[questionId]?.testCases || []);
-      // setCustomTestCases(existingData[questionId]?.customTestCases || []);
     }
   }, [questionId, existingData]);
 
-  // Auto-save code to context
   const handleCodeChange = (val) => {
     setCode(val);
     setExistingData((prev) => ({
@@ -76,7 +64,6 @@ const OnlineCompiler = () => {
     }));
   };
 
-  // Save the selected language
   const handleLanguageChange = (lang) => {
     setLanguage(lang);
     setExistingData((prev) => ({
@@ -88,7 +75,6 @@ const OnlineCompiler = () => {
     }));
   };
 
-  // Run code and parse test-case results
   const handleRun = async () => {
     setLoading(true);
 
@@ -123,14 +109,10 @@ const OnlineCompiler = () => {
 
       const { results } = await response.json();
 
-      // Separate results into normal vs. custom
       const normalResults = results.filter((r) => r.type !== "custom");
       const customResults = results.filter((r) => r.type === "custom");
 
-      // Compute pass/fail only for normal results
       const computedResults = normalResults.map((res) => {
-        // If there's no expected output (like hidden tests sometimes),
-        // you might handle that differently, but here is a basic check:
         const passed =
           res.expected_output?.trim() === res.actual_output?.trim();
         return { ...res, status: passed ? "Passed" : "Failed" };
@@ -149,7 +131,6 @@ const OnlineCompiler = () => {
       setTestCases(computedResults);
       setCustomTestCases(customResults);
 
-      // Save in context
       setExistingData((prev) => ({
         ...prev,
         [questionId]: {
@@ -164,14 +145,12 @@ const OnlineCompiler = () => {
         },
       }));
 
-      // Update coding answer for final exam submission
       updateCodingAnswer({
         questionId,
         sourceCode: code,
         language,
         testCaseSummary: summary,
         answered: true,
-        // If you need them: testCases: computedResults, customTestCases: customResults
       });
     } catch (error) {
       console.error("Error:", error);
@@ -183,15 +162,31 @@ const OnlineCompiler = () => {
   };
 
   return (
-    <div className=" md:w-2/3 xl:w-1/2 mx-auto m-2 bg-white rounded-2xl flex flex-col gap-4 p-4">
+    <div
+      className="
+        w-full 
+        sm:w-11/12 
+        md:w-2/3 
+        xl:w-1/2 
+        mx-auto 
+        m-10 
+        rounded-[10px]
+        bg-[#2C2C2C] 
+        text-white 
+        flex 
+        flex-col 
+        gap-4 
+        p-4
+      "
+    >
       {/* Language Selector + Run Button */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2">
-          <label className="block font-semibold">Select Language:</label>
+          <label className="block font-semibold text-white">Select Language:</label>
           <select
             value={language}
             onChange={(e) => handleLanguageChange(e.target.value)}
-            className="border rounded px-2 py-1"
+            className="bg-gray-700 text-white border border-gray-500 rounded px-2 py-1"
           >
             <option value="Python">Python</option>
             <option value="Java">Java</option>
@@ -200,18 +195,18 @@ const OnlineCompiler = () => {
         <button
           onClick={handleRun}
           disabled={loading}
-          className="px-4 py-2 text-white text-lg bg-blue-600 rounded hover:bg-blue-700 self-end sm:self-auto"
+          className="px-4 py-2 text-white text-lg bg-green-600 rounded hover:bg-green-500 self-end sm:self-auto"
         >
           {loading ? "Running..." : "Run"}
         </button>
       </div>
 
       {/* Code Editor */}
-      <div className="border rounded overflow-hidden">
+      <div className="border border-gray-600 rounded overflow-hidden w-full bg-[#1E1E1E]">
         <CodeMirror
           value={code}
           height="300px"
-          width="900px"
+          width="100%"
           theme={oneDark}
           extensions={[languageExtensions[language]]}
           onChange={handleCodeChange}
@@ -219,10 +214,11 @@ const OnlineCompiler = () => {
       </div>
 
       {/* Custom Input */}
-      <div className="flex flex-col gap-2">
+      <div className="flex flex-col gap-2 text-white">
         <label className="flex items-center space-x-2 font-semibold">
           <input
             type="checkbox"
+            className="accent-blue-500"
             checked={customInputEnabled}
             onChange={() => setCustomInputEnabled((prev) => !prev)}
           />
@@ -231,7 +227,7 @@ const OnlineCompiler = () => {
         {customInputEnabled && (
           <textarea
             rows={1}
-            className="w-full p-2 border rounded"
+            className="w-full p-2 border border-gray-600 bg-[#1E1E1E] rounded text-white"
             placeholder="Enter custom input"
             value={customInput}
             onChange={(e) => setCustomInput(e.target.value)}
@@ -239,29 +235,31 @@ const OnlineCompiler = () => {
         )}
       </div>
 
-      {/* Normal Test Summary & Results */}
-      {customInputEnabled ? (
-        <div className="p-2 border rounded bg-white">
-          <p className="font-semibold mb-2">Custom Input Results</p>
-          {customTestCases.length === 0 ? (
-            <p className="text-sm">No custom input results yet.</p>
-          ) : (
-            <TestCaseTabs testCases={customTestCases} />
-          )}
-        </div>
-      ) : (
-        <div className="p-2 border rounded bg-white">
-          <p className="font-semibold mb-2">
-            Normal Test Summary: {testCaseSummary.passed} Passed /{" "}
-            {testCaseSummary.failed} Failed
-          </p>
-          {testCases.length === 0 ? (
-            <p className="text-sm">No normal test cases to display.</p>
-          ) : (
-            <TestCaseTabs testCases={testCases} />
-          )}
-        </div>
-      )}
+      {/* Test Results */}
+      <div className="bg-[#1E1E1E] p-3 rounded border border-gray-600">
+        {customInputEnabled ? (
+          <>
+            <p className="font-semibold mb-2 text-white">Custom Input Results</p>
+            {customTestCases.length === 0 ? (
+              <p className="text-sm text-gray-300">No custom input results yet.</p>
+            ) : (
+              <TestCaseTabs testCases={customTestCases} />
+            )}
+          </>
+        ) : (
+          <>
+            <p className="font-semibold mb-2 text-white">
+              Normal Test Summary: {testCaseSummary.passed} Passed /{" "}
+              {testCaseSummary.failed} Failed
+            </p>
+            {testCases.length === 0 ? (
+              <p className="text-sm text-gray-300">No normal test cases to display.</p>
+            ) : (
+              <TestCaseTabs testCases={testCases} />
+            )}
+          </>
+        )}
+      </div>
     </div>
   );
 };

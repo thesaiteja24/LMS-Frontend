@@ -11,7 +11,7 @@ const SectionSwitcher = () => {
   // If only one section is available, show its title and disable switching
   if (hasMCQs && !hasCoding) {
     return (
-      <div className="text-center p-4 font-bold text-lg bg-white shadow-md rounded-xl">
+      <div className="text-center p-4 font-bold text-lg bg-white shadow-md rounded-xl ">
         MCQ Section
         {setSelectedMCQ(true)}
       </div>

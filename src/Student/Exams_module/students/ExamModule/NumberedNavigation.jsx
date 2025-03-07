@@ -66,3 +66,6 @@ export const NumberedNavigation = () => {
     </div>
   );
 };
+
+
+export default NumberedNavigation;

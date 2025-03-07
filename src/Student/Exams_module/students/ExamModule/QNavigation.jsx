@@ -14,7 +14,7 @@ const QNavigation = () => {
   } = useContext(ExamContext);
 
   return (
-    <div className="flex flex-row justify-between legend w-full rounded-2xl bg-white m-2 px-2  shadow-[0px_4px_12px_0px_rgba(3,104,255,0.15)]">
+    <div className="flex flex-row justify-between legend w-full rounded-lg bg-white m-2 px-2  shadow-[0px_4px_12px_0px_rgba(3,104,255,0.15)]">
       <div className="flex flex-row gap-4 justify-evenly items-center current">
         <button
           type="button"
@@ -24,7 +24,7 @@ const QNavigation = () => {
           <span className="py-1 px-2">
             <img src="ExamModule/markForReview.png" alt="" />
           </span>
-          Mark for Review
+          Review
         </button>
       </div>
       <div className="text-xl rounded-full border border-[#183B56] px-2 m-4">
@@ -41,14 +41,14 @@ const QNavigation = () => {
         <button
           type="button"
           onClick={handlePrevious}
-          className="text-white bg-[#19216F] w-36 px-2 py-1 rounded-lg font-normal text-xl flex flex-row items-center justify-center"
+          className="text-white bg-[#132EE0] w-36 px-2 py-1 rounded-lg font-normal text-xl flex flex-row items-center justify-center"
         >
           <span> &lt; &nbsp;</span> Previous
         </button>
         <button
           type="button"
           onClick={handleNext}
-          className="text-white bg-[#19216F] w-36 px-2 py-1 rounded-lg font-normal text-xl flex flex-row items-center justify-center"
+          className="text-white bg-[#132EE0] w-36 px-2 py-1 rounded-lg font-normal text-xl flex flex-row items-center justify-center"
         >
           Next <span>&nbsp; &gt;</span>
         </button>
