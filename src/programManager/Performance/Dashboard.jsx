@@ -39,7 +39,7 @@ export const Dashboard = () => {
     console.log("batch:", batch.Batch, "location:", localStorageLocation);
     try {
       const response = await axios.get(
-        `${import.meta.env.VITE_BACKEND_URL}/api/v1/daily-exam-performance`,
+        `${import.meta.env.VITE_BACKEND_URL}/api/v1/exam-reports`,
         {
           params: {
             batch: batch.Batch,
