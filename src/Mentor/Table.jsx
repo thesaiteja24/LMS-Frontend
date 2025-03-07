@@ -7,8 +7,9 @@ export const Table = ({ subject, batch, mentorId }) => {
   const [tableData, setTableData] = useState({});
   const [editedData, setEditedData] = useState({});
   const [loading, setLoading] = useState(false);
+  const [submittedFields, setSubmittedFields] = useState({});
+  const [submittingRows, setSubmittingRows] = useState({});
 
-  // Fetch the curriculum table whenever subject, batch, or mentorId changes
   useEffect(() => {
     if (subject && batch && mentorId) {
       fetchCurriculumTable();
@@ -18,14 +19,20 @@ export const Table = ({ subject, batch, mentorId }) => {
   const fetchCurriculumTable = async () => {
     try {
       setLoading(true);
-      const url = `${
-        import.meta.env.VITE_BACKEND_URL
-      }/api/v1/mentorsyllabus?mentorId=${mentorId}&subject=${subject}&batch=${batch}`;
+      const url = `${import.meta.env.VITE_BACKEND_URL}/api/v1/mentorsyllabus?mentorId=${mentorId}&subject=${subject}&batch=${batch}`;
       const response = await axios.get(url);
       console.log(response.data);
       setTableData(response.data);
-      // Create a deep copy so that editing doesn't affect the original data immediately
       setEditedData(JSON.parse(JSON.stringify(response.data)));
+      setSubmittedFields((prevSubmitted) => {
+        const newSubmitted = { ...prevSubmitted };
+        Object.keys(response.data).forEach((key) => {
+          if (!newSubmitted.hasOwnProperty(key)) {
+            newSubmitted[key] = { subtopics: false, videoUrl: false };
+          }
+        });
+        return newSubmitted;
+      });
     } catch (error) {
       console.error("Error fetching curriculum table:", error);
       toast.error("Error fetching curriculum table.");
@@ -34,21 +41,20 @@ export const Table = ({ subject, batch, mentorId }) => {
     }
   };
 
-  // Toggle subtopic status if it is currently "false"
   const handleSubtopicChange = (rowId, tag) => {
-    setEditedData((prevData) => {
-      const newData = { ...prevData };
-      const subtopics = newData[rowId].SubTopics;
-      // Find the subtopic index by its tag
-      const index = subtopics.findIndex((sub) => sub.tag === tag);
-      if (index !== -1 && subtopics[index].status === "false") {
-        subtopics[index].status = "true";
-      }
-      return newData;
-    });
+    setEditedData((prevData) => ({
+      ...prevData,
+      [rowId]: {
+        ...prevData[rowId],
+        SubTopics: prevData[rowId].SubTopics.map((sub) =>
+          sub.tag === tag && sub.status === "false"
+            ? { ...sub, status: "true" }
+            : sub
+        ),
+      },
+    }));
   };
 
-  // Update the video URL for a specific row
   const handleVideoUrlChange = (rowId, value) => {
     setEditedData((prevData) => ({
       ...prevData,
@@ -56,37 +62,73 @@ export const Table = ({ subject, batch, mentorId }) => {
     }));
   };
 
-  // Submit changes for a single row via an axios POST call and then refresh the table
+  const isValidVideoUrl = (url) => {
+    const regex = /^(https?:\/\/)?(www\.)?(youtube\.com\/watch\?v=|youtu\.be\/|drive\.google\.com\/file\/d\/)[\w-]+/;
+    return regex.test(url.trim());
+  };
+
   const handleRowSubmit = async (rowId) => {
+    const originalRow = tableData[rowId];
+    const currentRow = editedData[rowId];
+    if (!originalRow || !currentRow) {
+      toast.error("Row data is missing.");
+      return;
+    }
+    const subtopicsChanged = originalRow.SubTopics.some((sub, i) => {
+      return sub.status !== currentRow.SubTopics[i].status;
+    });
+    const videoUrlChanged = originalRow.videoUrl !== currentRow.videoUrl;
+
+    const pendingSubtopics =
+      subtopicsChanged && !submittedFields[rowId]?.subtopics;
+    const pendingVideoUrl =
+      videoUrlChanged && !submittedFields[rowId]?.videoUrl;
+
+    if (pendingVideoUrl && (!currentRow.videoUrl || !isValidVideoUrl(currentRow.videoUrl))) {
+      toast.error("Please enter a valid Google Drive video URL.");
+      return;
+    }
+    
+    if (!pendingSubtopics && !pendingVideoUrl) {
+      toast.error("No pending changes to submit.");
+      return;
+    }
+
     const payload = {
       mentorId,
       subject,
       batch,
-      data: { [rowId]: editedData[rowId] },
+      data: { [rowId]: currentRow },
     };
+
+    setSubmittingRows((prev) => ({ ...prev, [rowId]: true }));
+
     try {
-      setLoading(true);
       const url = `${import.meta.env.VITE_BACKEND_URL}/api/v1/mentorsyllabus`;
       const response = await axios.post(url, payload);
-      console.log("Submitted row payload:", payload);
-      console.log("Response:", response.data);
+      console.log("Submitted payload:", payload);
       toast.success(response.data.message || "Row updated successfully.");
+      setSubmittedFields((prev) => ({
+        ...prev,
+        [rowId]: {
+          subtopics: pendingSubtopics ? true : prev[rowId]?.subtopics,
+          videoUrl: pendingVideoUrl ? true : prev[rowId]?.videoUrl,
+        },
+      }));
     } catch (error) {
       console.error("Error submitting row:", error.response);
       toast.error(
         error.response?.data?.error || "Error submitting row. Please try again."
       );
     } finally {
-      // Refresh the table data irrespective of the outcome
-      fetchCurriculumTable();
-      setLoading(false);
+      await fetchCurriculumTable();
+      setSubmittingRows((prev) => ({ ...prev, [rowId]: false }));
     }
   };
 
   return (
     <div className="bg-white w-full max-w-[1200px] h-auto p-6 flex flex-col justify-center">
       {loading && <p className="mt-4 text-center">Loading...</p>}
-
       {Object.keys(editedData).length > 0 ? (
         <div className="max-h-[500px] overflow-y-auto scrollbar-thin scrollbar-thumb-[#0C1BAA] scrollbar-track-[#F5F5F5]">
           <div className="max-h-[500px] overflow-y-auto scrollbar-custom">
@@ -102,10 +144,25 @@ export const Table = ({ subject, batch, mentorId }) => {
               </thead>
               <tbody>
                 {Object.entries(editedData).map(([id, item], index) => {
+                  const originalRow = tableData[id];
+                  let subtopicsChanged = false;
+                  let videoUrlChanged = false;
+                  if (originalRow) {
+                    subtopicsChanged = originalRow.SubTopics.some((sub, i) => {
+                      return sub.status !== item.SubTopics[i].status;
+                    });
+                    videoUrlChanged = originalRow.videoUrl !== item.videoUrl;
+                  }
+                  const pendingSubtopics =
+                    subtopicsChanged && !submittedFields[id]?.subtopics;
+                  const pendingVideoUrl =
+                    videoUrlChanged && !submittedFields[id]?.videoUrl;
+                  const isPending = pendingSubtopics || pendingVideoUrl;
+                  const rowSubmitting = submittingRows[id];
                   const rowComplete =
-                    tableData[id]?.videoUrl &&
-                    tableData[id].videoUrl === item.videoUrl &&
-                    item.SubTopics.every((sub) => sub.status === "true");
+                  tableData[id]?.videoUrl &&
+                  tableData[id].videoUrl === item.videoUrl &&
+                  item.SubTopics.every((sub) => sub.status === "true");
 
                   return (
                     <tr
@@ -118,7 +175,7 @@ export const Table = ({ subject, batch, mentorId }) => {
                       <td className="px-6 py-4">{item.Topics}</td>
                       <td className="px-6 py-4">
                         <ul className="list-none space-y-1">
-                          {item.SubTopics.slice()
+                          {item.SubTopics
                             .sort((a, b) => {
                               const parseTag = (tag) => {
                                 const match = tag.match(/Day-(\d+):(\d+)/);
@@ -151,7 +208,10 @@ export const Table = ({ subject, batch, mentorId }) => {
                                   type="checkbox"
                                   className="mr-2"
                                   checked={sub.status === "true"}
-                                  disabled={sub.status === "true"}
+                                  disabled={
+                                    sub.status === "true" ||
+                                    submittedFields[id]?.subtopics
+                                  }
                                   onChange={() =>
                                     handleSubtopicChange(id, sub.tag)
                                   }
@@ -183,19 +243,17 @@ export const Table = ({ subject, batch, mentorId }) => {
                         )}
                       </td>
                       <td className="px-6 py-4">
-                        {!rowComplete && (
-                          <button
-                            disabled={loading}
-                            onClick={() => handleRowSubmit(id)}
-                            className={`w-[100px] h-[36px] text-white text-base font-semibold rounded-md transition ${
-                              !loading
-                                ? "bg-[#0C1BAA] hover:bg-blue-900"
-                                : "bg-gray-400 cursor-not-allowed"
-                            }`}
-                          >
-                            {!loading ? "Submit" : "Submitting"}
-                          </button>
-                        )}
+                        <button
+                          disabled={loading || !isPending || rowSubmitting}
+                          onClick={() => handleRowSubmit(id)}
+                          className={`w-[100px] h-[36px] text-white text-base font-semibold rounded-md transition ${
+                            !loading && isPending && !rowSubmitting
+                              ? "bg-[#0C1BAA] hover:bg-blue-900"
+                              : "bg-gray-400 cursor-not-allowed"
+                          }`}
+                        >
+                          {rowSubmitting ? "Submitting" : "Submit"}
+                        </button>
                       </td>
                     </tr>
                   );
