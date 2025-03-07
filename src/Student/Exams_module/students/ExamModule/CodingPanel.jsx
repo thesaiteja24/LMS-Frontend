@@ -43,15 +43,15 @@ export const CodingPanel = () => {
           {currentQuestion.Sample_Input}
         </div>
 
-        {/* Sample Output */}
+        
+       
         <div>
           <strong>Sample Output:</strong>
           <br />
-          <pre className="text-base p-1 m-1 whitespace-pre-wrap">
-            {parsedSampleOutput}
-          </pre>
+          <pre className="text-base p-1 m-1">{parsedSampleOutput}</pre>
+
         </div>
-      </div>
+    </div>
     </div>
   );
 };

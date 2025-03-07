@@ -143,6 +143,14 @@ const ExamDashboard = () => {
     );
   }
 
+  if (exams.length === 0) {
+    return (
+      <div className="text-center text-3xl">
+        <Alert>No exams found</Alert>
+      </div>
+    );
+  }
+
   return (
     <div className="flex flex-col p-[49px]">
       {/* ==================== ACTIVE EXAMS ==================== */}
