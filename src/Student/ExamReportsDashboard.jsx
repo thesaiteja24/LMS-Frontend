@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { Loader } from "lucide-react";
 import HalfDoughnutChart from "./HalfDoughnutChart";
 import Alert from "./Exams_module/students/Alert";
-import { decryptData } from '../../cryptoUtils.jsx';
+import { decryptData } from "../../cryptoUtils.jsx";
 
 export const ExamReportsDashboard = () => {
   const [exams, setExams] = useState([]);
@@ -34,7 +34,7 @@ export const ExamReportsDashboard = () => {
           setError("No exam results found.");
         }
       } catch (err) {
-        setError("Error fetching exam reports.");
+        setError("Results under maintenance...");
         console.error("ERROR:", err);
       } finally {
         setLoading(false);
@@ -198,7 +198,7 @@ export const ExamReportsDashboard = () => {
           <Loader className="animate-spin" />
         </div>
       ) : error ? (
-        <div className="text-3xl text-center text-red-600">{error}</div>
+        <div className="text-4xl text-center text-red-600">{error}</div>
       ) : (
         <>
           {renderExamGroup("Daily-Exam", dailyExams)}
