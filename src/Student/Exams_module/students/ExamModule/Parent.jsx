@@ -23,6 +23,7 @@ const ExamContent = () => {
     isSubmitting,
     examType,
   } = useContext(ExamContext);
+  
   const { profilePicture } = useStudent();
   const navigate = useNavigate();
   const submitted = useRef(false); // Prevent multiple submissions
@@ -172,7 +173,9 @@ const ExamContent = () => {
       clearInterval(devtoolsInterval);
     };
   }, [handleSubmit, navigate]);
-  
+
+
+
 
   return (
     <div className="min-h-screen h-full parent bg-[#F8F8F8] flex flex-col justify-between overflow-hidden">

@@ -134,6 +134,7 @@ const OnlineCompiler = () => {
       setExistingData((prev) => ({
         ...prev,
         [questionId]: {
+          ...prev[questionId], // preserve any existing data
           language,
           sourceCode: code,
           customInputEnabled,
@@ -144,6 +145,7 @@ const OnlineCompiler = () => {
           answered: true,
         },
       }));
+      
 
       updateCodingAnswer({
         questionId,
@@ -164,19 +166,17 @@ const OnlineCompiler = () => {
   return (
     <div
       className="
-        w-full 
+        max-w-full
         sm:w-11/12 
         md:w-2/3 
-        xl:w-1/2 
-        mx-auto 
-        m-10 
         rounded-[10px]
         bg-[#2C2C2C] 
         text-white 
         flex 
         flex-col 
         gap-4 
-        p-4
+         p-4  my-5
+        
       "
     >
       {/* Language Selector + Run Button */}
@@ -248,7 +248,7 @@ const OnlineCompiler = () => {
           </>
         ) : (
           <>
-            <p className="font-semibold mb-2 text-white">
+            <p className="font-semibold mb-2 text-white ">
               Normal Test Summary: {testCaseSummary.passed} Passed /{" "}
               {testCaseSummary.failed} Failed
             </p>

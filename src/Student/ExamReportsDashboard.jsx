@@ -201,9 +201,11 @@ export const ExamReportsDashboard = () => {
         <div className="text-4xl text-center text-red-600">{error}</div>
       ) : (
         <>
-          {renderExamGroup("Daily-Exam", dailyExams)}
+          {/* {renderExamGroup("Daily-Exam", dailyExams)}
           {renderExamGroup("Weekly-Exam", weeklyExams)}
-          {renderExamGroup("Monthly-Exam", monthlyExams)}
+          {renderExamGroup("Monthly-Exam", monthlyExams)} */}
+          <div className="text-4xl text-center text-red-600">Results Under Maintenance</div>
+
         </>
       )}
     </div>
