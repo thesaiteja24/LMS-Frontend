@@ -70,7 +70,7 @@ const Course = () => {
         Mentor Curriculum
       </h1>
 
-      <div className="w-full max-w-[1200px] border-t border-[#D1D1D1] mt-4"></div>
+      {/* <div className="w-full max-w-[1200px] border-t border-[#D1D1D1] mt-4"></div> */}
 
       <div className="bg-white w-full max-w-full h-auto shadow-md rounded-md mt-6 p-6 flex flex-col justify-center">
         <div className="w-full flex flex-col sm:flex-row justify-between items-center px-8 space-y-4 sm:space-y-0">
@@ -127,9 +127,9 @@ const Course = () => {
           </div>
         </div>
 
-        <div className="w-full max-w-[1528px] border-t border-[#303C60] mt-6 mx-auto"></div>
+        {/* <div className="w-full max-w-full border-t border-[#303C60] mt-6 mx-auto"></div> */}
 
-        <div className="w-full max-w-7xl mx-auto mt-6 bg-white rounded-md min-h-[500px] p-4 md:p-6">
+        <div className="w-full max-w-full mx-auto mt-6 bg-white rounded-md min-h-[500px] p-4 md:p-6">
           <div className="overflow-x-auto flex items-center justify-center h-full">
             <Table
               subject={selectedSubject}
