@@ -7,16 +7,14 @@ export const CodingPanel = () => {
 
   if (!currentQuestion) return null;
 
-  // Safely convert Sample_Output to a string:
   const sampleOutputString = String(currentQuestion.Sample_Output ?? "");
 
-  // Parse the ASCII-art-like output
   const parsedSampleOutput = sampleOutputString
-    .replace(/\\s/g, " ") // Replace all \s with an actual space
-    .replace(/\\n/g, "\n"); // Replace all \n with a newline
+    .replace(/\\s/g, " ") 
+    .replace(/\\n/g, "\n"); 
 
   return (
-    <div className="max-w-[583px] min-h-[485px] bg-white rounded-[16px] shadow-[0_4px_12px_0_rgba(3,104,255,0.25)] p-6 mx-auto my-10">
+    <div className="max-w-[783px] min-h-[485px] bg-white rounded-[16px] shadow-[0_4px_12px_0_rgba(3,104,255,0.25)] p-6  my-5">
       {/* Display question number + text */}
       <div className="flex items-center gap-3 mb-4">
         <div className="bg-[#E1EFFF] w-20 h-16 rounded-[8px] flex items-center justify-center text-xl font-semibold text-blue-800">

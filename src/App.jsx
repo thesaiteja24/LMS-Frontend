@@ -250,11 +250,6 @@ export default function App() {
             }
           />
 
-          {/* <Route path="/login" element={<StudentLogin />} />
-          <Route path="/superadmin" element={<SuperAdmin />} /> */}
-
-          {/* <Route path='/forgotPassword' element={<ForgotPassword/>}/> */}
-          {/* <Route path='/bdeforgotPassword' element={<BdeForgotPassword/>}/> */}
           <Route path="/request-form" element={<EnquiryForm />} />
 
           <Route
@@ -683,14 +678,7 @@ export default function App() {
             }
           />
 
-          {/* <Route
-            path="/student-profile"
-            element={
-              <ProtectedRoute allowedRoles={['student_login_details']}>
-                <StudentProfile />
-              </ProtectedRoute>
-            }
-          /> */}
+      
           <Route
             path="/student-dashboard"
             element={
@@ -699,14 +687,7 @@ export default function App() {
               </ProtectedRoute>
             }
           />
-          {/* <Route
-            path="/online-exams"
-            element={
-              <ProtectedRoute allowedRoles={['student_login_details']}>
-                <StudentDailyExam />
-              </ProtectedRoute>
-            }
-          /> */}
+        
           <Route
             path="/student-profile"
             element={

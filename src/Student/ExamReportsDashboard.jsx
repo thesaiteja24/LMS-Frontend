@@ -175,9 +175,11 @@ export const ExamReportsDashboard = () => {
         </div>
       ) : (
         <>
+
           {renderExamGroup("Daily-Exam", dailyExam)}
           {renderExamGroup("Weekly-Exam", weeklyExam)}
           {renderExamGroup("Monthly-Exam", monthlyExam)}
+
         </>
       )}
     </div>

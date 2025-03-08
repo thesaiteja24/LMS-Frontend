@@ -4,7 +4,7 @@ const TestCaseTabs = ({ testCases }) => {
   const [activeTab, setActiveTab] = useState(0);
 
   if (!testCases || !testCases.length) {
-    return <div>No test cases to display.</div>;
+    return null;
   }
 
   const handleTabClick = (index) => {
