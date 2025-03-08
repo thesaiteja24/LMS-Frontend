@@ -10,6 +10,13 @@ import ExamCountdownTimer from "./ExamCountDownTimer";
 import InstructionsModal from "./InstructionsModal"; // <-- Import Modal
 import { decryptData } from "../../../../../cryptoUtils.jsx";
 
+// Import images (adjust the relative path as needed)
+import examBlue from "../../../../../public/ExamModule/Exam-blue.png";
+import dateIcon from "../../../../../public/ExamModule/Date.png";
+import watchIcon from "../../../../../public/ExamModule/Watch.png";
+import sandClockIcon from "../../../../../public/ExamModule/Sand-clock.png";
+import examCompletedIcon from "../../../../../public/ExamModule/Exam-Completed.png";
+
 const ExamDashboard = () => {
   const { setExamData } = useContext(ExamContext);
   const { studentDetails, loading: studentLoading } = useStudent();
@@ -157,7 +164,7 @@ const ExamDashboard = () => {
       {active.length > 0 && (
         <div className="mb-6">
           <h3 className="font-semibold text-[#19216F] mb-3 flex flex-row items-center gap-2 text-xl ">
-            <img className="w-8" src="ExamModule/Exam-blue.png" alt="" />
+            <img className="w-8" src={examBlue} alt="Exam Icon" />
             Active Exams
           </h3>
           <div className="flex flex-row ">
@@ -174,16 +181,12 @@ const ExamDashboard = () => {
                     <div className="flex flex-row justify-evenly">
                       <div className="flex flex-col gap-4">
                         <div className="flex items-center gap-2">
-                          <img
-                            src="ExamModule/Date.png"
-                            alt="Date"
-                            className="w-5 h-5"
-                          />
+                          <img src={dateIcon} alt="Date" className="w-5 h-5" />
                           <strong className="text-gray-700">Start Date</strong>
                         </div>
                         <div className="flex items-center gap-2">
                           <img
-                            src="ExamModule/Watch.png"
+                            src={watchIcon}
                             alt="Clock"
                             className="w-5 h-5"
                           />
@@ -191,7 +194,7 @@ const ExamDashboard = () => {
                         </div>
                         <div className="flex items-center gap-2">
                           <img
-                            src="ExamModule/Sand-clock.png"
+                            src={sandClockIcon}
                             alt="Duration"
                             className="w-5 h-5"
                           />
@@ -240,7 +243,7 @@ const ExamDashboard = () => {
       {upcoming.length > 0 && (
         <div className="mb-6">
           <h3 className="font-semibold text-[#19216F] mb-3 flex flex-row items-center gap-2 text-xl ">
-            <img className="w-8" src="ExamModule/Exam-blue.png" alt="" />
+            <img className="w-8" src={examBlue} alt="Exam Icon" />
             Upcoming Exams
           </h3>
           <div className="flex flex-row gap-8">
@@ -254,16 +257,12 @@ const ExamDashboard = () => {
                     <div className="flex flex-row justify-evenly">
                       <div className="flex flex-col gap-4">
                         <div className="flex gap-2">
-                          <img
-                            src="ExamModule/Date.png"
-                            alt="Date"
-                            className="w-5 h-5"
-                          />
+                          <img src={dateIcon} alt="Date" className="w-5 h-5" />
                           <strong className="text-gray-700">Start Date</strong>
                         </div>
                         <div className="flex gap-2">
                           <img
-                            src="ExamModule/Watch.png"
+                            src={watchIcon}
                             alt="Clock"
                             className="w-5 h-5"
                           />
@@ -271,7 +270,7 @@ const ExamDashboard = () => {
                         </div>
                         <div className="flex gap-2">
                           <img
-                            src="ExamModule/Sand-clock.png"
+                            src={sandClockIcon}
                             alt="Duration"
                             className="w-5 h-5"
                           />
@@ -309,7 +308,7 @@ const ExamDashboard = () => {
       {finished.length > 0 && (
         <div className="mb-6">
           <h3 className="font-semibold text-[#19216F] mb-3 flex flex-row items-center gap-2 text-xl ">
-            <img className="w-8" src="ExamModule/Exam-blue.png" alt="" />
+            <img className="w-8" src={examBlue} alt="Exam Icon" />
             Finished Exams
           </h3>
           <div className="flex flex-row gap-8">
@@ -323,16 +322,12 @@ const ExamDashboard = () => {
                     <div className="flex flex-row justify-evenly">
                       <div className="flex flex-col gap-4">
                         <div className="flex items-center gap-2">
-                          <img
-                            src="ExamModule/Date.png"
-                            alt="Date"
-                            className="w-5 h-5"
-                          />
+                          <img src={dateIcon} alt="Date" className="w-5 h-5" />
                           <strong className="text-gray-700">Start Date</strong>
                         </div>
                         <div className="flex items-center gap-2">
                           <img
-                            src="ExamModule/Watch.png"
+                            src={watchIcon}
                             alt="Clock"
                             className="w-5 h-5"
                           />
@@ -340,7 +335,7 @@ const ExamDashboard = () => {
                         </div>
                         <div className="flex items-center gap-2">
                           <img
-                            src="ExamModule/Sand-clock.png"
+                            src={sandClockIcon}
                             alt="Duration"
                             className="w-5 h-5"
                           />
@@ -363,7 +358,7 @@ const ExamDashboard = () => {
                           : {exam.totalExamTime} mins
                         </span>
                         <img
-                          src="ExamModule/Exam-Completed.png"
+                          src={examCompletedIcon}
                           alt="Completed"
                           className="w-10 h-8 ml-2"
                         />

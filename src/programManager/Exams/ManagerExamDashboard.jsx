@@ -63,7 +63,7 @@ export const ManagerExamDashboard = () => {
       const date = new Date().toISOString().slice(0, 10);
 
       const response = await axios.get(
-        `${import.meta.env.VITE_BACKEND_URL}/api/v1/get-day-exam-data`,
+        `${import.meta.env.VITE_BACKEND_URL}/api/v1/get-exam-data`,
         {
           params: {
             batch: batch.Batch,
@@ -83,7 +83,8 @@ export const ManagerExamDashboard = () => {
     } catch (error) {
       console.error("Error fetching exam details:", error);
       toast.error(
-        `Failed to fetch exam details. Please try again or contact support if the issue persists`
+        error.response?.data.message ||
+          `Failed to fetch exam details. Please try again or contact support if the issue persists`
       );
     }
   };

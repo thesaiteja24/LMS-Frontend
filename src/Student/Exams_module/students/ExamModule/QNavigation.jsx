@@ -1,5 +1,6 @@
 import React, { useContext } from "react";
 import { ExamContext } from "./ExamContext";
+import MarkForReview from "../../../../../public/ExamModule/markForReview.png";
 
 const QNavigation = () => {
   const {
@@ -22,7 +23,7 @@ const QNavigation = () => {
           className="text-white bg-[#FF6000] w-full px-2 py-1 rounded-lg font-normal text-xl flex flex-row items-center justify-evenly "
         >
           <span className="py-1 px-2">
-            <img src="ExamModule/markForReview.png" alt="" />
+            <img src={MarkForReview} alt="" />
           </span>
           Review
         </button>
