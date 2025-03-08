@@ -11,7 +11,7 @@ export const ExamReportsDashboard = () => {
   );
   const navigate = useNavigate();
 
-  // Updated function: calculate maximum marks from the exam's paper
+  // Calculate maximum marks from the exam's paper
   const calculateMaximumMarks = (paper) => {
     let maximumScore = 0;
     if (!paper || paper.length === 0) return 0;
@@ -60,7 +60,7 @@ export const ExamReportsDashboard = () => {
     });
   };
 
-  // Render a carousel for a given exam group using custom styling
+  // Render a carousel for a given exam group
   const renderExamGroup = (groupName, examGroup) => {
     if (!examGroup || examGroup.length === 0) return null;
     const startIndex = pageIndices[groupName] || 0;
@@ -83,10 +83,11 @@ export const ExamReportsDashboard = () => {
             <div className="flex space-x-6 transition-transform duration-300">
               {visibleExams.map((exam) => {
                 const totalScore = exam.analysis?.totalScore || 0;
-                // Calculate max score from the exam's "paper" instead of "subjects"
+                // Calculate maximum score from the exam's "paper" instead of "subjects"
                 const maxScore = calculateMaximumMarks(exam.paper);
                 const correctCount = exam.analysis?.correctCount || 0;
                 const incorrectCount = exam.analysis?.incorrectCount || 0;
+                const attempted = exam["attempt-status"];
 
                 return (
                   <div
@@ -94,36 +95,50 @@ export const ExamReportsDashboard = () => {
                     className="bg-white rounded-xl shadow-lg flex flex-col items-center transform transition"
                   >
                     <div className="w-full rounded-t-lg px-4 py-2 text-2xl text-white font-bold bg-[#19216f]">
-                      {exam.examName?.toUpperCase()}
+                      {exam.examName}
                     </div>
-                    <div className="flex flex-col px-4 justify-start items-center">
-                      {/* Display the arc chart */}
-                      <HalfDoughnutChart
-                        totalScore={totalScore}
-                        maximumScore={maxScore}
-                      />
-                      {/* Exam details */}
-                      <div className="flex flex-row gap-4 justify-start mb-3">
-                        <p className="text-green-600 font-lg text-xl">
-                          Correct: {correctCount}
-                        </p>
-                        <p className="text-red-600 font-lg text-xl">
-                          Incorrect: {incorrectCount}
-                        </p>
+                    {attempted ? (
+                      <>
+                        <div className="flex flex-col px-4 justify-start items-center">
+                          {/* Display the chart and exam details */}
+                          <HalfDoughnutChart
+                            totalScore={totalScore}
+                            maximumScore={maxScore}
+                          />
+                          <div className="flex flex-row gap-4 justify-start mb-3">
+                            <p className="text-green-600 font-lg text-xl">
+                              Correct: {correctCount}
+                            </p>
+                            <p className="text-red-600 font-lg text-xl">
+                              Incorrect: {incorrectCount}
+                            </p>
+                          </div>
+                        </div>
+                        <button
+                          onClick={() => {
+                            localStorage.setItem(
+                              "Analysis",
+                              JSON.stringify(exam)
+                            );
+                            navigate("/exam-analysis", {
+                              state: { isReports: true },
+                            });
+                          }}
+                          type="button"
+                          className="text-white bg-[#19216f] font-medium rounded-lg text-lg px-5 py-2.5 mb-2"
+                        >
+                          View Detailed Analysis
+                        </button>
+                      </>
+                    ) : (
+                      // If the exam wasn't attempted, display "Not Attempted"
+                      <div className="flex h-full flex-col justify-center w-full px-4 pb-4 items-center text-3xl text-center text-red-500">
+                        <div>
+                          <h1>Did Not</h1>
+                          <h1>Attempt Exam</h1>
+                        </div>
                       </div>
-                    </div>
-                    <button
-                      onClick={() => {
-                        localStorage.setItem("Analysis", JSON.stringify(exam));
-                        navigate("/exam-analysis", {
-                          state: { isReports: true },
-                        });
-                      }}
-                      type="button"
-                      className="text-white bg-[#19216f] font-medium rounded-lg text-lg px-5 py-2.5 mb-2"
-                    >
-                      View Detailed Analysis
-                    </button>
+                    )}
                   </div>
                 );
               })}
