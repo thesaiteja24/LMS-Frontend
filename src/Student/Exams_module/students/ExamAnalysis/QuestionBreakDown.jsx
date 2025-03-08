@@ -82,14 +82,14 @@ export const QuestionBreakDown = ({ details }) => {
                       <div className="flex gap-4 flex-wrap">
                         <span
                           className={
-                            correctAnswer === "A" ? "text-green font-bold" : ""
+                            correctAnswer === "A" ? "text-green-600 font-bold" : ""
                           }
                         >
                           A: {options.A || "N/A"}
                         </span>
                         <span
                           className={
-                            correctAnswer === "B" ? "text-green font-bold" : ""
+                            correctAnswer === "B" ? "text-green-600 font-bold" : ""
                           }
                         >
                           B: {options.B || "N/A"}
@@ -98,14 +98,14 @@ export const QuestionBreakDown = ({ details }) => {
                       <div className="flex gap-4 flex-wrap">
                         <span
                           className={
-                            correctAnswer === "C" ? "text-green font-bold" : ""
+                            correctAnswer === "C" ? "text-green-600 font-bold" : ""
                           }
                         >
                           C: {options.C || "N/A"}
                         </span>
                         <span
                           className={
-                            correctAnswer === "D" ? "text-green font-bold" : ""
+                            correctAnswer === "D" ? "text-green-600 font-bold" : ""
                           }
                         >
                           D: {options.D || "N/A"}

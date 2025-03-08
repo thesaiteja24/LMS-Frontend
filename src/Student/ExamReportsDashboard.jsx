@@ -3,7 +3,6 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { Loader } from "lucide-react";
 import HalfDoughnutChart from "./HalfDoughnutChart";
-import Alert from "./Exams_module/students/Alert";
 import { decryptData } from "../../cryptoUtils.jsx";
 
 export const ExamReportsDashboard = () => {

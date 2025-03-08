@@ -63,7 +63,7 @@ export const ManagerExamDashboard = () => {
       const date = new Date().toISOString().slice(0, 10);
 
       const response = await axios.get(
-        `${import.meta.env.VITE_BACKEND_URL}/api/v1/get-day-exam-data`,
+        `${import.meta.env.VITE_BACKEND_URL}/api/v1/get-exam-data`,
         {
           params: {
             batch: batch.Batch,
