@@ -211,11 +211,6 @@ export const SidebarV = ({ setIsAuthenticated }) => {
           { label: "Attendance", path: "/attendance", icon: FaClipboard },
           { label: "Student List", path: "/mentorstudentslist", icon: FaUsers },
           {
-            label: "Upload Questions",
-            path: "/upload-questions",
-            icon: IoMdCloudUpload,
-          },
-          {
             label: "Code Playground",
             path: "/codeplayground",
             icon: FaCode,
@@ -267,6 +262,11 @@ export const SidebarV = ({ setIsAuthenticated }) => {
             label: "Students performance",
             path: "/students-performance-manager",
             icon: FaChartLine,
+          },
+          {
+            label: "Upload Questions",
+            path: "/upload-questions",
+            icon: IoMdCloudUpload,
           },
           { label: "Logout", action: handleLogout, icon: FaSignOutAlt },
         ];
