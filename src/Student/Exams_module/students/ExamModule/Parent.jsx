@@ -11,6 +11,7 @@ import { NavigationMCq } from "./NavigationMCQ";
 import { NavigationCoding } from "./NavigationCoding";
 import { useStudent } from "../../../../contexts/StudentProfileContext";
 import { FaUserCircle } from "react-icons/fa";
+import Exam from "../../../../../public/ExamModule/Exam.png";
 
 const ExamContent = () => {
   const {
@@ -33,10 +34,8 @@ const ExamContent = () => {
       submitted.current = true;
 
       try {
-        
         await new Promise((resolve) => setTimeout(resolve, 100)); // ⏳ Small delay to ensure state updates
         await handleSubmit(); // ✅ Ensure submission is completed before navigating
-        
       } catch (error) {
         toast.error("Exam submission failed! Please try again.");
         submitted.current = false; // Allow retry if submission fails
@@ -51,7 +50,7 @@ const ExamContent = () => {
       toast.warn("Right-click is disabled!");
     };
     document.addEventListener("contextmenu", handleContextMenu);
-  
+
     // ✅ Disable Copy/Cut/Paste
     const handleCopy = (e) => {
       e.preventDefault();
@@ -68,36 +67,43 @@ const ExamContent = () => {
     document.addEventListener("copy", handleCopy);
     document.addEventListener("cut", handleCut);
     document.addEventListener("paste", handlePaste);
-  
+
     // ✅ Block DevTools, Reload, and Auto-Submit on Escape Key
     const handleKeyDown = (e) => {
       if (e.key === "Escape" || e.key.toLowerCase() === "esc") {
         e.preventDefault();
-        toast.error("Full screen exited or Escape pressed. Auto-submitting exam.");
+        toast.error(
+          "Full screen exited or Escape pressed. Auto-submitting exam."
+        );
         safeSubmit();
         return;
       }
-  
-      if (e.key === "F5" || ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "r")) {
+
+      if (
+        e.key === "F5" ||
+        ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "r")
+      ) {
         e.preventDefault();
         toast.error("Reload is disabled during the exam!");
       }
-  
+
       if (
         e.key === "F12" ||
-        ((e.ctrlKey || e.metaKey) && e.shiftKey && ["i", "j"].includes(e.key.toLowerCase()))
+        ((e.ctrlKey || e.metaKey) &&
+          e.shiftKey &&
+          ["i", "j"].includes(e.key.toLowerCase()))
       ) {
         e.preventDefault();
         toast.error("Opening DevTools is not allowed!");
         safeSubmit();
       }
-  
+
       if ((e.metaKey || e.ctrlKey) && e.altKey) {
         e.preventDefault();
         toast.error("Opening DevTools is not allowed!");
         safeSubmit();
       }
-  
+
       if (e.key === "PrintScreen") {
         e.preventDefault();
         toast.error("Screenshots are not allowed!");
@@ -108,7 +114,7 @@ const ExamContent = () => {
       }
     };
     window.addEventListener("keydown", handleKeyDown);
-  
+
     // ✅ Warn on Tab Switch / Visibility Change (Triggers Safe Submit)
     const handleVisibilityChange = () => {
       if (document.hidden) {
@@ -117,7 +123,7 @@ const ExamContent = () => {
       }
     };
     document.addEventListener("visibilitychange", handleVisibilityChange);
-  
+
     // ✅ Prevent Back Navigation
     window.history.pushState(null, "", window.location.href);
     const handlePopState = () => {
@@ -125,14 +131,14 @@ const ExamContent = () => {
       toast.error("Navigating back is disabled!");
     };
     window.addEventListener("popstate", handlePopState);
-  
+
     // ✅ Prevent Page Unload (Closing Tab, etc.)
     const handleBeforeUnload = (e) => {
       e.preventDefault();
       e.returnValue = "";
     };
     window.addEventListener("beforeunload", handleBeforeUnload);
-  
+
     // ✅ Auto-Submit on Fullscreen Exit
     const handleFullscreenChange = () => {
       if (!document.fullscreenElement) {
@@ -141,15 +147,16 @@ const ExamContent = () => {
       }
     };
     document.addEventListener("fullscreenchange", handleFullscreenChange);
-  
+
     // ✅ Detect DevTools Opening Using Polling
     let devtoolsOpen = false;
     const threshold = 160; // Pixels difference to detect DevTools
     const checkDevTools = () => {
       const widthThreshold = window.outerWidth - window.innerWidth > threshold;
-      const heightThreshold = window.outerHeight - window.innerHeight > threshold;
+      const heightThreshold =
+        window.outerHeight - window.innerHeight > threshold;
       const isOpen = widthThreshold || heightThreshold;
-  
+
       if (isOpen && !devtoolsOpen) {
         devtoolsOpen = true;
         toast.error("DevTools are open! Auto-submitting exam.");
@@ -159,7 +166,7 @@ const ExamContent = () => {
       }
     };
     const devtoolsInterval = setInterval(checkDevTools, 500);
-  
+
     return () => {
       document.removeEventListener("contextmenu", handleContextMenu);
       document.removeEventListener("copy", handleCopy);
@@ -175,8 +182,6 @@ const ExamContent = () => {
   }, [handleSubmit, navigate]);
 
 
-
-
   return (
     <div className="min-h-screen h-full parent bg-[#F8F8F8] flex flex-col justify-between overflow-hidden">
       <div>
@@ -187,7 +192,8 @@ const ExamContent = () => {
                 <img className="w-44" src="ExamModule/Logo.png" alt="" />
               </span>
               <span className="flex flex-row gap-4 items-center">
-                <img src="ExamModule/Exam.png" alt="" /> <span className="font-bold text-[#132EE0]">{examType}</span>
+                <img src={Exam} alt="" />{" "}
+                <span className="font-bold text-[#132EE0]">{examType}</span>
               </span>
               <span>
                 <span className="text-[#132EE0] font-semibold">Marks:</span>

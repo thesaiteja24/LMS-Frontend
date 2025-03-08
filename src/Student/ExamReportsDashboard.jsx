@@ -1,64 +1,29 @@
-import React, { useState, useEffect } from "react";
-import axios from "axios";
+import React, { useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import { Loader } from "lucide-react";
 import HalfDoughnutChart from "./HalfDoughnutChart";
-import Alert from "./Exams_module/students/Alert";
-import { decryptData } from "../../cryptoUtils.jsx";
+import { StudentReportsContext } from "../contexts/StudentReportsContext.jsx";
 
 export const ExamReportsDashboard = () => {
-  const [exams, setExams] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
-  const stdId = decryptData(localStorage.getItem("id"));
+  // Use the context to get exam reports and loading state
+  const { dailyExam, weeklyExam, monthlyExam, loading } = useContext(
+    StudentReportsContext
+  );
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const fetchReports = async () => {
-      try {
-        setLoading(true);
-        const response = await axios.get(
-          `${
-            import.meta.env.VITE_BACKEND_URL
-          }/api/v1/student-reports?stdId=${stdId}`
-        );
-        const { success, results } = response.data;
-        if (success && Array.isArray(results)) {
-          // Transform each result so that analysis is nested under submissionResult
-          const transformedResults = results.map((result) => ({
-            ...result,
-            submissionResult: { analysis: result.analysis },
-          }));
-          setExams(transformedResults);
-        } else {
-          setError("No exam results found.");
-        }
-      } catch (err) {
-        setError("Results under maintenance...");
-        console.error("ERROR:", err);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    if (stdId) {
-      fetchReports();
-    } else {
-      setLoading(false);
-      setError("No student ID found in localStorage.");
-    }
-  }, [stdId]);
-
-  // Function to calculate maximum marks from a subjects array
-  const calculateMaximumMarks = (subjects) => {
+  // Calculate maximum marks from the exam's paper
+  const calculateMaximumMarks = (paper) => {
     let maximumScore = 0;
-    if (!subjects || subjects.length === 0) return 0;
-    subjects.forEach((subject) => {
-      if (subject.MCQs && subject.MCQs.length > 0) {
-        maximumScore += subject.MCQs.reduce((sum, mcq) => sum + mcq.Score, 0);
+    if (!paper || paper.length === 0) return 0;
+    paper.forEach((subjectPaper) => {
+      if (subjectPaper.MCQs && subjectPaper.MCQs.length > 0) {
+        maximumScore += subjectPaper.MCQs.reduce(
+          (sum, mcq) => sum + mcq.Score,
+          0
+        );
       }
-      if (subject.Coding && subject.Coding.length > 0) {
-        maximumScore += subject.Coding.reduce(
+      if (subjectPaper.Coding && subjectPaper.Coding.length > 0) {
+        maximumScore += subjectPaper.Coding.reduce(
           (sum, code) => sum + code.Score,
           0
         );
@@ -66,11 +31,6 @@ export const ExamReportsDashboard = () => {
     });
     return maximumScore;
   };
-
-  // Group exam results by type
-  const dailyExams = exams.filter((exam) => exam.type === "Daily-Exam");
-  const weeklyExams = exams.filter((exam) => exam.type === "Weekly-Exam");
-  const monthlyExams = exams.filter((exam) => exam.type === "Monthly-Exam");
 
   // Carousel settings: Show 4 cards per page.
   const cardsPerPage = 4;
@@ -100,9 +60,9 @@ export const ExamReportsDashboard = () => {
     });
   };
 
-  // Render a carousel for a given exam group using custom styling
+  // Render a carousel for a given exam group
   const renderExamGroup = (groupName, examGroup) => {
-    if (examGroup.length === 0) return null;
+    if (!examGroup || examGroup.length === 0) return null;
     const startIndex = pageIndices[groupName] || 0;
     const visibleExams = examGroup.slice(startIndex, startIndex + cardsPerPage);
 
@@ -123,46 +83,62 @@ export const ExamReportsDashboard = () => {
             <div className="flex space-x-6 transition-transform duration-300">
               {visibleExams.map((exam) => {
                 const totalScore = exam.analysis?.totalScore || 0;
-                const maxScore = calculateMaximumMarks(exam.subjects);
+                // Calculate maximum score from the exam's "paper" instead of "subjects"
+                const maxScore = calculateMaximumMarks(exam.paper);
                 const correctCount = exam.analysis?.correctCount || 0;
                 const incorrectCount = exam.analysis?.incorrectCount || 0;
+                const attempted = exam["attempt-status"];
 
                 return (
                   <div
                     key={exam._id}
-                    className=" bg-white rounded-xl shadow-lg flex flex-col items-center transform transition"
+                    className="bg-white rounded-xl shadow-lg flex flex-col items-center transform transition"
                   >
                     <div className="w-full rounded-t-lg px-4 py-2 text-2xl text-white font-bold bg-[#19216f]">
-                      View {exam.dayOrder.toUpperCase()} Exam Reports
+                      {exam.examName}
                     </div>
-                    <div className="flex flex-col px-4 justify-start items-center">
-                      {/* Display the arc chart */}
-                      <HalfDoughnutChart
-                        totalScore={totalScore}
-                        maximumScore={maxScore}
-                      />
-                      {/* Exam details */}
-                      <div className="flex flex-row gap-4 justify-start mb-3">
-                        <p className="text-green-600 font-lg text-xl">
-                          Correct Answers: {correctCount}
-                        </p>
-                        <p className="text-red-600 font-lg text-xl">
-                          Incorrect Answers: {incorrectCount}
-                        </p>
+                    {attempted ? (
+                      <>
+                        <div className="flex flex-col px-4 justify-start items-center">
+                          {/* Display the chart and exam details */}
+                          <HalfDoughnutChart
+                            totalScore={totalScore}
+                            maximumScore={maxScore}
+                          />
+                          <div className="flex flex-row gap-4 justify-start mb-3">
+                            <p className="text-green-600 font-lg text-xl">
+                              Correct: {correctCount}
+                            </p>
+                            <p className="text-red-600 font-lg text-xl">
+                              Incorrect: {incorrectCount}
+                            </p>
+                          </div>
+                        </div>
+                        <button
+                          onClick={() => {
+                            localStorage.setItem(
+                              "Analysis",
+                              JSON.stringify(exam)
+                            );
+                            navigate("/exam-analysis", {
+                              state: { isReports: true },
+                            });
+                          }}
+                          type="button"
+                          className="text-white bg-[#19216f] font-medium rounded-lg text-lg px-5 py-2.5 mb-2"
+                        >
+                          View Detailed Analysis
+                        </button>
+                      </>
+                    ) : (
+                      // If the exam wasn't attempted, display "Not Attempted"
+                      <div className="flex h-full flex-col justify-center w-full px-4 pb-4 items-center text-3xl text-center text-red-500">
+                        <div>
+                          <h1>Did Not</h1>
+                          <h1>Attempt Exam</h1>
+                        </div>
                       </div>
-                    </div>
-                    <button
-                      onClick={() => {
-                        localStorage.setItem("Analysis", JSON.stringify(exam));
-                        navigate("/exam-analysis", {
-                          state: { isReports: true },
-                        });
-                      }}
-                      type="button"
-                      class="text-white bg-[#19216f] font-medium rounded-lg text-lg px-5 py-2.5 mb-2 "
-                    >
-                      View Detailed Analysis
-                    </button>
+                    )}
                   </div>
                 );
               })}
@@ -197,14 +173,12 @@ export const ExamReportsDashboard = () => {
         <div className="flex items-center justify-center">
           <Loader className="animate-spin" />
         </div>
-      ) : error ? (
-        <div className="text-4xl text-center text-red-600">{error}</div>
       ) : (
         <>
-          {/* {renderExamGroup("Daily-Exam", dailyExams)}
-          {renderExamGroup("Weekly-Exam", weeklyExams)}
-          {renderExamGroup("Monthly-Exam", monthlyExams)} */}
-          <div className="text-4xl text-center text-red-600">Results Under Maintenance</div>
+
+          {renderExamGroup("Daily-Exam", dailyExam)}
+          {renderExamGroup("Weekly-Exam", weeklyExam)}
+          {renderExamGroup("Monthly-Exam", monthlyExam)}
 
         </>
       )}

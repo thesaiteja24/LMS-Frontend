@@ -12,21 +12,26 @@ export const SetExam = () => {
   const location = useLocation();
 
   // Data passed from ManagerExamDashboard (adjust if needed)
-  // The new response might look like:
-  //  {
-  //    Python: {
-  //      topics: "...",
-  //      subtopics: { titles: [...], tags: [...] },
-  //      date: "2025-03-04",
-  //      breakdown: {
-  //        mcq: { easy: 10, medium: 1, hard: 0 },
-  //        code: { easy: 29, medium: 0, hard: 0 }
-  //      }
-  //    },
-  //    Java: {
-  //      ...
-  //    }
-  //  }
+  // Expected structure example:
+  // {
+  //   Python: {
+  //     topics: "Introduction to Python,History and Applications",
+  //     subtitles: [
+  //       "What is Procedural Programming Language",
+  //       "What is Object Oriented Programming Language",
+  //       "What is Python ?",
+  //       "Why Python ?",
+  //       "Differences b/w memory allocation in Procedural and \r\nObject oriented Programming Language"
+  //     ],
+  //     tags: ["Day-1:1", "Day-1:2", "Day-1:3", "Day-1:4", "Day-1:5"],
+  //     date: "2025-03-08",
+  //     breakdown: {
+  //       mcq: { easy: 10, medium: 0, hard: 0 },
+  //       code: { easy: 29, medium: 0, hard: 0 }
+  //     }
+  //   },
+  //   Java: { ... }
+  // }
   const { examData, batch, type } = location.state || {};
 
   // Manager info, if needed by your API
@@ -56,9 +61,10 @@ export const SetExam = () => {
     hard: 0,
   });
 
-  // Topics & subtopics come from examData[subject]
-  const [displayTopics, setDisplayTopics] = useState([]);
+  // Subtitles come from examData[subject]
   const [displaySubtopics, setDisplaySubtopics] = useState([]);
+  // (Not used now, but retained for structure if needed)
+  const [displayTopics, setDisplayTopics] = useState([]);
 
   // Summaries of all chosen subjects (if user picks multiple)
   const [examSubjects, setExamSubjects] = useState([]);
@@ -71,7 +77,7 @@ export const SetExam = () => {
   // Expand/collapse time constraint details in UI
   const [isTimeCollapsed, setIsTimeCollapsed] = useState(true);
 
-  // We’ll gather the list of subjects from the examData keys.
+  // Gather the list of subjects from the examData keys.
   const [subjectList, setSubjectList] = useState([]);
   useEffect(() => {
     if (examData) {
@@ -80,7 +86,7 @@ export const SetExam = () => {
     }
   }, [examData]);
 
-  // When the user selects a subject, grab its breakdown & subtopics
+  // When the user selects a subject, grab its breakdown & subtitles
   useEffect(() => {
     if (selectedSubject && examData?.[selectedSubject]) {
       const breakdown = examData[selectedSubject].breakdown;
@@ -92,14 +98,16 @@ export const SetExam = () => {
         setTotalCoding({ easy: 0, medium: 0, hard: 0 });
       }
 
-      const { topics, subtopics } = examData[selectedSubject];
-      setDisplayTopics(topics ? topics.split(",") : []); // If topics is a comma-separated string
-      setDisplaySubtopics(subtopics?.titles || []);
+      // Use subtitles instead of topics
+      const { subtitles } = examData[selectedSubject];
+      setDisplaySubtopics(subtitles || []);
+      // Clear topics if present
+      setDisplayTopics([]);
     } else {
       setTotalMCQs({ easy: 0, medium: 0, hard: 0 });
       setTotalCoding({ easy: 0, medium: 0, hard: 0 });
-      setDisplayTopics([]);
       setDisplaySubtopics([]);
+      setDisplayTopics([]);
     }
 
     // Reset chosen counts each time we pick a new subject
@@ -107,7 +115,7 @@ export const SetExam = () => {
     setSelectedCoding({ easy: 0, medium: 0, hard: 0 });
   }, [selectedSubject, examData]);
 
-  // Handling user-chosen question counts
+  // Handling user-chosen question counts for MCQs
   const handleMCQInputChange = (e) => {
     const { name, value } = e.target;
     const parsedValue = parseInt(value, 10);
@@ -121,6 +129,7 @@ export const SetExam = () => {
     });
   };
 
+  // Handling user-chosen question counts for Coding questions
   const handleCodingInputChange = (e) => {
     const { name, value } = e.target;
     const parsedValue = parseInt(value, 10);
@@ -146,7 +155,7 @@ export const SetExam = () => {
     );
 
     const tags = examData[selectedSubject]?.tags || [];
-    // Calculate total time if you have specific rules
+    // Calculate total time if you have specific rules:
     // For example, 1 min per MCQ, 5/10/15 mins for easy/medium/hard coding:
     const mcqTime = selectedMCQs.easy + selectedMCQs.medium + selectedMCQs.hard;
     const codingTime =
@@ -165,19 +174,19 @@ export const SetExam = () => {
     };
 
     if (existingIndex >= 0) {
-      // Update existing
+      // Update existing subject entry
       setExamSubjects((prev) =>
         prev.map((item, idx) => (idx === existingIndex ? newEntry : item))
       );
       toast.success(`Updated questions for ${selectedSubject}.`);
     } else {
-      // Add as new
+      // Add as new subject entry
       setExamSubjects((prev) => [...prev, newEntry]);
       toast.success(`Questions set for ${selectedSubject}.`);
     }
   };
 
-  // Handle removing a subject
+  // Handle removing a subject from the exam
   const handleDeleteSubject = (subjectName) => {
     setExamSubjects((prev) =>
       prev.filter((item) => item.subject !== subjectName)
@@ -185,9 +194,8 @@ export const SetExam = () => {
     toast.success(`Deleted questions for ${subjectName}.`);
   };
 
-  // Optionally, let them edit – in this simpler structure, “editing” just means re-selecting the subject
+  // Optionally, let the user edit by re-selecting the subject
   const handleEditSubject = (subjectName) => {
-    // Pre-fill the fields for editing
     const found = examSubjects.find((item) => item.subject === subjectName);
     if (found) {
       setSelectedSubject(found.subject);
@@ -196,7 +204,7 @@ export const SetExam = () => {
     }
   };
 
-  // Submit final data
+  // Submit final data to create the exam
   const handleCreateExam = async () => {
     if (examSubjects.length === 0 || !startDate || !startTime) {
       toast.error("Please select at least one subject and enter date/time.");
@@ -271,35 +279,32 @@ export const SetExam = () => {
             </select>
           </div>
 
-          {/* Topics display */}
+          {/* Subtopics Display */}
           {selectedSubject && (
-            <>
-              <div className="mb-6">
-                <h3 className="text-2xl font-semibold text-gray-800 mb-2">
-                  Topics
-                </h3>
-                {displayTopics.length ? (
-                  <ul className="list-disc ml-5 text-gray-700">
-                    {displayTopics.map((topic, idx) => (
-                      <li key={idx}>{topic.trim()}</li>
-                    ))}
-                  </ul>
-                ) : (
-                  <p className="text-gray-500">No topics available.</p>
-                )}
-              </div>
-            </>
+            <div className="mb-6">
+              <h3 className="text-2xl font-semibold text-gray-800 mb-4">
+                Topics for Exam
+              </h3>
+              {displaySubtopics.length > 0 ? (
+                <ul className="list-disc ml-5 text-gray-700">
+                  {displaySubtopics.map((subtopic, idx) => (
+                    <li key={idx}>{subtopic.trim()}</li>
+                  ))}
+                </ul>
+              ) : (
+                <p className="text-gray-500">No subtopics available.</p>
+              )}
+            </div>
           )}
 
           {/* Question Breakdown */}
           {selectedSubject && (
             <>
-              {/* MCQ */}
+              {/* MCQ Questions */}
               <div className="mb-6">
                 <h3 className="text-2xl font-semibold text-gray-800 mb-4">
                   MCQ Questions
                 </h3>
-                {/* If totalMCQs.* > 0, display an input */}
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
                   {["easy", "medium", "hard"].map((level) => {
                     const total = totalMCQs[level] || 0;
@@ -332,7 +337,7 @@ export const SetExam = () => {
                 </div>
               </div>
 
-              {/* Coding */}
+              {/* Coding Questions */}
               <div className="mb-6">
                 <h3 className="text-2xl font-semibold text-gray-800 mb-4">
                   Coding Questions
@@ -369,7 +374,7 @@ export const SetExam = () => {
                 </div>
               </div>
 
-              {/* Button to "Set" (or update) the chosen subject’s question counts */}
+              {/* Button to set/update the chosen subject’s question counts */}
               {(totalMCQs.easy + totalMCQs.medium + totalMCQs.hard > 0 ||
                 totalCoding.easy + totalCoding.medium + totalCoding.hard >
                   0) && (
@@ -498,7 +503,6 @@ export const SetExam = () => {
                 type="time"
                 value={startTime}
                 onChange={(e) => setStartTime(e.target.value)}
-                // Optionally restrict past times if startDate = today
                 className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
               />
             </div>

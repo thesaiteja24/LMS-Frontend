@@ -63,9 +63,9 @@ import DailyPerformance from "./programManager/Performance/DailyPerformance.jsx"
 import { classNames } from "@react-pdf-viewer/core";
 import { ExamReportsDashboard } from "./Student/ExamReportsDashboard.jsx";
 import CodePlayground from "./Student/Codeplayground.jsx";
-import { decryptData } from '../cryptoUtils.jsx';
+import { decryptData } from "../cryptoUtils.jsx";
 import TestCaseCompiler from "./Mentor/TestCaseCompiler.jsx";
-
+import { StudentReportsProvider } from "./contexts/StudentReportsContext.jsx";
 
 const ProtectedRoute = ({ children, allowedRoles }) => {
   const userType = decryptData(localStorage.getItem("userType"));
@@ -564,7 +564,9 @@ export default function App() {
             path="/exam-reports-dashboard"
             element={
               <ProtectedRoute allowedRoles={["student_login_details"]}>
-                <ExamReportsDashboard />
+                <StudentReportsProvider>
+                  <ExamReportsDashboard />
+                </StudentReportsProvider>
               </ProtectedRoute>
             }
           />
@@ -617,7 +619,7 @@ export default function App() {
           <Route
             path="/upload-questions"
             element={
-              <ProtectedRoute allowedRoles={["Mentors"]}>
+              <ProtectedRoute allowedRoles={["Manager"]}>
                 <LogoWrapper>
                   <UploadQuestions />
                 </LogoWrapper>

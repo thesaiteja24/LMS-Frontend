@@ -15,29 +15,48 @@ const DailyPerformance = () => {
 
   if (!data || !data.results) return null;
 
-  // Extract unique exam names from the data.
+  // Build unique exam names, normalizing by lower-case to remove duplicates.
   const uniqueExamNames = useMemo(() => {
-    const names = new Set();
+    const namesMap = {};
     data.results.forEach((item) => {
-      names.add(item.exam.examName);
+      if (item.exam && item.exam.examName) {
+        const lower = item.exam.examName.toLowerCase();
+        if (!namesMap[lower]) {
+          namesMap[lower] = item.exam.examName;
+        }
+      }
     });
-    return Array.from(names);
+    return Object.values(namesMap);
   }, [data.results]);
 
   // State for the searchable exam name dropdown filter.
   const [examNameQuery, setExamNameQuery] = useState("");
   const [examNameFilter, setExamNameFilter] = useState(""); // applied filter
 
+  // New state for attempt status filter: "all", "attempted", "not attempted"
+  const [attemptStatusFilter, setAttemptStatusFilter] = useState("all");
+
   // State for sort order based on overall marks.
   const [scoreSort, setScoreSort] = useState("none"); // "none", "highest", "lowest"
 
-  // Compute filtered data based on exam name filter.
+  // Compute filtered data based on exam name and attempt status filters.
   let filteredData = data.results.filter((item) => {
+    // Filter out records that don't have an exam.
+    if (!item.exam || !item.exam.examName) return false;
+
+    // Check exam name filter (exact match).
     if (
       examNameFilter &&
-      !item.exam.examName.toLowerCase().includes(examNameFilter.toLowerCase())
+      item.exam.examName.toLowerCase() !== examNameFilter.toLowerCase()
     ) {
       return false;
+    }
+
+    // Check attempt status filter.
+    if (attemptStatusFilter !== "all") {
+      const attempted = item.exam["attempt-status"] === true;
+      if (attemptStatusFilter === "attempted" && !attempted) return false;
+      if (attemptStatusFilter === "not attempted" && attempted) return false;
     }
     return true;
   });
@@ -46,12 +65,14 @@ const DailyPerformance = () => {
   if (scoreSort === "highest") {
     filteredData.sort(
       (a, b) =>
-        (b.exam.analysis.totalScore || 0) - (a.exam.analysis.totalScore || 0)
+        (b.exam?.analysis?.totalScore || 0) -
+        (a.exam?.analysis?.totalScore || 0)
     );
   } else if (scoreSort === "lowest") {
     filteredData.sort(
       (a, b) =>
-        (a.exam.analysis.totalScore || 0) - (b.exam.analysis.totalScore || 0)
+        (a.exam?.analysis?.totalScore || 0) -
+        (b.exam?.analysis?.totalScore || 0)
     );
   }
 
@@ -156,6 +177,22 @@ const DailyPerformance = () => {
           )}
         </div>
 
+        {/* Attempt Status Filter */}
+        <div className="flex flex-col">
+          <label className="font-medium text-gray-700 mb-1">
+            Attempt Status
+          </label>
+          <select
+            value={attemptStatusFilter}
+            onChange={(e) => setAttemptStatusFilter(e.target.value)}
+            className="border rounded px-2 py-1"
+          >
+            <option value="all">All</option>
+            <option value="attempted">Attempted</option>
+            <option value="not attempted">Not Attempted</option>
+          </select>
+        </div>
+
         {/* Sort by Score Filter */}
         <div className="flex flex-col">
           <label className="font-medium text-gray-700 mb-1">
@@ -207,7 +244,7 @@ const DailyPerformance = () => {
           <tbody>
             {filteredData.map((item, index) => {
               const { student, exam } = item;
-              const subjectAnalysis = getSubjectWiseAnalysis(exam);
+              const subjectAnalysis = exam ? getSubjectWiseAnalysis(exam) : [];
               return (
                 <tr
                   key={student.id}
@@ -223,13 +260,17 @@ const DailyPerformance = () => {
                     {student.phNumber}
                   </td>
                   <td className="border border-gray-300 px-4 py-2">
-                    {exam.examName}
+                    {exam?.examName || "N/A"}
                   </td>
                   <td className="border border-gray-300 px-4 py-2">
-                    {exam["attempt-status"] ? "Attempted" : "Not Attempted"}
+                    {exam
+                      ? exam["attempt-status"]
+                        ? "Attempted"
+                        : "Not Attempted"
+                      : "N/A"}
                   </td>
                   <td className="border border-gray-300 px-4 py-2">
-                    {exam.analysis.totalScore}
+                    {exam?.analysis?.totalScore ?? "N/A"}
                   </td>
                   <td className="border border-gray-300 px-4 py-2">
                     {subjectAnalysis.map((subj, idx) => (
@@ -241,13 +282,16 @@ const DailyPerformance = () => {
                   </td>
                   <td className="border border-gray-300 px-4 py-2">
                     <div>
-                      <strong>Date:</strong> {exam.startDate}
+                      <strong>Date:</strong> {exam?.startDate || "N/A"}
                     </div>
                     <div>
-                      <strong>Time:</strong> {exam.startTime}
+                      <strong>Time:</strong> {exam?.startTime || "N/A"}
                     </div>
                     <div>
-                      <strong>Total Time:</strong> {exam.totalExamTime} mins
+                      <strong>Total Time:</strong>{" "}
+                      {exam?.totalExamTime
+                        ? exam.totalExamTime + " mins"
+                        : "N/A"}
                     </div>
                   </td>
                 </tr>
