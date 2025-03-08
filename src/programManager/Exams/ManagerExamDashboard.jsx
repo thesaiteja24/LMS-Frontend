@@ -83,7 +83,8 @@ export const ManagerExamDashboard = () => {
     } catch (error) {
       console.error("Error fetching exam details:", error);
       toast.error(
-        `Failed to fetch exam details. Please try again or contact support if the issue persists`
+        error.response?.data.message ||
+          `Failed to fetch exam details. Please try again or contact support if the issue persists`
       );
     }
   };
