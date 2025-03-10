@@ -4,8 +4,7 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { decryptData } from '../../../cryptoUtils.jsx';
-
+import { decryptData } from "../../../cryptoUtils.jsx";
 
 export const Dashboard = () => {
   const navigate = useNavigate();
@@ -50,7 +49,7 @@ export const Dashboard = () => {
       );
       const data = response.data;
       console.log(data);
-      navigate("/students-performance/daily", { state: data });
+      navigate("/students-performance-manager/daily", { state: data });
     } catch (error) {
       console.error("Error fetching exam details:", error);
       toast.error("No Reports are available at this moment");
